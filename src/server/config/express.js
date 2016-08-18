@@ -6,7 +6,6 @@ import morgan           from 'morgan'
 import compress         from 'compression'
 import bodyParser       from 'body-parser'
 import methodOverride   from 'method-override'
-import routes       from '../routes/index.route';
 import users        from '../routes/users.route';
 
 export default function () {
@@ -26,7 +25,6 @@ export default function () {
 	app.use(bodyParser.json());
 	app.use(methodOverride());
 
-    app.use('/',routes)
     app.use('/users',users)
 
 	return server;
