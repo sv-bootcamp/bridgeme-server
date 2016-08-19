@@ -5,9 +5,7 @@ import * as Users from '../controllers/users.controller'
 
 const router = express.Router()
 
- router.get('/', Users.index)
- //change to post
- router.get('/insertMock', Users.saveTest)
- router.get('/all', Users.getAll)
+router.get('/insertMock', Users.saveTest)
+router.get('/all', Users.getAll)
 
 export default router;

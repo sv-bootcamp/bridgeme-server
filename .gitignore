@@ -2,9 +2,11 @@
 .c9/
 node_modules/
 dist-server/
+coverage/
 
 # DB Folder
 data/
 
 # scripts
 mongod
+apidoc.json
