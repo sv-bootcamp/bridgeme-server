@@ -9,6 +9,7 @@ const server = require('gulp-develop-server');
 const runSequence = require('run-sequence');
 const install = require("gulp-install");
 const apidoc = require('gulp-apidoc');
+const jscs = require('gulp-jscs');
 const originalJs = './src/**/**/*.js';
 
 gulp.task('server:start', () => {
@@ -45,18 +46,24 @@ gulp.task('lint', () => {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('apidoc', function(done) {
+gulp.task('apidoc', function (done) {
   apidoc({
     src: "src/",
     dest: "apidoc/"
   }, done);
 });
 
-gulp.task('test', function() {
+gulp.task('test', function () {
   return gulp.src('./src/test/node/*.js')
     .pipe(tape({
       reporter: faucet()
     }));
+});
+
+gulp.task('jscs', () => {
+  return gulp.src('src/**/*.js')
+    .pipe(jscs({fix: true}))
+    .pipe(gulp.dest('src'));
 });
 
 gulp.task('default', () => {

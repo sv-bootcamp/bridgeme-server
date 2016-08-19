@@ -1,7 +1,7 @@
 'use strict';
 
-import mongoose from 'mongoose'
-import '../models/users.model'
+import mongoose from 'mongoose';
+import '../models/users.model';
 
 export default function () {
   mongoose.Promise = global.Promise;

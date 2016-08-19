@@ -1,12 +1,12 @@
 'use strict';
 
-import http from 'http'
-import express from 'express'
-import morgan from 'morgan'
-import compress from 'compression'
-import bodyParser from 'body-parser'
-import methodOverride from 'method-override'
-import users from '../routes/users.route'
+import http from 'http';
+import express from 'express';
+import morgan from 'morgan';
+import compress from 'compression';
+import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
+import users from '../routes/users.route';
 
 export default function() {
   const app = express();
@@ -14,13 +14,12 @@ export default function() {
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
-  }
-  else if (process.env.NODE_ENV === 'production') {
+  } else if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
 
   app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
   }));
   app.use(bodyParser.json());
   app.use(methodOverride());

@@ -43,6 +43,7 @@
     "gulp-develop-server": "^0.5.2",
     "gulp-eslint": "^3.0.1",
     "gulp-install": "^0.6.0",
+    "gulp-jscs": "^4.0.0",
     "gulp-nodemon": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tape": "0.0.9",
