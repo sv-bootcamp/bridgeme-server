@@ -1,0 +1,13 @@
+#Useless Folders
+.c9/
+node_modules/
+dist-server/
+coverage/
+.idea/
+
+# DB Folder
+data/
+
+# scripts
+mongod
+apidoc.json
