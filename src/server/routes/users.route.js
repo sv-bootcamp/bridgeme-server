@@ -1,7 +1,7 @@
-'use strict'
+'use strict';
 
-import express from 'express';
-import * as Users from '../controllers/users.controller';
+import express from 'express'
+import * as Users from '../controllers/users.controller'
 
 const router = express.Router();
 

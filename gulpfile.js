@@ -9,7 +9,6 @@ const server = require('gulp-develop-server');
 const runSequence = require('run-sequence');
 const install = require("gulp-install");
 const apidoc = require('gulp-apidoc');
-const swagger = require('gulp-swagger');
 const originalJs = './src/**/**/*.js';
 
 gulp.task('server:start', () => {

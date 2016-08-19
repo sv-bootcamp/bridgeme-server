@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const User = require('mongoose').model('User');
 
 let mockData = {
@@ -9,18 +9,18 @@ let mockData = {
   field: 'SW Engineer',
   region: "seoul",
   skills: "JAVA"
-}
+};
 
 export function saveTest(req, res, next) {
-  let user = new User(mockData)
+  let user = new User(mockData);
   user.save((err) => {
     if (err) {
-      res.send(err)
+      res.send(err);
     }
     else {
-      res.send("Success")
+      res.send("Success");
     }
-  })
+  });
 }
 
 export function getAll(req, res, next) {
@@ -31,5 +31,5 @@ export function getAll(req, res, next) {
     else {
       res.send(doc);
     }
-  })
+  });
 }
