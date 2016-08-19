@@ -1,7 +1,7 @@
-'use strict'
+'use strict';
 
-import mongoose from 'mongoose'
-const Schema = mongoose.Schema
+import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
 
 let userSchema = new Schema({
   userId: String,
@@ -13,13 +13,13 @@ let userSchema = new Schema({
   skills: String,
   regDate: {
     type: Date,
-    default: Date.now()
-  }
-})
+    default: Date.now(),
+  },
+});
 
 userSchema.set('toJSON', {
-  getters: true, // bring all elements include virtuals
-  virtuals: true // To have all virtuals show up in your console.log output
-})
+  getters: true,  // bring all elements include virtuals
+  virtuals: true,  // To have all virtuals show up in your console.log output
+});
 
-export default mongoose.model('User', userSchema)
+export default mongoose.model('user', userSchema);

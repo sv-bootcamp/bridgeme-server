@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // Set the 'NODE_ENV' variable
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';

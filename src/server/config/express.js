@@ -14,13 +14,12 @@ export default function() {
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
-  }
-  else if (process.env.NODE_ENV === 'production') {
+  } else if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
 
   app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
   }));
   app.use(bodyParser.json());
   app.use(methodOverride());
