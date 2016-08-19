@@ -1,7 +1,6 @@
 'use strict';
 
 const User = require('mongoose').model('user');
-
 let mockData = {
   userId: 'gildong',
   email: 'abcds@fsdss.com',
