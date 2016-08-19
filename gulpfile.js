@@ -2,19 +2,18 @@ const gulp = require('gulp');
 const tape = require('gulp-tape');
 const faucet = require('faucet');
 const babel = require('gulp-babel');
-const watch = require('gulp-nodemon');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
 const server = require('gulp-develop-server');
 const runSequence = require('run-sequence');
-const install = require("gulp-install");
+const install = require('gulp-install');
 const apidoc = require('gulp-apidoc');
 const jscs = require('gulp-jscs');
 const originalJs = './src/**/**/*.js';
 
 gulp.task('server:start', () => {
   server.listen({
-    path: './dist-server/server.js'
+    path: './dist-server/server.js',
   });
 });
 
@@ -26,7 +25,7 @@ gulp.task('babel', () => {
   return gulp.src(originalJs)
     .pipe(sourcemaps.init())
     .pipe(babel({
-      presets: ['es2015']
+      presets: ['es2015'],
     }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('dist-server'));
@@ -40,23 +39,23 @@ gulp.task('install', () => {
 gulp.task('lint', () => {
   return gulp.src(originalJs)
     .pipe(eslint({
-      configFile: './.eslintrc.json'
+      configFile: './.eslintrc.json',
     }))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('apidoc', function (done) {
+gulp.task('apidoc', (done) => {
   apidoc({
-    src: "src/",
-    dest: "apidoc/"
+    src: 'src/',
+    dest: 'apidoc/',
   }, done);
 });
 
-gulp.task('test', function () {
+gulp.task('test', () => {
   return gulp.src('./src/test/node/*.js')
     .pipe(tape({
-      reporter: faucet()
+      reporter: faucet(),
     }));
 });
 

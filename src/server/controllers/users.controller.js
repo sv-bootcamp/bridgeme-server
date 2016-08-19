@@ -8,7 +8,7 @@ let mockData = {
   name: '홍길동',
   age: 25,
   field: 'SW Engineer',
-  region: 'seoul',
+  region: 'Seoul',
   skills: 'JAVA',
 };
 

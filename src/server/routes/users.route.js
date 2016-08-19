@@ -1,11 +1,11 @@
 'use strict';
 
 import express from 'express';
-import * as users from '../controllers/users.controller';
+import * as user from '../controllers/users.controller';
 
 const router = express.Router();
 
-router.get('/insertMock', users.saveTest);
-router.get('/all', users.getAll);
+router.get('/insertMock', user.saveTest);
+router.get('/all', user.getAll);
 
 export default router;
