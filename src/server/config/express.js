@@ -1,11 +1,11 @@
 'use strict';
 
-import http from 'http'
-import express from 'express'
-import morgan from 'morgan'
-import compress from 'compression'
-import bodyParser from 'body-parser'
-import methodOverride from 'method-override'
+import http from 'http';
+import express from 'express';
+import morgan from 'morgan';
+import compress from 'compression';
+import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
 import users from '../routes/users.route';
 
 export default function() {
@@ -26,7 +26,7 @@ export default function() {
   app.use(methodOverride());
   app.use(express.static('../public'));
 
-  app.use('/users', users)
+  app.use('/users', users);
 
   return server;
 }

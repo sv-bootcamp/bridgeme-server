@@ -1,5 +1,5 @@
 'use strict'
-const User = require('mongoose').model('User')
+const User = require('mongoose').model('User');
 
 let mockData = {
   userId: "gildong",
@@ -13,12 +13,23 @@ let mockData = {
 
 export function saveTest(req, res, next) {
   let user = new User(mockData)
-  user.save(() => {
-    res.send(arguments)
+  user.save((err) => {
+    if (err) {
+      res.send(err)
+    }
+    else {
+      res.send("Success")
+    }
   })
 }
 
-export function getOne(req, res, next) {
-  let id = req.params.id
-  res.send(id)
+export function getAll(req, res, next) {
+  User.find((err, doc) => {
+    if (err) {
+      res.send(err);
+    }
+    else {
+      res.send(doc);
+    }
+  })
 }

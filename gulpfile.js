@@ -54,7 +54,7 @@ gulp.task('apidoc', function(done) {
 });
 
 gulp.task('test', function() {
-  return gulp.src('test/*.js')
+  return gulp.src('./src/test/node/*.js')
     .pipe(tape({
       reporter: faucet()
     }));
