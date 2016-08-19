@@ -1,4 +1,5 @@
 'use strict';
+
 const User = require('mongoose').model('User');
 
 let mockData = {

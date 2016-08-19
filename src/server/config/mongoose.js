@@ -1,4 +1,5 @@
 'use strict';
+
 import mongoose from 'mongoose'
 import '../models/users.model'
 
