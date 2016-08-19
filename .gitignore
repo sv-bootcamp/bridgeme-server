@@ -3,6 +3,7 @@
 node_modules/
 dist-server/
 coverage/
+.idea/
 
 # DB Folder
 data/
