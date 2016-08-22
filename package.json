@@ -4,8 +4,8 @@
   "description": "This is skeleton of project yoda.",
   "main": "dist-server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist-server/server.js"
+    "test": "test : node src/node/test.js",
+    "start": "node src/node/test.js"
   },
   "repository": {
     "type": "git",
