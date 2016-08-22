@@ -13,8 +13,8 @@ let mockData = {
 };
 
 export function saveTest(req, res, next) {
-  let user = new user(mockData);
-  user.save((err) => {
+  let userSample = new user(mockData);
+  userSample.save((err) => {
     if (err) {
       res.send(err);
     } else {
@@ -24,7 +24,7 @@ export function saveTest(req, res, next) {
 }
 
 export function getAll(req, res, next) {
-  User.find((err, doc) => {
+  user.find((err, doc) => {
     if (err) {
       res.send(err);
     } else {
