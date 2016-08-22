@@ -4,8 +4,8 @@
   "description": "This is skeleton of project yoda.",
   "main": "dist-server/server.js",
   "scripts": {
-    "test": "test : node src/node/test.js",
-    "start": "node src/node/test.js"
+    "test": "gulp test",
+    "start": "gulp test"
   },
   "repository": {
     "type": "git",
