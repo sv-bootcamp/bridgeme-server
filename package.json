@@ -4,8 +4,8 @@
   "description": "This is skeleton of project yoda.",
   "main": "dist-server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist-server/server.js"
+    "test": "gulp test",
+    "start": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "mongoose": "^4.5.9",
     "morgan": "^1.7.0",
     "path": "^0.12.7",
+    "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
     "swagger-ui": "^2.2.0"
   },

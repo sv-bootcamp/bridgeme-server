@@ -53,7 +53,7 @@ gulp.task('apidoc', (done) => {
 });
 
 gulp.task('test', () => {
-  return gulp.src('./src/test/node/*.js')
+  return gulp.src('./dist-server/test/node/*.js')
     .pipe(tape({
       reporter: faucet(),
     }));
