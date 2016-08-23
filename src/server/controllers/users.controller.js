@@ -12,7 +12,7 @@ let mockData = {
   skills: 'JAVA',
 };
 
-export function saveTest(req, res, next) {
+export function insertMockData(req, res, next) {
   let userSample = new user(mockData);
   userSample.save((err) => {
     if (err) {
