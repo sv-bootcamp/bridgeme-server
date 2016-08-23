@@ -11,3 +11,15 @@ data/
 # scripts
 mongod
 apidoc.json
+
+
+#client
+src/client/ios/build/
+src/client/ios/DerivedData/
+src/client/android/build/
+src/client/android/app/build/
+src/client/android/app/gradle/
+src/client/android/app/.gradle/
+src/client/android/app/gradlew
+src/client/.idea/
+src/client/node_modules/
