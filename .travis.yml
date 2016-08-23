@@ -4,3 +4,5 @@ node_js:
 before_script:
   - npm install
 script: gulp test
+notifications:
+  slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv
