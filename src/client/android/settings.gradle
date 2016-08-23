@@ -1,0 +1,3 @@
+rootProject.name = 'Yoda'
+
+include ':app'
