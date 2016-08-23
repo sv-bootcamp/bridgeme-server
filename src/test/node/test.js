@@ -1,17 +1,16 @@
-'use strict';
-
 import test from 'tape';
 
-test('A passing test', (assert) => {
-  assert.pass('This test will pass.');
-  assert.end();
+//sample test for 'pass'
+test('A passing test', (t) => {
+  t.pass('This test will pass.');
+  t.end();
 });
 
-test('Assertions with tape.', (assert) => {
+//sample test for 'equal'
+test('Assertions with tape.', (t) => {
   const expected = 'something to test';
   const actual = 'something to test';
 
-  assert.equal(actual, expected,
-    'Given two mismatched values, .equal() should produce a nice bug report');
-  assert.end();
+  t.equal(actual, expected);
+  t.end();
 });
