@@ -64,9 +64,9 @@ gulp.task('test', () => {
 });
 
 gulp.task('jscs', () => {
-  return gulp.src('*.js')
+  return gulp.src('src/**/*.js')
     .pipe(jscs({ fix: true }))
-    .pipe(gulp.dest(''));
+    .pipe(gulp.dest('src'));
 });
 
 gulp.task('default', () => {
