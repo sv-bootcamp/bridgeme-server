@@ -14,25 +14,28 @@ import {
 } from 'react-native';
 
 class App extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
+  constructor(props) {
+    super(props);
+    this.state = {
         titleText: 'Yoda',
         os: 'OS',
       };
 
-      if (Platform.OS === 'ios') {
-        this.state.os = 'IOS';
-      } else if (Platform.OS === 'android') {
-        this.state.os = 'Android API :' + Platform.Version;
-      }
-
-      console.log(Platform.OS);
-
+    //For specific platform
+    if (Platform.OS === 'ios') {
+      this.state.os = 'IOS';
+    } else if (Platform.OS === 'android') {
+      this.state.os = 'Android API :' + Platform.Version;
     }
 
-    render() {
-      return (
+    console.log(Platform.OS);
+
+  }
+
+  render() {
+    return (
+
+            //To do about View
             <View style={styles.container}>
                                   <Text style={styles.welcome}>
                       Welcome to React Native, {this.state.os} !
@@ -47,9 +50,10 @@ class App extends Component {
                           </View>
 
       );
-    }
+  }
 }
 
+//style components
 const styles = StyleSheet.create({
   container: {
     flex: 1,
