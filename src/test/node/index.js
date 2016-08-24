@@ -1,5 +1,5 @@
 'use strict';
 
-import './test.js'
-import './user.js'
+import './test'
+import './user'
 

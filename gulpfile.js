@@ -52,11 +52,15 @@ gulp.task('apidoc', (done) => {
   }, done);
 });
 
-gulp.task('test', () => {
-  return gulp.src('./dist-server/test/node/*.js')
+gulp.task('test:index', () => {
+  return gulp.src('./dist-server/test/node/index.js')
     .pipe(tape({
       reporter: faucet(),
     }));
+});
+
+gulp.task('test', () => {
+  runSequence('babel','test:index');
 });
 
 gulp.task('jscs', () => {
