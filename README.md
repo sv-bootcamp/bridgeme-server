@@ -7,5 +7,5 @@ How to test this on your local environment:
 
 1. `git clone https://github.com/sv-bootcamp/yoda.git` 
 2. `npm install` 
-3. `mongod` (To start MongoDB)
+3. `mongod --dbpath=~/mongodb/data` (To start MongoDB with db path)
 3. `gulp` 
