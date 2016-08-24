@@ -34,9 +34,7 @@ class App extends Component {
 
   render() {
     return (
-
-            //To do about View
-            <View style={styles.container}>
+           <View style={styles.container}>
                                   <Text style={styles.welcome}>
                       Welcome to React Native, {this.state.os} !
                                   </Text>
@@ -48,8 +46,7 @@ class App extends Component {
                       Cmd+D or shake for dev menu
                                   </Text>
                           </View>
-
-      );
+     );
   }
 }
 

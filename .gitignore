@@ -13,13 +13,43 @@ mongod
 apidoc.json
 
 
-#client
+# client
+
+# OSX
+#
+.DS_Store
+
+# Xcode
+#
 src/client/ios/build/
-src/client/ios/DerivedData/
-src/client/android/build/
-src/client/android/app/build/
-src/client/android/gradle/
-src/client/android/.gradle/
-src/client/android/gradlew
-src/client/.idea/
-src/client/node_modules/
+src/client/ios/*.pbxuser
+!src/client/ios/default.pbxuser
+src/client/ios/*.mode1v3
+!src/client/ios/default.mode1v3
+src/client/ios/*.mode2v3
+!src/client/ios/default.mode2v3
+src/client/ios/*.perspectivev3
+!src/client/ios/default.perspectivev3
+src/client/ios/xcuserdata
+src/client/ios/*.xccheckout
+src/client/ios/*.moved-aside
+src/client/ios/DerivedData
+src/client/ios/*.hmap
+src/client/ios/*.ipa
+src/client/ios/*.xcuserstate
+src/client/ios/project.xcworkspace
+
+# Android/IJ
+#
+src/client/android/*.iml
+src/client/android/.idea
+src/client/android/.gradle
+src/client/android/local.properties
+
+
+# BUCK
+src/client/buck-out/
+src/client/\.buckd/
+src/client/android/app/libs
+src/client/android/keystores/debug.keystore
+
