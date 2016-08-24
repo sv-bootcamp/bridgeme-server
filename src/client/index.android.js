@@ -12,4 +12,4 @@ import {
 import App from './javascripts/App';
 
 //regist to AppRegistry for route
-AppRegistry.registerComponent('Yoda', () => App);
+AppRegistry.registerComponent('yoda', () => App);
