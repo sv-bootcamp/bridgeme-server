@@ -60,7 +60,7 @@ gulp.task('test:index', () => {
 });
 
 gulp.task('test', () => {
-  runSequence('babel', 'test:index');
+  runSequence('babel', 'server:start','test:index');
 });
 
 gulp.task('jscs', () => {
