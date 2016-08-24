@@ -53,22 +53,22 @@ gulp.task('apidoc', (done) => {
 });
 
 gulp.task('test:index', () => {
-  return gulp.src('./dist-server/test/node/index.js')
+  return gulp.src('./dist-server/test/index.js')
     .pipe(tape({
       reporter: faucet(),
     }));
 });
 
 gulp.task('test', () => {
-  runSequence('babel','test:index');
+  runSequence('babel', 'test:index');
 });
 
 gulp.task('jscs', () => {
-  return gulp.src('src/**/*.js')
-    .pipe(jscs({fix: true}))
-    .pipe(gulp.dest('src'));
+  return gulp.src('*.js')
+    .pipe(jscs({ fix: true }))
+    .pipe(gulp.dest(''));
 });
 
 gulp.task('default', () => {
-  runSequence('install', 'babel', 'server:start');
+  runSequence('babel', 'server:start');
 });
