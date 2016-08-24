@@ -3,6 +3,8 @@ Codename Yoda. Mentoring.
 
 [Go to yoda wiki page](https://github.com/sv-bootcamp/wiki/wiki/Project-Yoda)
 
-* First, Clone repository  
-* execute `npm install` 
-* and then `gulp`
+How to test this on your local environment:
+
+1. `git clone https://github.com/sv-bootcamp/yoda.git` 
+2. `npm install` 
+3. `gulp` 
