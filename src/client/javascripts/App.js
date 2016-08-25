@@ -18,22 +18,24 @@ class App extends Component {
     super(props);
     this.state = {
         titleText: 'Yoda',
-        os: 'OS',
+        os: '',
       };
 
-    //For specific platform
+    // Populate the OS state by looking at Platform params.
     if (Platform.OS === 'ios') {
       this.state.os = 'IOS';
     } else if (Platform.OS === 'android') {
       this.state.os = 'Android API :' + Platform.Version;
     }
 
-    console.log(Platform.OS);
+    console.log(('Starting the app for platform: ' + this.state.os));
 
   }
 
   render() {
     return (
+
+           // Render the screen on View.
            <View style={styles.container}>
                                   <Text style={styles.welcome}>
                       Welcome to React Native, {this.state.os} !
@@ -50,7 +52,7 @@ class App extends Component {
   }
 }
 
-//style components
+// Set style components.
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -11,7 +11,7 @@ Powered by React-native
 * and then `react-native start` or
 	`react-native run-android` or
 	`react-native run-ios`
-
+* if 
 # if you start First
 check following documents first
 
