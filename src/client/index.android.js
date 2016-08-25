@@ -11,5 +11,5 @@ import {
 
 import App from './javascripts/App';
 
-//regist to AppRegistry for route
+// Register route to AppRegistry
 AppRegistry.registerComponent('yoda', () => App);
