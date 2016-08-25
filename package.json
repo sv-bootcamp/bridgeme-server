@@ -20,6 +20,7 @@
   "dependencies": {
     "babel-cli": "^6.11.4",
     "babel-preset-react": "^6.11.1",
+    "babel-preset-react-native": "^1.9.0",
     "body-parser": "^1.15.2",
     "browser-run": "^3.2.0",
     "co": "^4.6.0",
