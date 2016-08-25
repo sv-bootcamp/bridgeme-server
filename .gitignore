@@ -23,13 +23,13 @@ apidoc.json
 #
 src/client/ios/build/
 src/client/ios/*.pbxuser
-!src/client/ios/default.pbxuser
+src/client/ios/!default.pbxuser
 src/client/ios/*.mode1v3
-!src/client/ios/default.mode1v3
+src/client/ios/!default.mode1v3
 src/client/ios/*.mode2v3
-!src/client/ios/default.mode2v3
+src/client/ios/!default.mode2v3
 src/client/ios/*.perspectivev3
-!src/client/ios/default.perspectivev3
+src/client/ios/!default.perspectivev3
 src/client/ios/xcuserdata
 src/client/ios/*.xccheckout
 src/client/ios/*.moved-aside
