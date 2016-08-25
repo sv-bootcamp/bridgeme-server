@@ -52,19 +52,23 @@ gulp.task('apidoc', (done) => {
   }, done);
 });
 
-gulp.task('test', () => {
-  return gulp.src('./dist-server/test/node/*.js')
+gulp.task('test:index', () => {
+  return gulp.src('./dist-server/test/index.js')
     .pipe(tape({
       reporter: faucet(),
     }));
 });
 
+gulp.task('test', () => {
+  runSequence('babel','test:index');
+});
+
 gulp.task('jscs', () => {
   return gulp.src('src/**/*.js')
-    .pipe(jscs({fix: true}))
+    .pipe(jscs({ fix: true }))
     .pipe(gulp.dest('src'));
 });
 
 gulp.task('default', () => {
-  runSequence('install', 'babel', 'server:start');
+  runSequence('babel', 'server:start');
 });

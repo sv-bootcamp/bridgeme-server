@@ -1,8 +1,12 @@
 language: node_js
 node_js:
   - "6"
+services:
+  - mongodb
 before_script:
-  - npm install
+  - npm install -g gulp
+  - gulp &
+  - sleep 5
 script: gulp test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv
