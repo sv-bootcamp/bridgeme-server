@@ -6,6 +6,8 @@ Powered by React-native
 
 * First, Clone repository  
 * execute `npm install` 
+* if you don't install recat-native, you must install it using following command
+	`npm install -g recat-native-cli`
 * and then `react-native start` or
 	`react-native run-android` or
 	`react-native run-ios`

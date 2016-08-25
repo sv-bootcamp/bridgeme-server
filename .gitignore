@@ -41,7 +41,7 @@ src/client/ios/project.xcworkspace
 
 # Android/IJ
 #
-src/client/android/*.iml
+src/client/android/*.iml 
 src/client/android/.idea
 src/client/android/.gradle
 src/client/android/local.properties
