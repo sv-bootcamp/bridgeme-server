@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
   userId: String,
-  email: String,
+  email: { type: String, unique: true },
   name: String,
   age: Number,
   field: String,

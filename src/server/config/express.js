@@ -7,6 +7,8 @@ import compress from 'compression';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import users from '../routes/users.route';
+var session = require('express-session');
+var MongoStore = require('connect-mongostore')(session);
 
 export default function() {
   const app = express();
@@ -18,12 +20,21 @@ export default function() {
     app.use(compress());
   }
 
+  app.use(session({
+      secret: 'yodasalt46787134refgr45refd',
+      store: new MongoStore({ db: 'yoda' }),
+      resave: false,
+      saveUninitialized: false,
+      //session expire after 1Day.
+      cookie: { maxAge: 3600 * 24 },
+    }));
+
   app.use(bodyParser.urlencoded({
     extended: true,
   }));
+
   app.use(bodyParser.json());
   app.use(methodOverride());
-  app.use(express.static('../public'));
   app.use('/users', users);
 
   return server;
