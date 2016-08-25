@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 let matchSchema = new Schema({
-  mentor: String,
-  mentee: String,
+  mentorId: String,
+  menteeId: String,
   requestDate: {
     type: Date,
     default: Date.now(),

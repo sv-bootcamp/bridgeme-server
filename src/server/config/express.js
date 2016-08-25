@@ -7,6 +7,7 @@ import compress from 'compression';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import users from '../routes/users.route';
+import match from '../routes/match.route';
 
 export default function() {
   const app = express();
@@ -25,6 +26,7 @@ export default function() {
   app.use(methodOverride());
   app.use(express.static('../public'));
   app.use('/users', users);
+  app.use('/match', match);
 
   return server;
 }
