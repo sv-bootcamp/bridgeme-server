@@ -3,13 +3,13 @@ export default {
     successCode: 1,
     result: {
       userId: '',
-      msg: 'login success.',
+      msg: 'Session stored',
     },
   },
   fail: {
     successCode: 0,
     result: {
-      msg: 'login failed.',
+      msg: 'Failed to authentication.',
     },
   },
 };

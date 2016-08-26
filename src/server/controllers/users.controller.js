@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose';
 const user = mongoose.model('user');
-import * as auth from '../config/auth';
+import * as authentication from '../config/auth';
 import loginCallback from '../config/json/login.callback';
 
 let mockData = {
@@ -13,25 +13,35 @@ let mockData = {
   field: 'SW Engineer',
   region: 'Seoul',
   skills: 'JAVA',
+  access_token : 'yodaROX',
 };
 
-export function testAuth(req, res, next) {
-  if (auth.validiateFB(req.body.access_token) == true) {
-    res.json('success');
-  }else {
-    res.json('fail auth.');
+export function auth(req, res, next) {
+  let platform = req.body.platform
+  let access_token = req.body.access_token;
+  let email = req.body.email;
+
+
+
+  if(platform == 1 || "FB"){
+    if (authentication.validiateFB(access_token) == true) {
+      req.session.access_token = access_token;
+      req.session.email = email;
+      res.json(loginCallback.success);
+    }
+  } else if (platform == 2 || "LI"){
+    if (authentication.validiateLI(access_token) == true) {
+      req.session.access_token = access_token;
+      req.session.email = email;
+      res.json(loginCallback.success);
+    }
   }
+
+  res.json(loginCallback.fail);
 }
 
-export function signin(req, res, next) {
-  if (auth.validiateFB(req.body.access_token) == true) {
-    res.json(loginCallback.success);
-  }else {
-    res.json(loginCallback.fail);
-  }
-}
+function signup(req, res, next) {
 
-function signup() {
 
 }
 
@@ -59,6 +69,8 @@ export function getAll(req, res, next) {
 
 export function getMyProfile(req, res, next) {
   ///TODO : Get person's session and retrieve DBsession.
+  req.session
+
 
 }
 

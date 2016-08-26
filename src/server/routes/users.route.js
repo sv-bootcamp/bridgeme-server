@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get('/insertMock', user.insertMockData);
 router.get('/all', user.getAll);
+router.get('/me', user.getMyProfile);
 
-router.post('/signin', user.signin);
-router.get('/me', user.signin);
+router.post('/auth', user.auth);
 
 export default router;
