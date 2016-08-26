@@ -11,8 +11,14 @@
 
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+
+
 
 @implementation AppDelegate
+
+
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -31,6 +37,9 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  [[FBSDKApplicationDelegate sharedInstance] application:application
+                           didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
 
