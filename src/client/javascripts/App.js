@@ -6,12 +6,17 @@
 
 import React, { Component } from 'react';
 import {
-    AppRegistry,
     StyleSheet,
     Text,
     View,
     Platform
 } from 'react-native';
+
+const FBSDK = require('react-native-fbsdk');
+const {
+  LoginButton,
+  AccessToken,
+} = FBSDK;
 
 class App extends Component {
   constructor(props) {
@@ -35,19 +40,28 @@ class App extends Component {
   render() {
     return (
 
-           // Render the screen on View.
+          //  Render the screen on View.
            <View style={styles.container}>
-                                  <Text style={styles.welcome}>
-                      Welcome to React Native, {this.state.os} !
-                                  </Text>
-                                  <Text style={styles.instructions}>
-                      To get started, edit index.ios.js
-                                  </Text>
-                                  <Text style={styles.instructions}>
-                      Press Cmd+R to reload,                    {'\n'}
-                      Cmd+D or shake for dev menu
-                                  </Text>
-                          </View>
+
+              {/* Render facebook login button */}
+             <LoginButton
+                onLoginFinished={
+                  (error, result) => {
+                    if (error) {
+                      alert('login has error: ' + result.error);
+                    } else if (result.isCancelled) {
+                      alert('login is cancelled.');
+                    } else {
+                      AccessToken.getCurrentAccessToken().then(
+                        (data) => {
+                          alert(data.accessToken.toString());
+                        }
+                    );
+                    }
+                  }
+              }
+              onLogoutFinished={() => alert('logout.')}/>
+          </View>
      );
   }
 }
