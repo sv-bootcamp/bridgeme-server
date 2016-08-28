@@ -1,76 +1,84 @@
 'use strict';
 
 import mongoose from 'mongoose';
-const user = mongoose.model('user');
+const User = mongoose.model('user');
 import * as authentication from '../config/auth';
-import loginCallback from '../config/json/login.callback';
+import authCallback from '../config/json/auth.callback';
 
-let mockData = {
-  userId: 'gildong',
-  email: 'abcds@fsdss.com',
-  name: '홍길동',
-  age: 25,
-  field: 'SW Engineer',
-  region: 'Seoul',
-  skills: 'JAVA',
-  access_token : 'yodaROX',
-};
+let platform = { facebook: 1, linkedin: 2 };
 
-export function auth(req, res, next) {
-  let platform = req.body.platform
-  let access_token = req.body.access_token;
-  let email = req.body.email;
-
-
-
-  if(platform == 1 || "FB"){
-    if (authentication.validiateFB(access_token) == true) {
-      req.session.access_token = access_token;
-      req.session.email = email;
-      res.json(loginCallback.success);
-    }
-  } else if (platform == 2 || "LI"){
-    if (authentication.validiateLI(access_token) == true) {
-      req.session.access_token = access_token;
-      req.session.email = email;
-      res.json(loginCallback.success);
-    }
+export function getMyProfile(req, res, next) {
+  if (req.session.email) {
+    User.find({ email: req.session.email }, (err, doc) => {
+      if (err) {
+        let json = authCallback.fail;
+        json.result.msg = err;
+        res.json(json);
+      } else {
+        res.json(doc);
+      }
+    });
+  } else {
+    res.json(authCallback.failAuth);
   }
-
-  res.json(loginCallback.fail);
-}
-
-function signup(req, res, next) {
-
-
-}
-
-export function insertMockData(req, res, next) {
-  let userSample = new user(mockData);
-  userSample.save((err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send('Success');
-    }
-  });
 }
 
 export function getAll(req, res, next) {
-  user.find((err, doc) => {
+  User.find((err, doc) => {
     if (err) {
       res.send(err);
     } else {
       console.log(req.session.accessToken);
-      res.send(req.session.accessToken);
+      res.json(req.session.accessToken);
     }
   });
 }
 
-export function getMyProfile(req, res, next) {
-  ///TODO : Get person's session and retrieve DBsession.
-  req.session
-
-
+export function getById(req, res, next) {
+  User.find({ _id: req.params._id }, (err, doc) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(doc);
+    }
+  });
 }
 
+function registerUser(req, res) {
+  let user = new User(req.body);
+  user.save((err, doc) => {
+    if (err) {
+      res.json(authCallback.failRegister);
+    } else {
+      let cb = authCallback.successRegister;
+      cb.result._id = doc._id;
+      res.json(authCallback.successRegister);
+      storeSession(req, res);
+    }
+  });
+}
+
+function storeSession(req, res) {
+  req.session.access_token = req.body.access_token;
+  req.session.email = req.body.email;
+}
+
+export function signin(req, res, next) {
+  let user = req.body;
+  if (user.email) {
+    User.find({ email: user.email }, (err, doc) => {
+      if (err) {
+        res.json(err);
+      } else {
+        if (doc.length == 0) {
+          registerUser(req, res);
+        } else {
+          storeSession(req, res);
+          res.json(authCallback.successSignin);
+        }
+      }
+    });
+  }else {
+    res.json(authCallback.failSignin);
+  }
+}

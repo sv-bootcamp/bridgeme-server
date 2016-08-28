@@ -4,13 +4,10 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-  userId: String,
   email: { type: String, unique: true },
+  platform_id: String,
+  platform_type: Number,
   name: String,
-  age: Number,
-  field: String,
-  region: String,
-  skills: String,
   regDate: {
     type: Date,
     default: Date.now(),

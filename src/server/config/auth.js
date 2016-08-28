@@ -17,12 +17,3 @@ export function validiateLI(accessToken) {
 
   return false;
 }
-
-export function validiateSession(accessToken) {
-  if (accessToken == superToken) {
-    return true;
-  }
-  ///TODO : Validiate accesstoken from linkedin API server.
-
-  return false;
-}
