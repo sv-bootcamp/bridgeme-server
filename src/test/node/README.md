@@ -11,8 +11,6 @@ How to run individual unit test:
 
 `tape test dist-server/test/node/user.js`
 
-
-
 #note :
 
 Before run test, please drop your `user` collection.
