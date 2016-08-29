@@ -6,7 +6,7 @@ services:
 before_script:
   - npm install -g gulp
   - gulp &
-  - sleep 5
+  - sleep 10
 script: gulp test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv
