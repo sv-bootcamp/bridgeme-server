@@ -1,0 +1,49 @@
+'use strict';
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+import express from 'express';
+import mongoose from './config/mongoose';
+import morgan from 'morgan';
+import compress from 'compression';
+import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
+import session from 'express-session';
+import users from './routes/users.route';
+
+const MongoStore = require('connect-mongostore')(session);
+const db = mongoose();
+
+export default (cb) => {
+  const app = express();
+
+  if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+  } else if (process.env.NODE_ENV === 'production') {
+    app.use(compress());
+  }
+
+  app.use(session({
+    secret: 'yodasalt46787134refgr45refd',
+    store: new MongoStore({ db: 'yoda' }),
+    resave: false,
+    saveUninitialized: false,
+    //session expire after 1Day.
+    cookie: { maxAge: 3600 * 24 },
+  }));
+
+  app.use(bodyParser.urlencoded({
+    extended: true,
+  }));
+
+  app.use(bodyParser.json());
+  app.use(methodOverride());
+  app.use('/users', users);
+
+  const server = app.listen(8000, cb ? cb : () => {
+    /* eslint-disable no-console */
+    console.log(`Listening on port 8000`);
+    /* eslint-enable */
+  });
+  return server;
+};
