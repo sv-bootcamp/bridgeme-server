@@ -5,6 +5,6 @@ import '../models/users.model';
 
 export default function () {
   mongoose.Promise = global.Promise;
-  const db = mongoose.connect('mongodb://localhost/yoda');
+  const db = mongoose.connect('mongodb://localhost:27017/yoda');
   return db;
 }

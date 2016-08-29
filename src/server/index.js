@@ -12,10 +12,10 @@ import session from 'express-session';
 import users from './routes/users.route';
 
 const MongoStore = require('connect-mongostore')(session);
-const db = mongoose();
 
 export default (cb) => {
   const app = express();
+  const db = mongoose();
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -45,5 +45,6 @@ export default (cb) => {
     console.log(`Listening on port 8000`);
     /* eslint-enable */
   });
+
   return server;
 };

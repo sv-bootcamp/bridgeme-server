@@ -10,6 +10,7 @@ const install = require('gulp-install');
 const apidoc = require('gulp-apidoc');
 const jscs = require('gulp-jscs');
 const originalJs = './src/**/**/*.js';
+const unitest = require('unitest');
 
 gulp.task('server:start', () => {
   server.listen({
@@ -58,6 +59,21 @@ gulp.task('test:index', () => {
       reporter: faucet(),
     }));
 });
+
+gulp.task('test:test', () => {
+  const output = unitest({
+    // browser: 'dist-test/test/browser/index.js',
+    node: 'dist-server/test/index.js',
+    report: ['text']
+  }, (exitCode) => {
+    if (exitCode !== 0) {
+      console.error('Tests failed! - Test script exited with non-zero status code.');
+    }
+    return true;
+  });
+  output.pipe(process.stdout);
+});
+
 
 gulp.task('test', () => {
   runSequence('babel','test:index');
