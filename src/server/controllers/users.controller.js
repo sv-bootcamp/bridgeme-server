@@ -12,6 +12,7 @@ let mockData = {
   skills: 'JAVA',
 };
 
+// Add a mock data into response.
 export function insertMockData(req, res, next) {
   let userSample = new user(mockData);
   userSample.save((err) => {
@@ -23,6 +24,7 @@ export function insertMockData(req, res, next) {
   });
 }
 
+// Return all users. 
 export function getAll(req, res, next) {
   user.find((err, doc) => {
     if (err) {

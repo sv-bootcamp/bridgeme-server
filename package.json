@@ -5,7 +5,7 @@
   "main": "dist-server/server.js",
   "scripts": {
     "test": "gulp test",
-    "start": "gulp test"
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
