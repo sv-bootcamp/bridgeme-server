@@ -80,6 +80,8 @@ function sendRequestEmail(req, res, receiver) {
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
+  matchData.mentorId = 'mentor_accept@gmail.com';
+  matchData.menteeId = 'mentee_accept@gmail.com';
   matchData.mentorName = "Mentor Kim";
   matchData.menteeName = "Mentee Lee";
 
