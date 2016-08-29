@@ -59,7 +59,8 @@ function sendRequestEmail(req, res, receiver) {
     to: receiver,
     subject: 'New mentee needs your help!',
     text: 'Hi, mentor!',
-    html: '<h1>Hi, ' + matchData.mentorName + ', </br>new mentee needs your help.</h1><p></p>',
+    html: '<h1>Hi, ' + matchData.mentorName
+    + ', </br>new mentee needs your mentoring.</h1><p> - ' + matchData.menteeName + ' sented</p>',
   };
 
   transport.sendMail(mailOptions, function(err, response){
@@ -79,6 +80,9 @@ function sendRequestEmail(req, res, receiver) {
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
+  matchData.mentorName = "Mentor Kim";
+  matchData.menteeName = "Mentee Lee";
+
   matchData.save((err) => {
     if (err) {
       sampleFailResult.errPoint = 'RequestMentoring - Saving MatchData';
