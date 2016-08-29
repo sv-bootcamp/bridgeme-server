@@ -5,7 +5,9 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let matchSchema = new Schema({
   mentorId: String,
+  mentorName: String,
   menteeId: String,
+  menteeName: String,
   requestDate: {
     type: Date,
     default: Date.now(),

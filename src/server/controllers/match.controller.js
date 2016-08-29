@@ -2,10 +2,12 @@
 
 const matchSchema = require('mongoose').model('match');
 import mailer from 'nodemailer';
-
+/*
+ * Methods about mentoring request, accept or reject including E-mail Service
+ */
 let matchData = new matchSchema();
 
-let sampleResult = {
+let sampleSuccessResult = {
   successCode: 1,
   matchData: matchData,
   requestList: {
@@ -43,32 +45,54 @@ let sampleResult = {
   },
 };
 
-// The mentee sent request to Mentor
-export function requestMentoring(req, res, next) {
-  matchData.mentorId = 'mentor_request@gmail.com';
-  matchData.menteeId = 'mentee_request@gmail.com';
+let sampleFailResult = {
+  successCode: 0,
+  errPoint: null,
+  err: null,
+};
 
-  matchData.save((err) => {
-    if (err) {
-      res.send(err);
+// Send mentoring request pushing Email to mentor(receiver)
+function sendRequestEmail(req, res, receiver) {
+  let transport = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
+  let mailOptions = {
+    from: '"Yoda Service Team" <yoda.mentor.lab@gmail.com>',
+    to: receiver,
+    subject: 'New mentee needs your help!',
+    text: 'Hi, mentor!',
+    html: '<h1>Hi, ' + matchData.mentorName + ', </br>new mentee needs your help.</h1><p></p>',
+  };
+
+  transport.sendMail(mailOptions, function(err, response){
+    if (err){
+      sampleFailResult.errPoint = 'RequestMentoring - transport.sendMail';
+      sampleFailResult.err = err;
+
+      res.json(sampleFailResult);
     } else {
-      // Todo:
-      // update mentor and mentee's request db
+      sampleSuccessResult.mailOptions = mailOptions;
 
-      res.json(sampleResult);
+      res.json(sampleSuccessResult);
     }
+    transport.close();
   });
 }
 
-// The mentee canceled the mentoring request
-export function cancelRequest(req, res, next) {
-  matchData.mentor = 'mentor_cancel@gmail.com';
-  matchData.mentee = 'mentee_cancel@gmail.com';
+// The mentee sent request to Mentor
+export function requestMentoring(req, res, next) {
+  matchData.save((err) => {
+    if (err) {
+      sampleFailResult.errPoint = 'RequestMentoring - Saving MatchData';
+      sampleFailResult.err = err;
 
-  // Todo:
-  // update mentor and mentee's request db
+      res.json(sampleFailResult);
+    } else {
+      // Todo:
+      // 1. update mentor and mentee's request db
 
-  res.json(sampleResult);
+      // 2. Send Request Mail to Mentor
+      sendRequestEmail(req, res, 'papermoon703@gmail.com');
+    }
+  });
 }
 
 // The mentor accepted the mentoring request
@@ -79,7 +103,7 @@ export function acceptRequest(req, res, next) {
   // Todo:
   // update mentor and mentee's request db
 
-  res.json(sampleResult);
+  res.json(sampleSuccessResult);
 }
 
 // The mentor rejected the mentoring request
@@ -90,46 +114,5 @@ export function rejectRequest(req, res, next) {
   // Todo:
   // update mentor and mentee's request db
 
-  res.json(sampleResult);
-}
-
-export function sendRequestMail(req, res, next) {
-  matchData.mentor = 'mentor_reject@gmail.com';
-  matchData.mentee = 'mentee_reject@gmail.com';
-
-  let transport = mailer.createTransport("SMTP", {
-    service: 'Gmail',
-    auth: {
-      user: 'yoda.mentor.lab@gmail.com',
-      pass: 'svbootcamp@!',
-    },
-  });
-
-  let mailOptions = {
-    from: matchData.mentor,
-    to: matchData.mentor,
-    subject: 'Would you be my Yoda?',
-    text: 'Hi!',
-    html: '<h1>HTML 보내기 테스트</h1><p><img src="http://www.nodemailer.com/img/logo.png"/></p>',
-  };
-
-  transport.sendMail(mailOptions, function(err, response){
-    let failureResult = {
-      successCode: 0,
-      result: err,
-    };
-
-    let successResult = {
-      successCode: 1,
-      mailOptions: mailOptions,
-    };
-
-    if (err){
-      res.json(failureResult);
-    } else {
-      res.json(successResult);
-    }
-
-    transport.close();
-  });
+  res.json(sampleSuccessResult);
 }
