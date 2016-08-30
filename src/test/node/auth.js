@@ -21,10 +21,3 @@ test('user signin test', t => {
   });
 });
 
-test('user signin test', t => {
-  r.post('/users/signin', mockData.mockUserData, res=> {
-    let body = JSON.parse(res.body);
-    t.equal(body.successCode, 1);
-    t.end();
-  });
-});
