@@ -13,5 +13,9 @@ How to run individual unit test:
 
 #note :
 
-Before run test, please drop your `user` collection.
+Before run test, please drop your Database.
+
+`mongo yoda --eval "db.dropDatabase()"`
+
+caution : It must use for local only.
 
