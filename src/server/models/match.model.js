@@ -1,13 +1,12 @@
 'use strict';
 
 import mongoose from 'mongoose';
-
+// const ObjectId = mongoose.Types.ObjectId;
 const Schema = mongoose.Schema;
+
 let matchSchema = new Schema({
-  mentorId: String,
-  mentorName: String,
-  menteeId: String,
-  menteeName: String,
+  mentor: Schema.Types.ObjectId,
+  mentee: Schema.Types.ObjectId,
   requestDate: {
     type: Date,
     default: Date.now(),
