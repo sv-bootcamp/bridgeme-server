@@ -1,8 +1,10 @@
-import test from 'tape';
+import mockData from '../mockData.js';
 import requestah from 'requestah';
+import test from 'tape';
+
 let r = requestah(8000);
+
 let _id;
-import mockData from '../../server/config/json/mockData.js';
 
 test('User register test', t => {
   r.post('/users/signin', mockData.mockUserData, res=> {

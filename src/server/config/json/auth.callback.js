@@ -2,13 +2,13 @@ export default {
   successRegister: {
     successCode: 1,
     result: {
-      msg: 'Register sucess.',
+      msg: 'Register success.',
     },
   },
   successSignin: {
     successCode: 1,
     result: {
-      msg: 'signin sucess.',
+      msg: 'sign in success.',
     },
   },
   failRegister: {
@@ -20,7 +20,7 @@ export default {
   failSignin: {
     successCode: 0,
     result: {
-      msg: 'Failed to signin.',
+      msg: 'Failed to sign in.',
     },
   },
   failAuth: {

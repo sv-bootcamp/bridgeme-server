@@ -1,18 +1,10 @@
-export const superToken = 'yodaROX';
-
-export function validiateFB(accessToken) {
-  if (accessToken == superToken) {
-    return true;
-  }
+export function validateAccessTokenFacebook(accessToken) {
   ///TODO : Validiate accesstoken from facebook API server.
 
   return false;
 }
 
-export function validiateLI(accessToken) {
-  if (accessToken == superToken) {
-    return true;
-  }
+export function validateAccessTokenLinkedIn(accessToken) {
   ///TODO : Validiate accesstoken from linkedin API server.
 
   return false;

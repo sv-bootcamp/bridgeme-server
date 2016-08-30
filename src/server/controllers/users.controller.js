@@ -22,7 +22,7 @@ export function getMyProfile(req, res, next) {
   }
 }
 
-// Return all users. 
+// Return all users.
 export function getAll(req, res, next) {
   if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
     User.find((err, doc) => {
@@ -37,7 +37,7 @@ export function getAll(req, res, next) {
   }
 }
 
-export function getById(req, res, next) {
+export function getProfileById(req, res, next) {
   if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
     User.find({ _id: req.params._id }, (err, doc) => {
       if (err) {

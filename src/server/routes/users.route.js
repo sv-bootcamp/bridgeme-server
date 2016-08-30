@@ -11,8 +11,8 @@ const router = express.Router();
 
 router.get('/all', user.getAll);
 router.get('/me', user.getMyProfile);
-router.get('/id/:_id', user.getById);
+router.get('/id/:_id', user.getProfileById);
 
-router.post('/signin', user.signin);
+router.post('/signIn', user.signin);
 
 export default router;
