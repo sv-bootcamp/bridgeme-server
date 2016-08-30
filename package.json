@@ -25,11 +25,11 @@
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "faucet": "0.0.1",
     "gulp": "^3.9.1",
     "method-override": "^2.3.6",
     "mongoose": "^4.5.9",
     "morgan": "^1.7.0",
+    "nyan": "^1.0.3",
     "path": "^0.12.7",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
@@ -45,13 +45,14 @@
     "gulp-eslint": "^3.0.1",
     "gulp-install": "^0.6.0",
     "gulp-jscs": "^4.0.0",
+    "gulp-mocha": "^3.0.1",
     "gulp-nodemon": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tape": "0.0.9",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.9",
+    "mocha": "^3.0.2",
     "nodemon": "^1.10.0",
     "run-sequence": "^1.2.2",
-    "tape": "^4.6.0"
+    "should": "^11.1.0"
   }
 }

@@ -1,6 +1,6 @@
 const gulp = require('gulp');
-const tape = require('gulp-tape');
-const faucet = require('faucet');
+const mocha = require('gulp-mocha');
+const nyan = require('nyan');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
@@ -54,9 +54,13 @@ gulp.task('apidoc', (done) => {
 
 gulp.task('test:index', () => {
   return gulp.src('./dist-server/test/index.js')
-    .pipe(tape({
-      reporter: faucet(),
-    }));
+    .pipe(mocha({reporter: 'nyan'}))
+    .once('error', () => {
+      process.exit(1);
+    })
+    .once('end', () => {
+      process.exit();
+    })
 });
 
 gulp.task('test', () => {
