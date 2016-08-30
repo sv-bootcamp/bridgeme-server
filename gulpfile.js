@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
-const nyan = require('nyan');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
@@ -53,18 +52,28 @@ gulp.task('apidoc', (done) => {
 });
 
 gulp.task('test:index', () => {
-  return gulp.src('./dist-server/test/index.js')
-    .pipe(mocha({reporter: 'nyan'}))
-    .once('error', () => {
-      process.exit(1);
-    })
-    .once('end', () => {
-      process.exit();
-    })
+  return gulp.src(['./dist-server/test/index.js'], { read: false })
+    .pipe(mocha({
+      reporter: 'spec',
+      globals: {
+        should: require('should')
+      }
+    }));
+
+});
+
+gulp.task('test:mocha', function() {
+  return gulp.src(['dist-server/test/**/*.js'], { read: false })
+    .pipe(mocha({
+      reporter: 'spec',
+      globals: {
+        should: require('should')
+      }
+    }));
 });
 
 gulp.task('test', () => {
-  runSequence('babel','test:index');
+  runSequence('babel','test:mocha');
 });
 
 gulp.task('jscs', () => {
