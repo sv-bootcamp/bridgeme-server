@@ -14,8 +14,7 @@ let assert = require('assert');
 // Test for getAll method.
 describe('Test for users.controller', function() {
   describe('#getMentorList()', function() {
-    it('should create a new User with session', function (done) {
-      // Create a User object to pass to User.create()
+    it('should create a new User with email session', function (done) {
       var u = sampleUser.loginedUserData;
       user.create(u, function (err, createdUser) {
         should.not.exist(err);
@@ -24,11 +23,10 @@ describe('Test for users.controller', function() {
       });
     });
   
-    // it('should get all users except session user', function (done) {
-    //
-    // });
-    // it('should return not exist because logined user', function() {
-    //   assert.equal(-1, [1,2,3].indexOf(4));
-    // });
+    it('should delete new User with email session', function (done) {
+      user.find({ name: 'session' }).remove(function() {
+        done();
+      });
+    });
   });
 });

@@ -4,9 +4,13 @@ var mongoose = require('mongoose');
 
 beforeEach(function (done) {
   function clearDB() {
-    for (var i in mongoose.connection.collections) {
-      mongoose.connection.collections[i].remove(function() {});
-    }
+    /*
+     * This part is hided because it always cleanDB even when dev-mode,
+     * so if test, dev DB separated, this would be added for test.
+     */
+    // for (var i in mongoose.connection.collections) {
+    //   mongoose.connection.collections[i].remove(function() {});
+    // }
     return done();
   }
   

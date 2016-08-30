@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose';
 
-/**
+/*
  * Define the schema model for user.
  */
 

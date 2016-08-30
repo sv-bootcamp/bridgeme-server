@@ -21,5 +21,15 @@ describe('Users: models', function () {
         done();
       });
     });
+  
+    it('should delete new User', function (done) {
+      // Create a User object to pass to User.create()
+      var u = {
+        name: 'yoda'
+      };
+      user.find(u).remove(function() {
+        done();
+      });
+    });
   });
 });
