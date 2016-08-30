@@ -33,6 +33,7 @@
     "path": "^0.12.7",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
+    "should": "^11.1.0",
     "swagger-ui": "^2.2.0"
   },
   "devDependencies": {

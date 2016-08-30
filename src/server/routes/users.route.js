@@ -10,6 +10,6 @@ import * as user from '../controllers/users.controller';
 const router = express.Router();
 
 router.get('/all', user.getAll);
-router.get('/insertMock', user.insertMockData);
+router.get('/mentorlist', user.getMentorList);
 
 export default router;
