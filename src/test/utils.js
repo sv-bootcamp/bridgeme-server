@@ -1,6 +1,10 @@
 'use strict';
 
-var mongoose = require('mongoose');
+/*
+ * Prepare for mongodb connection to test.
+ */
+
+let mongoose = require('mongoose');
 
 beforeEach(function (done) {
   function clearDB() {

@@ -1,12 +1,13 @@
 'use strict';
 
+import '../../server/models/users.model';
+
 /*
  * Test for mongodb create.
  */
 
-var should = require('should');
-var User = require('../../server/models/users.model');
-const user = require('mongoose').model('user');
+let should = require('should');
+let user = require('mongoose').model('user');
 
 describe('Users: models', function () {
   describe('#create()', function () {

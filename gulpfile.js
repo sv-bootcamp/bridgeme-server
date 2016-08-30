@@ -1,14 +1,14 @@
-const gulp = require('gulp');
-const mocha = require('gulp-mocha');
+const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
-const sourcemaps = require('gulp-sourcemaps');
-const server = require('gulp-develop-server');
-const runSequence = require('run-sequence');
+const gulp = require('gulp');
 const install = require('gulp-install');
-const apidoc = require('gulp-apidoc');
 const jscs = require('gulp-jscs');
+const mocha = require('gulp-mocha');
 const originalJs = './src/**/**/*.js';
+const runSequence = require('run-sequence');
+const server = require('gulp-develop-server');
+const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('server:start', () => {
   server.listen({

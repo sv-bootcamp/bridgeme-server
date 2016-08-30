@@ -1,15 +1,15 @@
 'use strict';
 
+import sampleUser from '../fixtures/loginedUser';
+import '../../server/models/users.model';
+
 /*
  * Test for users.controller.
  */
 
-import sampleUser from '../fixtures/loginedUser';
-
-var should = require('should');
-var User = require('../../server/models/users.model');
-const user = require('mongoose').model('user');
 let assert = require('assert');
+let should = require('should');
+let user = require('mongoose').model('user');
 
 // Test for getMentorList method.
 describe('Test for users.controller', function() {
