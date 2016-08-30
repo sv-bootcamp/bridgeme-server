@@ -2,7 +2,7 @@
   "name": "yoda",
   "version": "1.0.0",
   "description": "This is skeleton of project yoda.",
-  "main": "dist-server/server.js",
+  "main": "server.js",
   "scripts": {
     "test": "gulp test",
     "start": "gulp"
@@ -23,8 +23,11 @@
     "browser-run": "^3.2.0",
     "co": "^4.6.0",
     "compression": "^1.6.2",
+    "config": "^1.21.0",
+    "connect-mongostore": "^0.1.4",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.1",
     "faucet": "0.0.1",
     "gulp": "^3.9.1",
     "method-override": "^2.3.6",
@@ -33,7 +36,9 @@
     "path": "^0.12.7",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "swagger-ui": "^2.2.0"
+    "sinon": "^1.17.5",
+    "swagger-ui": "^2.2.0",
+    "unitest": "^0.11.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.13.2",

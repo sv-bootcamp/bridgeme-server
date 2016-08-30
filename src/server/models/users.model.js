@@ -1,20 +1,20 @@
 'use strict';
 
 import mongoose from 'mongoose';
-
 /**
  * Define the schema model for user.
  */
-
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-  userId: String,
-  email: String,
+  email: { type: String, unique: true },
+  //Unique user id from platform.
+  platform_id: String,
+  //Which platform user is using.  1:Facebook 2: LinkedIn
+  platform_type: Number,
   name: String,
-  age: Number,
-  field: String,
-  region: String,
-  skills: String,
+
+  ///TODO(yangwoo_yangwoo): Add support for age, field, region, ...
+
   regDate: {
     type: Date,
     default: Date.now(),

@@ -1,24 +1,25 @@
-const gulp = require('gulp');
-const tape = require('gulp-tape');
-const faucet = require('faucet');
+const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
-const sourcemaps = require('gulp-sourcemaps');
-const server = require('gulp-develop-server');
-const runSequence = require('run-sequence');
+const gulp = require('gulp');
+const faucet = require('faucet');
 const install = require('gulp-install');
-const apidoc = require('gulp-apidoc');
 const jscs = require('gulp-jscs');
 const originalJs = './src/**/**/*.js';
+const runSequence = require('run-sequence');
+const sourcemaps = require('gulp-sourcemaps');
+const server = require('gulp-develop-server');
+const tape = require('gulp-tape');
+const unitest = require('unitest');
 
 gulp.task('server:start', () => {
   server.listen({
-    path: './dist-server/server.js',
+    path: 'server',
   });
 });
 
 gulp.task('server:restart', () => {
-  gulp.watch(['./dist-server/server.js'], server.restart);
+  gulp.watch(['server'], server.restart);
 });
 
 gulp.task('babel', () => {

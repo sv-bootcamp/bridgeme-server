@@ -1,9 +1,7 @@
+import mockData from '../mockData.js';
+import requestah from 'requestah';
 import test from 'tape';
 
-test('Insert Mock Users test', (t) => {
-  let r = require('requestah')(8000);
-  r.get('/users/insertMock', res=> {
-    t.equal(res.body, 'Success');
-    t.end();
-  });
-});
+let r = requestah(8000);
+
+///TODO make test for user
