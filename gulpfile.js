@@ -60,21 +60,6 @@ gulp.task('test:index', () => {
     }));
 });
 
-gulp.task('test:test', () => {
-  const output = unitest({
-    // browser: 'dist-test/test/browser/index.js',
-    node: 'dist-server/test/index.js',
-    report: ['text']
-  }, (exitCode) => {
-    if (exitCode !== 0) {
-      console.error('Tests failed! - Test script exited with non-zero status code.');
-    }
-    return true;
-  });
-  output.pipe(process.stdout);
-});
-
-
 gulp.task('test', () => {
   runSequence('babel','test:index');
 });
