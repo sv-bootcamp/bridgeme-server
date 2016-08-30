@@ -1,5 +1,6 @@
 'use strict';
 
+
 import mongoose from 'mongoose';
 const User = mongoose.model('user');
 import authCallback from '../config/json/auth.callback';
@@ -22,6 +23,7 @@ export function getMyProfile(req, res, next) {
   }
 }
 
+// Return all users. 
 export function getAll(req, res, next) {
   if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
     User.find((err, doc) => {
