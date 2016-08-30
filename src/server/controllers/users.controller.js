@@ -1,6 +1,5 @@
 'use strict';
 
-
 import mongoose from 'mongoose';
 const User = mongoose.model('user');
 import authCallback from '../config/json/auth.callback';
