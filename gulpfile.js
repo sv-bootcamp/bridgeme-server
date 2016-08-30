@@ -51,19 +51,18 @@ gulp.task('apidoc', (done) => {
   }, done);
 });
 
-gulp.task('test:index', () => {
-  return gulp.src('./dist-server/test/index.js')
-    .pipe(mocha())
-    .once('error', () => {
-      process.exit(1);
-    })
-    .once('end', () => {
-      process.exit();
-    })
+gulp.task('test:mocha', function() {
+  return gulp.src(['dist-server/test/**/*.js'], { read: false })
+    .pipe(mocha({
+      reporter: 'spec',
+      globals: {
+        should: require('should')
+      }
+    }));
 });
 
 gulp.task('test', () => {
-  runSequence('babel','test:index');
+  runSequence('babel','test:mocha');
 });
 
 gulp.task('jscs', () => {
