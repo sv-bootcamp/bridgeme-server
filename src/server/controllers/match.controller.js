@@ -55,7 +55,8 @@ let sampleFailResult = {
 
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(req, res, receiver) {
-  let transport = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
+  let transport
+    = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
   let mailOptions = {
     from: '"Yoda Service Team" <yoda.mentor.lab@gmail.com>',
     to: receiver,
@@ -82,10 +83,10 @@ function sendRequestEmail(req, res, receiver) {
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
-  matchData.mentorId = 'mentor_accept@gmail.com';
-  matchData.menteeId = 'mentee_accept@gmail.com';
-  matchData.mentorName = "Mentor Kim";
-  matchData.menteeName = "Mentee Lee";
+  matchData.mentorId = req.body.mentorId; // Email
+  matchData.menteeId = req.body.menteeId;
+  matchData.mentorName = req.body.mentorName;
+  matchData.menteeName = req.body.menteeName;
 
   matchData.save((err) => {
     if (err) {

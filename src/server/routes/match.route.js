@@ -5,7 +5,7 @@ import * as match from '../controllers/match.controller';
 
 const router = express.Router();
 
-router.get('/request', match.requestMentoring);
+router.post('/request', match.requestMentoring);
 router.get('/accept', match.acceptRequest);
 router.get('/reject', match.rejectRequest);
 
