@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
-const nyan = require('nyan');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
@@ -54,7 +53,7 @@ gulp.task('apidoc', (done) => {
 
 gulp.task('test:index', () => {
   return gulp.src('./dist-server/test/index.js')
-    .pipe(mocha({reporter: 'nyan'}))
+    .pipe(mocha())
     .once('error', () => {
       process.exit(1);
     })
