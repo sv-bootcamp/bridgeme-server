@@ -5,8 +5,6 @@ services:
   - mongodb
 before_script:
   - npm install -g gulp
-  - gulp &
-  - sleep 5
 script: npm test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv

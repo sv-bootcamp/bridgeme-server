@@ -24,9 +24,9 @@ describe('Test for users.controller', function() {
       });
     });
   
-    it('should get all users except session user', function (done) {
-      
-    });
+    // it('should get all users except session user', function (done) {
+    //
+    // });
     // it('should return not exist because logined user', function() {
     //   assert.equal(-1, [1,2,3].indexOf(4));
     // });
