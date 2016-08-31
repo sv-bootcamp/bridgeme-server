@@ -51,7 +51,7 @@ gulp.task('server:restart', () => {
 });
 
 gulp.task('test', () => {
-  runSequence('build','test:all');
+  runSequence('jscs','build','test:all');
 });
 
 gulp.task('test:all', function() {
