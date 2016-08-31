@@ -1,12 +1,10 @@
-'use strict';
+import mongoose from 'mongoose'
 
 /*
  * Prepare for mongodb connection to test.
  */
 
-let mongoose = require('mongoose');
-
-beforeEach(function (done) {
+beforeEach(done => {
   function clearDB() {
     /*
      * This part is hided because it always cleanDB even when dev-mode,
@@ -30,7 +28,7 @@ beforeEach(function (done) {
   }
 });
 
-afterEach(function (done) {
+afterEach(done => {
   mongoose.disconnect();
   return done();
 });

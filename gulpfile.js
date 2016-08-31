@@ -12,12 +12,12 @@ const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('server:start', () => {
   server.listen({
-    path: './dist-server/server.js',
+    path: 'server',
   });
 });
 
 gulp.task('server:restart', () => {
-  gulp.watch(['./dist-server/server.js'], server.restart);
+  gulp.watch(['server'], server.restart);
 });
 
 gulp.task('babel', () => {

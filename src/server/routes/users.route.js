@@ -1,5 +1,3 @@
-'use strict';
-
 import express from 'express';
 import * as user from '../controllers/users.controller';
 
@@ -9,7 +7,11 @@ import * as user from '../controllers/users.controller';
 
 const router = express.Router();
 
+router.post('/signIn', user.signin);
+
 router.get('/all', user.getAll);
+router.get('/id/:_id', user.getProfileById);
+router.get('/me', user.getMyProfile);
 router.get('/mentorlist', user.getMentorList);
 
 export default router;
