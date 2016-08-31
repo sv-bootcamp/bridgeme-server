@@ -14,6 +14,8 @@ let userSchema = new Schema({
   field: String,
   region: String,
   skills: String,
+  company: String,
+  job_position: String,
   regDate: {
     type: Date,
     default: Date.now(),
