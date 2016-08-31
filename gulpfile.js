@@ -2,15 +2,13 @@ const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const gulp = require('gulp');
-const faucet = require('faucet');
 const install = require('gulp-install');
 const jscs = require('gulp-jscs');
+const mocha = require('gulp-mocha');
 const originalJs = './src/**/**/*.js';
 const runSequence = require('run-sequence');
-const sourcemaps = require('gulp-sourcemaps');
 const server = require('gulp-develop-server');
-const tape = require('gulp-tape');
-const unitest = require('unitest');
+const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('server:start', () => {
   server.listen({
@@ -53,15 +51,18 @@ gulp.task('apidoc', (done) => {
   }, done);
 });
 
-gulp.task('test:index', () => {
-  return gulp.src('./dist-server/test/index.js')
-    .pipe(tape({
-      reporter: faucet(),
+gulp.task('test:mocha', function() {
+  return gulp.src(['dist-server/test/**/*.js'], { read: false })
+    .pipe(mocha({
+      reporter: 'spec',
+      globals: {
+        should: require('should')
+      }
     }));
 });
 
 gulp.task('test', () => {
-  runSequence('babel','test:index');
+  runSequence('babel','test:mocha');
 });
 
 gulp.task('jscs', () => {

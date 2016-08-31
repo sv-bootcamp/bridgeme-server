@@ -1,18 +1,15 @@
-'use strict';
-
-import mongoose from 'mongoose';
-const User = mongoose.model('user');
 import authCallback from '../config/json/auth.callback';
+import mongoose from 'mongoose';
 
+const User = mongoose.model('user');
 let platform = { facebook: 1, linkedin: 2 };
 
-export function getMyProfile(req, res, next) {
-  if (req.session.email) {
-    User.find({ email: req.session.email }, (err, doc) => {
+// Return all users.
+export function getAll(req, res, next) {
+  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
+    User.find((err, doc) => {
       if (err) {
-        let cb = authCallback.fail;
-        cb.result.msg = err;
-        res.status(400).json(cb);
+        res.status(400).send(err);
       } else {
         res.status(200).json(doc);
       }
@@ -22,12 +19,34 @@ export function getMyProfile(req, res, next) {
   }
 }
 
-// Return all users.
-export function getAll(req, res, next) {
-  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
-    User.find((err, doc) => {
+// Get all user list except logged in user
+export function getMentorList(req, res, next) {
+  // TODO: Once session_auth is implemented, replace the email address with req.session.email.
+  User.find({ 'email' : { $ne : 'session@yoda.com' }},
+    // TODO: Longer term, we should migrate to a UserSummary object
+    // that contains subset of fields. For now, we return only the following
+    // fields from user object:
+    //
+    // - userId
+    // - name
+    // - field
+    { userId: 1, email: 0, name: 1, age: 0, field: 1, region: 0, skills: 0, regDate: 0 }, (err, doc) => {
       if (err) {
-        res.status(400).send(err);
+        res.send(err);
+      } else {
+        res.send(doc);
+      }
+    });
+}
+
+// Return my profile.
+export function getMyProfile(req, res, next) {
+  if (req.session.email) {
+    User.find({ email: req.session.email }, (err, doc) => {
+      if (err) {
+        let cb = authCallback.fail;
+        cb.result.msg = err;
+        res.status(400).json(cb);
       } else {
         res.status(200).json(doc);
       }
@@ -65,11 +84,6 @@ function registerUser(req, res) {
   });
 }
 
-function storeSession(req, res) {
-  req.session.access_token = req.body.access_token;
-  req.session.email = req.body.email;
-}
-
 export function signin(req, res, next) {
   let user = req.body;
   if (user.email) {
@@ -88,4 +102,9 @@ export function signin(req, res, next) {
   } else {
     res.status(400).json(authCallback.failSignin);
   }
+}
+
+function storeSession(req, res) {
+  req.session.access_token = req.body.access_token;
+  req.session.email = req.body.email;
 }

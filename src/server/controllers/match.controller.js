@@ -1,7 +1,5 @@
-'use strict';
-
-const matchSchema = require('mongoose').model('match');
 import mailer from 'nodemailer';
+import mongoose from 'mongoose';
 
 /*
  * Methods about mentoring request, accept or reject including E-mail Service
@@ -11,6 +9,7 @@ import mailer from 'nodemailer';
  * Format the email body
  */
 
+const matchSchema = mongoose.model('match');
 const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';

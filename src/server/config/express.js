@@ -1,11 +1,9 @@
-'use strict';
-
-import http from 'http';
-import express from 'express';
-import morgan from 'morgan';
-import compress from 'compression';
 import bodyParser from 'body-parser';
+import compress from 'compression';
+import express from 'express';
+import http from 'http';
 import methodOverride from 'method-override';
+import morgan from 'morgan';
 import users from '../routes/users.route';
 import match from '../routes/match.route';
 

@@ -5,11 +5,11 @@ Unit tests for Yoda.
 
 How to run all unit tests:
 
-`gulp test`
+`npm test`
 
 How to run individual unit test:
 
-`tape test dist-server/test/node/user.js`
+`./node_modules/.bin/mocha ./dist-server/test/index.js`
 
 #note :
 
