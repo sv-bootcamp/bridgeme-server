@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "gulp test",
-    "start": "gulp"
+    "start": "gulp",
+    "jscs" : "jscs"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
     "url": "https://github.com/sv-bootcamp/yoda/issues"
   },
   "pre-push": [
-    "test"
+    "test","jscs"
   ],
   "homepage": "https://github.com/sv-bootcamp/yoda#readme",
   "dependencies": {
