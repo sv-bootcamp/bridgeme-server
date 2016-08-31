@@ -10,6 +10,9 @@ import * as user from '../controllers/users.controller';
 const router = express.Router();
 
 router.get('/all', user.getAll);
-router.get('/insertMock', user.insertMockData);
+router.get('/me', user.getMyProfile);
+router.get('/id/:_id', user.getProfileById);
+
+router.post('/signIn', user.signin);
 
 export default router;
