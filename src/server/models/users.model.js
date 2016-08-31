@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 /*
  * Define the schema model for user.
  */
+
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
   email: { type: String, unique: true },

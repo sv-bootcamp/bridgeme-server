@@ -1,26 +1,28 @@
 {
   "name": "yoda",
   "version": "1.0.0",
-  "description": "This is skeleton of project yoda.",
+  "description": "Yoda Sever.",
   "main": "server.js",
   "scripts": {
     "test": "gulp test",
     "start": "gulp"
   },
+  "pre-commit": [
+    "test"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sv-bootcamp/yoda-server-skeleton.git"
+    "url": "git+https://github.com/sv-bootcamp/yoda.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sv-bootcamp/yoda-server-skeleton/issues"
+    "url": "https://github.com/sv-bootcamp/yoda/issues"
   },
-  "homepage": "https://github.com/sv-bootcamp/yoda-server-skeleton#readme",
+  "homepage": "https://github.com/sv-bootcamp/yoda#readme",
   "dependencies": {
     "babel-cli": "^6.11.4",
     "body-parser": "^1.15.2",
-    "browser-run": "^3.2.0",
     "co": "^4.6.0",
     "compression": "^1.6.2",
     "config": "^1.21.0",
@@ -33,16 +35,15 @@
     "method-override": "^2.3.6",
     "mongoose": "^4.5.9",
     "morgan": "^1.7.0",
+    "nodemailer": "^2.5.0",
     "path": "^0.12.7",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "should": "^11.1.0",
-    "unitest": "^0.11.0"
+    "should": "^11.1.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.13.2",
     "babelify": "^7.3.0",
-    "gulp-apidoc": "^0.2.4",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.0",
     "gulp-develop-server": "^0.5.2",
@@ -55,7 +56,6 @@
     "gulp-watch": "^4.3.9",
     "mocha": "^3.0.2",
     "nodemon": "^1.10.0",
-    "run-sequence": "^1.2.2",
-    "should": "^11.1.0"
+    "run-sequence": "^1.2.2"
   }
 }

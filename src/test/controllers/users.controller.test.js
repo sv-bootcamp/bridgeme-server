@@ -2,8 +2,8 @@ import assert from 'assert';
 import requestah from 'requestah';
 import sampleUser from '../fixtures/loggedInUserData';
 import should from 'should';
-import mockData from '../mockData.js';
-import mongoose from 'mongoose'
+import mockData from '../fixtures/mockData.js';
+import mongoose from 'mongoose';
 import '../../server/models/users.model';
 
 /*
@@ -14,8 +14,8 @@ const User = mongoose.model('user');
 let r = requestah(8000);
 let _id;
 
-describe('Test for users.controller', function() {
-  describe('#getMentorList()', function() {
+describe('Users: controllers', function () {
+  describe('#getMentorList()', function () {
     it('should create a new User with fake session', function (done) {
       let u = sampleUser.loggedInUserData;
       User.create(u, function (err, createdUser) {
@@ -30,22 +30,19 @@ describe('Test for users.controller', function() {
     });
   });
 
-  describe('#auth()', function() {
-    // test('User register test', t => {
-    //   r.post('/users/signin', mockData.mockUserData, res=> {
-    //     let body = JSON.parse(res.body);
-    //     t.equal(body.successCode, 1);
-    //     _id = body.result._id;
-    //     t.end();
-    //   });
-    // });
-    //
-    // test('user signin test', t => {
-    //   r.post('/users/signin', mockData.mockUserData, res=> {
-    //     let body = JSON.parse(res.body);
-    //     t.equal(body.successCode, 1);
-    //     t.end();
-    //   });
-    // });
+  describe('#getAll()', function () {
+    // TODO: Add a test to getAll method.
+  });
+
+  describe('#getMyProfile()', function () {
+    // TODO: Add a test to getMyProfile method.
+  });
+
+  describe('#getProfileById()', function () {
+    // TODO: Add a test to getProfileById method.
+  });
+
+  describe('#registerUser()', function () {
+    // TODO: Add a test to getAll method.
   });
 });
