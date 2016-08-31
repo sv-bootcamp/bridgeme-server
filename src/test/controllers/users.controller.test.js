@@ -1,6 +1,6 @@
 'use strict';
 
-import sampleUser from '../fixtures/loginedUser';
+import sampleUser from '../fixtures/loggedInUserData';
 import '../../server/models/users.model';
 
 /*
@@ -11,24 +11,17 @@ let assert = require('assert');
 let should = require('should');
 let user = require('mongoose').model('user');
 
-// Test for getMentorList method.
 describe('Test for users.controller', function() {
   describe('#getMentorList()', function() {
     it('should create a new User with fake session', function (done) {
-      var u = sampleUser.loginedUserData;
+      var u = sampleUser.loggedInUserData;
       user.create(u, function (err, createdUser) {
         should.not.exist(err);
         createdUser.name.should.equal('session');
-        done();
-      });
-    });
-    
-    // Need to access getMentorList method
-    // Need to check not existing session user
-    // Need to check existing all users except session user
-  
-    it('should delete new User with fake session', function (done) {
-      user.find({ name: 'session' }).remove(function() {
+        // TODO: Add a test to access getMentorList method.
+        // TODO: Add a test to check for non-existent user session.
+        // TODO: Add a test to check if all users are returned except the user in the session.
+        createdUser.remove();
         done();
       });
     });

@@ -13,10 +13,18 @@ export function getAll(req, res, next) {
   });
 }
 
-// Get all user list except logined user
+// Get all user list except loggedIn user
 export function getMentorList(req, res, next) {
-  user.find({ 'email' : { $ne : 'session@yoda.com' }},  // if session_auth add, 'session' => req.session.email
-    { email: 0, userId: 0, age: 0, region: 0, skills: 0, regDate: 0 }, (err, doc) => {
+  // TODO: Once session_auth is implemented, replace the email address with req.session.email.
+  user.find({ 'email' : { $ne : 'session@yoda.com' }},
+    // TODO: Longer term, we should migrate to a UserSummary object
+    // that contains subset of fields. For now, we return only the following
+    // fields from user object:
+    //
+    // - userId
+    // - name
+    // - field
+    { userId: 1, email: 0, name: 1, age: 0, field: 1, region: 0, skills: 0, regDate: 0 }, (err, doc) => {
       if (err) {
         res.send(err);
       } else {
