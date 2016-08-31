@@ -13,7 +13,7 @@ export function getAll(req, res, next) {
   });
 }
 
-// Get all user list except loggedIn user
+// Get all user list except logged in user
 export function getMentorList(req, res, next) {
   // TODO: Once session_auth is implemented, replace the email address with req.session.email.
   user.find({ 'email' : { $ne : 'session@yoda.com' }},
