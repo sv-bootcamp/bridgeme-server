@@ -11,13 +11,13 @@ let matchSchema = new Schema({
     default: Date.now(),
   },
   isAccepted: {
-    type: Number,
-    default: 0,
+    type: Boolean,
+    default: false,
   },
   acceptDate: Date,
-  isCanceled: {
-    type: Number,
-    default: 0,
+  isCancelled: {
+    type: Boolean,
+    default: false,
   },
   cancelDate: Date,
 });

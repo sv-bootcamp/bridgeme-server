@@ -5,6 +5,10 @@ import mailer from 'nodemailer';
 
 /*
  * Methods about mentoring request, accept or reject including E-mail Service
+ *
+ * Todo:
+ * Connect Database
+ * Format the email body
  */
 
 const EMAIL_SUBJECT = 'New mentee needs your help!';
@@ -44,6 +48,9 @@ function sendRequestEmail(res, mentor, mentee, content) {
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
+  // Todo:
+  // Get Email address from DB with mentorId and menteeId (ObjectId). It's Email address for test now.
+  // Add data to 'matchData'
 
   matchData.save((err) => {
     if (err) {
@@ -62,9 +69,6 @@ export function requestMentoring(req, res, next) {
 
 // The mentor accepted the mentoring request
 export function acceptRequest(req, res, next) {
-  matchData.mentor = 'mentor_accept@gmail.com';
-  matchData.mentee = 'mentee_accept@gmail.com';
-
   // Todo:
   // update mentor and mentee's request db
 
@@ -73,9 +77,6 @@ export function acceptRequest(req, res, next) {
 
 // The mentor rejected the mentoring request
 export function rejectRequest(req, res, next) {
-  matchData.mentor = 'mentor_reject@gmail.com';
-  matchData.mentee = 'mentee_reject@gmail.com';
-
   // Todo:
   // update mentor and mentee's request db
 
