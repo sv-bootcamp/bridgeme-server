@@ -7,9 +7,6 @@
     "test": "gulp test",
     "start": "gulp"
   },
-  "pre-commit": [
-    "test"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sv-bootcamp/yoda.git"
@@ -19,6 +16,9 @@
   "bugs": {
     "url": "https://github.com/sv-bootcamp/yoda/issues"
   },
+  "pre-commit": [
+    "test"
+  ],
   "homepage": "https://github.com/sv-bootcamp/yoda#readme",
   "dependencies": {
     "babel-cli": "^6.11.4",
