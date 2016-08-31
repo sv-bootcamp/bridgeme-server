@@ -24,13 +24,14 @@ describe('Test for users.controller', function() {
         // TODO: Add a test to access getMentorList method.
         // TODO: Add a test to check for non-existent user session.
         // TODO: Add a test to check if all users are returned except the user in the session.
-        createdUser.remove();
+        //createdUser.remove();
         done();
       });
     });
   });
 
   describe('#auth()', function() {
+    // TODO: auth test modify
     // test('User register test', t => {
     //   r.post('/users/signin', mockData.mockUserData, res=> {
     //     let body = JSON.parse(res.body);
