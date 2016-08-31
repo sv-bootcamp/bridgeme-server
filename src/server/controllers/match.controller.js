@@ -19,13 +19,13 @@ let sampleFailResult = {
 };
 
 // Send mentoring request pushing Email to mentor(receiver)
-function sendRequestEmail(res, receiver, replyTo, content) {
+function sendRequestEmail(res, mentor, mentee, content) {
   let transport
     = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
   let mailOptions = {
     from: YODA_ACCOUNT,
-    to: receiver,
-    replyTo: replyTo,
+    to: mentor,
+    replyTo: mentee,
     subject: EMAIL_SUBJECT,
     html: EMAIL_HTML + content,
   };
