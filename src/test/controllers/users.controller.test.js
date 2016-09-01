@@ -2,7 +2,7 @@ import assert from 'assert';
 import requestah from 'requestah';
 import sampleUser from '../fixtures/loggedInUserData';
 import should from 'should';
-import mockData from '../mockData.js';
+import mockData from '../fixtures/mockData.js';
 import mongoose from 'mongoose';
 import '../../server/models/users.model';
 
@@ -30,23 +30,19 @@ describe('Test for users.controller', function () {
     });
   });
 
-  describe('#auth()', function () {
-    // TODO: auth test modify
-    // test('User register test', t => {
-    //   r.post('/users/signin', mockData.mockUserData, res=> {
-    //     let body = JSON.parse(res.body);
-    //     t.equal(body.successCode, 1);
-    //     _id = body.result._id;
-    //     t.end();
-    //   });
-    // });
-    //
-    // test('user signin test', t => {
-    //   r.post('/users/signin', mockData.mockUserData, res=> {
-    //     let body = JSON.parse(res.body);
-    //     t.equal(body.successCode, 1);
-    //     t.end();
-    //   });
-    // });
+  describe('#getAll()', function () {
+    // TODO: Add a test to getAll method.
+  });
+
+  describe('#getMyProfile()', function () {
+    // TODO: Add a test to getMyProfile method.
+  });
+
+  describe('#getProfileById()', function () {
+    // TODO: Add a test to getProfileById method.
+  });
+
+  describe('#registerUser()', function () {
+    // TODO: Add a test to registerUser method.
   });
 });
