@@ -20,9 +20,9 @@ beforeEach(done => {
     mongoose.connect('mongodb://localhost:27017/yoda', function (err) {
       if (err) {
         throw err;
+      }else {
+        return clearDB();
       }
-
-      return clearDB();
     });
   } else {
     return clearDB();
