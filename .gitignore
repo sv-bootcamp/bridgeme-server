@@ -2,6 +2,7 @@
 .c9/
 node_modules/
 dist-server/
+dist-test/
 coverage/
 .idea/
 

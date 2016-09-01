@@ -1,5 +1,5 @@
 import should from 'should';
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 import '../../server/models/users.model';
 
 /*
@@ -8,7 +8,7 @@ import '../../server/models/users.model';
 
 const User = mongoose.model('user');
 const u = {
-  name: 'yoda'
+  name: 'yoda',
 };
 
 describe('Users: models', function () {

@@ -6,7 +6,7 @@ let platform = { facebook: 1, linkedin: 2 };
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
     User.find((err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -22,7 +22,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   // TODO: Once session_auth is implemented, replace the email address with req.session.email.
-  User.find({ 'email' : { $ne : 'session@yoda.com' }},
+  User.find({ email: { $ne: 'session@yoda.com' } },
     // TODO: Longer term, we should migrate to a UserSummary object
     // that contains subset of fields. For now, we return only the following
     // fields from user object:
@@ -57,7 +57,7 @@ export function getMyProfile(req, res, next) {
 }
 
 export function getProfileById(req, res, next) {
-  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
     User.find({ _id: req.params._id }, (err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -91,7 +91,7 @@ export function signin(req, res, next) {
       if (err) {
         res.status(400).json(err);
       } else {
-        if (doc.length == 0) {
+        if (doc.length === 0) {
           registerUser(req, res);
         } else {
           storeSession(req, res);

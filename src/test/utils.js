@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 /*
  * Prepare for mongodb connection to test.
@@ -15,7 +15,7 @@ beforeEach(done => {
     // }
     return done();
   }
-  
+
   if (mongoose.connection.readyState === 0) {
     mongoose.connect('mongodb://localhost:27017/yoda', function (err) {
       if (err) {
