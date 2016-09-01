@@ -21,7 +21,8 @@ export function getAll(req, res, next) {
 
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined' && req.session.access_token == req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined'
+    && req.session.access_token === req.query.access_token) {
     User.find({ email: { $ne: req.session.email } }, (err, doc) => {
       // TODO: Longer term, we should migrate to a UserSummary object
       // that contains subset of fields. For now, we return all fields.
