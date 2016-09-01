@@ -33,14 +33,15 @@ function sendRequestEmail(res, mentor, mentee, content) {
     html: EMAIL_HTML + content,
   };
 
-  transport.sendMail(mailOptions, function(err, response){
-    if (err){
+  transport.sendMail(mailOptions, function (err, response) {
+    if (err) {
       sampleFailResult.errPoint = 'RequestMentoring - transport.sendMail';
       sampleFailResult.err = err;
       res.json(sampleFailResult);
     } else {
       res.json('Success');
     }
+
     transport.close();
   });
 }
