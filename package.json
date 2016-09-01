@@ -6,7 +6,7 @@
   "scripts": {
     "test": "gulp test",
     "start": "gulp",
-    "jscs": "jscs"
+    "jscs": "gulp jscs"
   },
   "repository": {
     "type": "git",

@@ -43,6 +43,6 @@ describe('Users: controllers', function () {
   });
 
   describe('#registerUser()', function () {
-    // TODO: Add a test to getAll method.
+    // TODO: Add a test to registerUser method.
   });
 });

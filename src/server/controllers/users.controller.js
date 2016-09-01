@@ -6,7 +6,7 @@ let platform = { facebook: 1, linkedin: 2 };
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
     User.find((err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -57,7 +57,7 @@ export function getMyProfile(req, res, next) {
 }
 
 export function getProfileById(req, res, next) {
-  if (typeof req.session.access_token != 'undefined' && req.session.access_token == req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
     User.find({ _id: req.params._id }, (err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -91,8 +91,7 @@ export function signin(req, res, next) {
       if (err) {
         res.status(400).json(err);
       } else {
-        if (doc.length == 0) {
-
+        if (doc.length === 0) {
           registerUser(req, res);
         } else {
           storeSession(req, res);

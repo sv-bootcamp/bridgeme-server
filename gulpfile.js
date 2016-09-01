@@ -8,7 +8,7 @@ const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', () => {
-  runSequence('build:test', 'server:start');
+  runSequence(['build:server','build:test'], 'server:start');
 });
 
 gulp.task('install', () => {
