@@ -21,6 +21,7 @@ beforeEach(done => {
       if (err) {
         throw err;
       }
+
       return clearDB();
     });
   } else {

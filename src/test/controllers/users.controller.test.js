@@ -14,7 +14,7 @@ const User = mongoose.model('user');
 let r = requestah(8000);
 let _id;
 
-describe('Users: controllers', function () {
+describe('Test for users.controller', function () {
   describe('#getMentorList()', function () {
     it('should create a new User with fake session', function (done) {
       let u = sampleUser.loggedInUserData;
