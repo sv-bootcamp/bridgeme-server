@@ -11,7 +11,7 @@ let positionSchema = new Schema({
         type: Boolean,
         default: false,
     },
-});
+  });
 
 positionSchema.set('toJSON', {
     getters: true,  // bring all elements include virtuals
