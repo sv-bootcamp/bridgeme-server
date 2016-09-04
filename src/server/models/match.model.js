@@ -18,7 +18,7 @@ let matchSchema = new Schema({
         default: false,
     },
     cancelDate: Date,
-});
+  });
 
 matchSchema.set('toJSON', {
     getters: true,  // bring all elements include virtuals
