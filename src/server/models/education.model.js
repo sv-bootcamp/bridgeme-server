@@ -12,7 +12,7 @@ let educationSchema = new Schema({
         default: false,
     },
     location: String,
-});
+  });
 
 educationSchema.set('toJSON', {
     getters: true,  // bring all elements include virtuals
