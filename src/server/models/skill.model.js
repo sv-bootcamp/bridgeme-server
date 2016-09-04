@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 let skillSchema = new Schema({
     name: String,
-});
+  });
 
 skillSchema.set('toJSON', {
     getters: true,  // bring all elements include virtuals
