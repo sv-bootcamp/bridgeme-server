@@ -19,7 +19,7 @@ let userSchema = new Schema({
         default: Date.now(),
       },
     profilePictureURL: String,
-});
+  });
 
 userSchema.set('toJSON', {
     getters: true,  // bring all elements include virtuals
