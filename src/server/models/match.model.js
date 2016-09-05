@@ -2,8 +2,14 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let matchSchema = new Schema({
-  mentorId: Schema.Types.ObjectId,
-  menteeId: Schema.Types.ObjectId,
+  mentor_id: {
+    type: String,
+    required: true,
+  },
+  mentee_id: {
+    type: String,
+    required: true,
+  },
   requestDate: {
     type: Date,
     default: Date.now(),
@@ -13,11 +19,11 @@ let matchSchema = new Schema({
     default: false,
   },
   acceptDate: Date,
-  isCancelled: {
+  isRejected: {
     type: Boolean,
     default: false,
   },
-  cancelDate: Date,
+  rejectDate: Date,
 });
 
 matchSchema.set('toJSON', {

@@ -29,4 +29,8 @@ export default {
       msg: 'Authentication failed. Please sign in first.',
     },
   },
+  fail: {
+    successCode: 0,
+    result: {},
+  },
 };

@@ -6,7 +6,8 @@ let platform = { facebook: 1, linkedin: 2 };
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined'
+    && req.session.access_token === req.query.access_token) {
     User.find((err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -55,7 +56,8 @@ export function getMyProfile(req, res, next) {
 }
 
 export function getProfileById(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined' && req.session.access_token === req.query.access_token) {
+  if (typeof req.session.access_token !== 'undefined'
+    && req.session.access_token === req.query.access_token) {
     User.find({ _id: req.params._id }, (err, doc) => {
       if (err) {
         res.status(400).send(err);
@@ -77,7 +79,7 @@ function registerUser(req, res) {
       let cb = authCallback.successRegister;
       cb.result._id = doc._id;
       res.status(200).json(authCallback.successRegister);
-      storeSession(req, res);
+      storeSession(req, res,doc._id);
     }
   });
 }
@@ -92,7 +94,7 @@ export function signin(req, res, next) {
         if (doc.length === 0) {
           registerUser(req, res);
         } else {
-          storeSession(req, res);
+          storeSession(req, res, doc[0]._id);
           res.status(200).json(authCallback.successSignin);
         }
       }
@@ -102,7 +104,8 @@ export function signin(req, res, next) {
   }
 }
 
-function storeSession(req, res) {
+function storeSession(req, res, _id) {
   req.session.access_token = req.body.access_token;
   req.session.email = req.body.email;
+  req.session._id = _id;
 }
