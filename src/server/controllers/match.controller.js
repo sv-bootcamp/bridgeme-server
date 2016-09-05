@@ -18,6 +18,10 @@ const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
+const PENDING =2;
+const ACCEPTED =1;
+const REJECTED =0;
+
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(res, mentor, mentee, content, callback) {
   let transport
@@ -31,10 +35,10 @@ function sendRequestEmail(res, mentor, mentee, content, callback) {
   transport.sendMail(mailOptions, function (err, response) {
     if (err) {
       if (typeof callback === 'function')callback(false);
-    }
-    else {
+    } else {
       if (typeof callback === 'function')callback(true);
     }
+
     transport.close();
   });
 }
@@ -47,52 +51,45 @@ export function requestMentoring(req, res, next) {
     matchData.mentee_id = req.session._id;
     let match = new Match(matchData);
     console.log(matchData);
-    User.find({_id: matchData.mentor_id}, (err, mentorDoc) => {  //find mentor_id is existing.
+    User.find({ _id: matchData.mentor_id }, (err, mentorDoc) => {  //find mentor_id is existing.
       if (err) {
         matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding montor_id';
         matchCallback.fail.err = err;
         res.json(matchCallback.fail);
-      }
-      else {
+      } else {
         if (mentorDoc.length === 0) {  //if mentor_id is not existing
           matchCallback.fail.errPoint = 'RequestMentoring - Cannot found mentor.';
           matchCallback.fail.err = err;
           res.json(matchCallback.fail);
-        }
-        else {
-          Match.find({mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id}, (err, matchDoc) => { //find match is existing
+        } else {
+          Match.find({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }, (err, matchDoc) => { //find match is existing
             if (err) {
               matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding matchData';
               matchCallback.fail.err = err;
               res.json(matchCallback.fail);
-            }
-            else {
+            } else {
               if (matchDoc.length !== 0) {  //if match is already existing
                 matchCallback.fail.errPoint = 'RequestMentoring - Match is Already exists';
                 matchCallback.fail.err = err;
                 res.json(matchCallback.fail);
-              }
-              else {
+              } else {
                 sendRequestEmail(res, mentorDoc[0].email, req.session.email, matchData.content, (result) => {  //try to send email
                   if (result === false) {
                     matchCallback.fail.errPoint = 'RequestMentoring - Fail to send email.';
                     matchCallback.fail.err = err;
                     res.json(matchCallback.fail);
-                  }
-                  else {
+                  } else {
                     match.save((err) => {
                       if (err) {
                         matchCallback.fail.errPoint = 'RequestMentoring - Saving MatchData';
                         matchCallback.fail.err = err;
                         res.json(matchCallback.fail);
-                      }
-                      else {
+                      } else {
                         res.json(matchCallback.successSendMail);
                       }
                     });
                   }
                 });
-
               }
             }
           });
@@ -100,8 +97,7 @@ export function requestMentoring(req, res, next) {
       }
     });
 
-  }
-  else {
+  } else {
     res.status(400).json(authCallback.failAuth);
   }
 }
@@ -110,21 +106,20 @@ export function getMyActivity(req, res, next) {
   if (req.session._id) {
     let activityData = {};
     //status of match {pending:2, accepted:1, rejected:0}
-    findMenteeActivityByStatus(req, res, 2, (pendingDoc) => {
+    findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
       activityData['pending'] = pendingDoc;
-      findMenteeActivityByStatus(req, res, 1, (acceptedDoc) => {
+      findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
         activityData['accepted'] = acceptedDoc;
-        findMenteeActivityByStatus(req, res, 0, (rejectedDoc) => {
+        findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
-            activityData["requested"] = requestedDoc;
+            activityData['requested'] = requestedDoc;
             res.json(activityData);
           });
         });
       });
     });
-  }
-  else {
+  } else {
     res.status(400).json(authCallback.failSignin);
   }
 }
@@ -150,7 +145,7 @@ function findMenteeActivityByStatus(req, res, status, callback) {
         status: 1,
         detail: 1,
         request_date: 1,
-        response_date: 1
+        response_date: 1,
       },
     },
   ], (err, doc) => {
@@ -162,8 +157,8 @@ function findMentorActivity(req, res, callback) {
   Match.aggregate([
     {
       $match: {
-         mentor_id: req.session._id,
-         status: 2
+        mentor_id: req.session._id,
+        status: 2,
       },
     },
     {
@@ -179,7 +174,7 @@ function findMentorActivity(req, res, callback) {
         status: 1,
         detail: 1,
         request_date: 1,
-        response_date: 1
+        response_date: 1,
       },
     },
   ], (err, doc) => {
@@ -189,18 +184,16 @@ function findMentorActivity(req, res, callback) {
 
 export function responseMentoring(req, res, next) {
   if (req.session._id) {
-    Match.update({_id: req.body.match_id}, {status: req.body.option, response_date: Date.now()}, (err) => {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
       if (err) {
         matchCallback.fail.errPoint = 'RequestMentoring - Updating MatchData.';
         matchCallback.fail.err = err;
         res.json(matchCallback.fail);
-      }
-      else {
+      } else {
         res.status(200).json(matchCallback.success);
       }
     });
-  }
-  else {
+  } else {
     res.status(400).json(authCallback.failSignin);
   }
 }

@@ -1,3 +1,4 @@
+import auth from '../config/auth';
 import authCallback from '../config/json/auth.callback';
 import mongoose from 'mongoose';
 
@@ -78,8 +79,8 @@ function registerUser(req, res) {
     } else {
       let cb = authCallback.successRegister;
       cb.result._id = doc._id;
-      res.status(200).json(authCallback.successRegister);
       storeSession(req, res, doc._id);
+      res.status(200).json(cb);
     }
   });
 }
