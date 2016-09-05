@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import '../models/answer.model';
+import '../models/survey.model';
 import '../models/users.model';
 import '../models/match.model';
 

@@ -15,6 +15,7 @@ let surveySchema = new Schema({
       id: Number,
       is_static: Boolean, // false: description
       content: String,
+      next_survey_id: Schema.Types.ObjectId,
     },
   ],
 });

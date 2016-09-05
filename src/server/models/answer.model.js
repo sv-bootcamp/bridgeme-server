@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let answerSchema = new Schema({
   survey_id: String,
-  user: ObjectId,
+  user_id: Schema.Types.ObjectId,
   options_num: Number,
   options: [
     {
@@ -27,4 +27,4 @@ answerSchema.set('toJSON', {
   virtuals: true,  // Set all virtuals show up in the console.log output.
 });
 
-export default mongoose.model('survey', answerSchema);
+export default mongoose.model('answer', answerSchema);
