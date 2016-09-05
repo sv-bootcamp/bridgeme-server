@@ -8,7 +8,7 @@ let platform = { facebook: 1, linkedin: 2 };
 export function getAll(req, res, next) {
   if (typeof req.session.access_token !== 'undefined'
     && req.session.access_token === req.query.access_token) {
-    User.find((err, doc) => {
+    User.find({}, (err, doc) => {
       if (err) {
         res.status(400).send(err);
       } else {

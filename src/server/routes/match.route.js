@@ -4,9 +4,8 @@ import * as match from '../controllers/match.controller';
 const router = express.Router();
 
 router.post('/request', match.requestMentoring);
-router.post('/accept', match.acceptRequest);
-router.post('/reject', match.rejectRequest);
+router.post('/response', match.responseMentoring);
 
-router.get('/activity', match.getActivity);
+router.get('/activity', match.getMyActivity);
 
 export default router;

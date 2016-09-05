@@ -3,27 +3,23 @@ const Schema = mongoose.Schema;
 
 let matchSchema = new Schema({
   mentor_id: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
   },
   mentee_id: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
   },
-  requestDate: {
+  request_date: {
     type: Date,
     default: Date.now(),
   },
-  isAccepted: {
-    type: Boolean,
-    default: false,
+  //status of match {pending:0, accepted:1, rejected:2}
+  status: {
+    type: Number,
+    default: 2,
   },
-  acceptDate: Date,
-  isRejected: {
-    type: Boolean,
-    default: false,
-  },
-  rejectDate: Date,
+  response_date: Date,
 });
 
 matchSchema.set('toJSON', {
