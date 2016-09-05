@@ -4,9 +4,9 @@ import express from 'express';
 import http from 'http';
 import methodOverride from 'method-override';
 import morgan from 'morgan';
-import users from '../routes/users.route';
 import match from '../routes/match.route';
 import survey from '../routes/survey.route';
+import users from '../routes/users.route';
 
 export default function() {
   const app = express();

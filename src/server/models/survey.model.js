@@ -6,16 +6,20 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 let surveySchema = new Schema({
-  survey_id: String,
-  question: String,
-  is_multiple: Boolean, // 0: Single Choice, 1: Multiple Choice
-  options_num: Number,
-  options: [
+  survey_id: Number,
+  questions: [
     {
-      id: Number,
-      is_static: Boolean, // false: description
-      content: String,
-      next_survey_id: Schema.Types.ObjectId,
+      question_index: Number,
+      question: String,
+      allow_multiple_answer: Boolean,
+      answers: [
+        {
+          answer_index: Number,
+          is_free_form: Boolean, // false: description
+          content: String,
+          next_question_index: Number, // NULL: this is last question
+        },
+      ],
     },
   ],
 });

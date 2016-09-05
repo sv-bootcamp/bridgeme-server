@@ -8,15 +8,15 @@ const Schema = mongoose.Schema;
 let answerSchema = new Schema({
   survey_id: String,
   user_id: Schema.Types.ObjectId,
-  options_num: Number,
-  options: [
+  answers: [
     {
-      id: Number,
-      is_static: Boolean, // false: description
+      question_index: Number,
+      answer_index: Number,
+      is_free_form: Boolean, // false: description
       content: String,
     },
   ],
-  reg_date: {
+  date: {
     type: Date,
     default: Date.now,
   },

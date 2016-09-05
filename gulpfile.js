@@ -69,5 +69,3 @@ gulp.task('jscs', () => {
     .pipe(jscs({ fix: true, }))
     .pipe(gulp.dest('src'));
 });
-
-

@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 import mongoose from 'mongoose';
 
 /*
@@ -17,7 +19,7 @@ beforeEach(done => {
   }
 
   if (mongoose.connection.readyState === 0) {
-    mongoose.connect('mongodb://localhost:27017/yoda', function (err) {
+    mongoose.connect('mongodb://localhost:27017/yoda-test', function (err) {
       if (err) {
         throw err;
       }
