@@ -1,8 +1,9 @@
+import request from 'request';
 import authCallback from '../config/json/auth.callback';
 import mongoose from 'mongoose';
 
 const User = mongoose.model('user');
-let platform = { facebook: 1, linkedin: 2 };
+let platform = { facebook: '1', linkedin: '2' };
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -68,41 +69,75 @@ export function getProfileById(req, res, next) {
   }
 }
 
-function registerUser(req, res) {
-  let user = new User(req.body);
-  user.save((err, doc) => {
+function registerUser(req, res, registerData) {
+  let userData = new User(registerData);
+  userData.save((err, user) => {
     if (err) {
       res.status(400).json(authCallback.failRegister);
     } else {
       let cb = authCallback.successRegister;
-      cb.result._id = doc._id;
-      res.status(200).json(authCallback.successRegister);
-      storeSession(req, res);
+      cb.result._id = user._id;
+      storeSession(req, res, user);
+      res.status(200).json(cb);
     }
   });
 }
 
 export function signin(req, res, next) {
-  let user = req.body;
-  if (user.email) {
-    User.find({ email: user.email }, (err, doc) => {
-      if (err) {
-        res.status(400).json(err);
+  if (req.body.platform_type === platform.facebook) {
+    validateAccessTokenFacebook(req.body.access_token, (facebookResult) => {
+      if (facebookResult !== false && facebookResult.verified == true) {
+        let registerData = {
+          email: facebookResult.email,
+          name: facebookResult.name,
+          platform_id: facebookResult.id,
+          platform_type: req.body.platform_type,
+          locale: facebookResult.locale,
+          timezone : facebookResult.timezone,
+        };
+
+        User.findOne({ email: registerData.email }, (err, user) => {
+          if (err) {
+            res.status(400).json(err);
+          } else {
+            if (!user) {
+              registerUser(req, res, registerData);
+            } else {
+              storeSession(req, res, user);
+              res.status(200).json(authCallback.successSignin);
+            }
+          }
+        });
       } else {
-        if (doc.length === 0) {
-          registerUser(req, res);
-        } else {
-          storeSession(req, res);
-          res.status(200).json(authCallback.successSignin);
-        }
+        res.status(400).json(authCallback.invalidAccessToken);
       }
     });
+  } else if (req.body.platform_type === platform.linkedin) {
+    ///TODO : Validiate accesstoken from linkedin API server.
+    res.send("Doesn't support yet.")
   } else {
-    res.status(400).json(authCallback.failSignin);
+    res.status(400).json(authCallback.invalidPlatform);
   }
 }
 
-function storeSession(req, res) {
+function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
-  req.session.email = req.body.email;
+  req.session.email = user.email;
+  req.session._id = user._id;
+}
+
+function validateAccessTokenFacebook(accessToken, callback) {
+  request.get('https://graph.facebook.com/me?access_token=' + accessToken, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      callback(JSON.parse(body));
+    } else {
+      callback(false);
+    }
+  });
+}
+
+function validateAccessTokenLinkedIn(accessToken) {
+  ///TODO : Validiate accesstoken from linkedin API server.
+
+  return false;
 }
