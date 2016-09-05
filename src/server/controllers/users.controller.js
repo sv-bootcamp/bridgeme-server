@@ -79,7 +79,7 @@ function registerUser(req, res) {
       let cb = authCallback.successRegister;
       cb.result._id = doc._id;
       res.status(200).json(authCallback.successRegister);
-      storeSession(req, res,doc._id);
+      storeSession(req, res, doc._id);
     }
   });
 }

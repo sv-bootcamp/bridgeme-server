@@ -42,45 +42,59 @@ function sendRequestEmail(res, mentor, mentee, content) {
       res.json(matchCallback.fail);
     }
     else {
-      res.json(matchCallback.success);
+      res.json(matchCallback.successSendMail);
     }
+
     transport.close();
   });
 }
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
-  // Todo:
-  // Get Email address from DB with mentorId and menteeId (ObjectId). It's Email address for test now.
-  // Add data to 'matchData'
-
   if (typeof req.session.access_token !== 'undefined'
     && req.session.access_token === req.body.access_token) {
-
     let matchData = req.body;
     matchData.mentee_id = req.session._id;
-    console.log(matchData)
     let match = new Match(matchData);
-    match.save((err) => {
+
+    User.find({_id: matchData.mentor_id}, (err, mentorDoc) => {  //find mentor_id is existing.
       if (err) {
-        matchCallback.fail.errPoint = 'RequestMentoring - Saving MatchData';
+        matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding montor_id';
         matchCallback.fail.err = err;
         res.json(matchCallback.fail);
       }
       else {
-        User.find({ _id: matchData.mentor_id }, (err, doc) => {
-          if (err) {
-            res.send(err);
-          } else {
-            if(doc.length !== 0){
-              sendRequestEmail(res, doc[0].email, req.session.email , matchData.content);
-            }else{
-              matchCallback.fail.errPoint = 'RequestMentoring - Can not found mentor.';
+        if (mentorDoc.length === 0) {  //if mentor_id is not existing
+          matchCallback.fail.errPoint = 'RequestMentoring - Cannot found mentor.';
+          matchCallback.fail.err = err;
+          res.json(matchCallback.fail);
+        }
+        else {
+          Match.find({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id  }, (err, matchDoc) => { //find match is existing
+            if (err) {
+              matchCallback.fail.errPoint = "RequestMentoring - Error occurred when finding matchData";
               matchCallback.fail.err = err;
               res.json(matchCallback.fail);
+            } else {
+              if(matchDoc.length !== 0 ){  //if match is already existing
+                matchCallback.fail.errPoint = "RequestMentoring - Match is Already exists";
+                matchCallback.fail.err = err;
+                res.json(matchCallback.fail);
+              }else{
+                match.save((err) => {
+                  if (err) {
+                    matchCallback.fail.errPoint = 'RequestMentoring - Saving MatchData';
+                    matchCallback.fail.err = err;
+                    res.json(matchCallback.fail);
+                  }
+                  else {
+                    sendRequestEmail(res, mentorDoc[0].email, req.session.email, matchData.content);
+                  }
+                });
+              }
             }
-          }
-        });
+          });
+        }
       }
     });
 
@@ -88,6 +102,9 @@ export function requestMentoring(req, res, next) {
   else {
     res.status(400).json(authCallback.failAuth);
   }
+}
+
+export function getActivity(req, res, next) {
 
 }
 
