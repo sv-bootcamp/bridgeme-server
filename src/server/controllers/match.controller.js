@@ -111,7 +111,6 @@ export function requestMentoring(req, res, next) {
 export function getMyActivity(req, res, next) {
   if (req.session._id) {
     let activityData = {};
-    //status of match {pending:2, accepted:1, rejected:0}
     findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
       activityData['pending'] = pendingDoc;
       findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
@@ -119,6 +118,7 @@ export function getMyActivity(req, res, next) {
         findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
+            activityData['']
             activityData['requested'] = requestedDoc;
             res.json(activityData);
           });
