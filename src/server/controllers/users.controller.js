@@ -93,7 +93,7 @@ export function signin(req, res, next) {
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
-          timezone : facebookResult.timezone,
+          timezone: facebookResult.timezone,
         };
 
         User.findOne({ email: registerData.email }, (err, user) => {
@@ -114,7 +114,7 @@ export function signin(req, res, next) {
     });
   } else if (req.body.platform_type === platform.linkedin) {
     ///TODO : Validiate accesstoken from linkedin API server.
-    res.send("Doesn't support yet.")
+    res.send("Doesn't support yet.");
   } else {
     res.status(400).json(authCallback.invalidPlatform);
   }
