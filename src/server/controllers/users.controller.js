@@ -86,7 +86,7 @@ function registerUser(req, res, registerData) {
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
     validateAccessTokenFacebook(req.body.access_token, (facebookResult) => {
-      if (facebookResult !== false ) {
+      if (facebookResult !== false) {
         let registerData = {
           email: facebookResult.email,
           name: facebookResult.name,
