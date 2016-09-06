@@ -19,7 +19,7 @@ let userSchema = new Schema({
   skills: String,
   company: String,
   timezone: Number,
-
+  profile_picture: String,
   job_position: String,
   regDate: {
     type: Date,

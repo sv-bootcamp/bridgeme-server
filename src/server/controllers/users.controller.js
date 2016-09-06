@@ -86,7 +86,7 @@ function registerUser(req, res, registerData) {
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
     validateAccessTokenFacebook(req.body.access_token, (facebookResult) => {
-      if (facebookResult !== false) {
+      if (facebookResult && facebookResult.verified == true) {
         let registerData = {
           email: facebookResult.email,
           name: facebookResult.name,
@@ -94,8 +94,8 @@ export function signin(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
+          profile_picture: facebookResult.profile_picture,
         };
-
         User.findOne({ email: registerData.email }, (err, user) => {
           if (err) {
             res.status(400).json(err);
@@ -127,18 +127,30 @@ function storeSession(req, res, user) {
 }
 
 function validateAccessTokenFacebook(accessToken, callback) {
+  //Crawl user data from facebook by access token.
   request.get('https://graph.facebook.com/me?fields=name,email,locale,timezone,verified&access_token='
-    + accessToken, function (error, response, body) {
+    + accessToken, function (error, response, userBody) {
     if (!error && response.statusCode == 200) {
-      callback(JSON.parse(body));
+      let result = JSON.parse(userBody);
+      //Crawl user profile_picture from facebook by access token.
+      request.get('https://graph.facebook.com/'
+        + result.id
+        + '/picture?type=large&redirect=0', function (error, response, pictureBody) {
+        if (!error && response.statusCode == 200) {
+          result.profile_picture = JSON.parse(pictureBody).data.url;
+          console.log(result);
+          callback(result);
+        } else {
+          callback();
+        }
+      });
     } else {
-      callback(false);
+      callback();
     }
   });
 }
 
 function validateAccessTokenLinkedIn(accessToken) {
   ///TODO : Validiate accesstoken from linkedin API server.
-
   return false;
 }
