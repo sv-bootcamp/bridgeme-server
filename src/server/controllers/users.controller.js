@@ -1,5 +1,5 @@
-import request from 'request';
 import authCallback from '../config/json/auth.callback';
+import * as auth from '../config/auth';
 import mongoose from 'mongoose';
 
 const User = mongoose.model('user');
@@ -85,7 +85,7 @@ function registerUser(req, res, registerData) {
 
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
-    validateAccessTokenFacebook(req.body.access_token, (facebookResult) => {
+    auth.crawlByAccessTokenFacebook(req.body.access_token, (facebookResult) => {
       if (facebookResult && facebookResult.verified == true) {
         let registerData = {
           email: facebookResult.email,
@@ -124,33 +124,4 @@ function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id;
-}
-
-function validateAccessTokenFacebook(accessToken, callback) {
-  //Crawl user data from facebook by access token.
-  request.get('https://graph.facebook.com/me?fields=name,email,locale,timezone,verified&access_token='
-    + accessToken, function (error, response, userBody) {
-    if (!error && response.statusCode == 200) {
-      let result = JSON.parse(userBody);
-      //Crawl user profile_picture from facebook by access token.
-      request.get('https://graph.facebook.com/'
-        + result.id
-        + '/picture?type=large&redirect=0', function (error, response, pictureBody) {
-        if (!error && response.statusCode == 200) {
-          result.profile_picture = JSON.parse(pictureBody).data.url;
-          console.log(result);
-          callback(result);
-        } else {
-          callback();
-        }
-      });
-    } else {
-      callback();
-    }
-  });
-}
-
-function validateAccessTokenLinkedIn(accessToken) {
-  ///TODO : Validiate accesstoken from linkedin API server.
-  return false;
 }
