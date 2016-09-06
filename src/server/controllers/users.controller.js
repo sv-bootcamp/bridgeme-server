@@ -127,8 +127,8 @@ function storeSession(req, res, user) {
 }
 
 function validateAccessTokenFacebook(accessToken, callback) {
-  request.get('https://graph.facebook.com/me?fields=name,email,locale,timezone,verified&access_token=' + accessToken, function (error, response, body) {
-    console.log(body)
+  request.get('https://graph.facebook.com/me?fields=name,email,locale,timezone,verified&access_token='
+    + accessToken, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       callback(JSON.parse(body));
     } else {
