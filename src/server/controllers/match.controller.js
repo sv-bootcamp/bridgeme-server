@@ -18,9 +18,9 @@ const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
-const PENDING =2;
-const ACCEPTED =1;
-const REJECTED =0;
+const PENDING = 2;
+const ACCEPTED = 1;
+const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(res, mentor, mentee, content, callback) {
@@ -33,14 +33,20 @@ function sendRequestEmail(res, mentor, mentee, content, callback) {
     html: EMAIL_HTML + content,
   };
   transport.sendMail(mailOptions, function (err, response) {
-    if (err) {
-      if (typeof callback === 'function')callback(false);
-    } else {
-      if (typeof callback === 'function')callback(true);
-    }
+      if (err) {
+        if (typeof callback === 'function') {
+          callback(false);
+        }
+      } else {
+        if (typeof callback === 'function') {
+          callback(true);
+        }
+      }
 
-    transport.close();
-  });
+      transport.close();
+    }
+  )
+  ;
 }
 
 // The mentee sent request to Mentor

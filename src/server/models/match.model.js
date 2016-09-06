@@ -14,17 +14,13 @@ let matchSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+  response_date: Date,
   //status of match {pending:0, accepted:1, rejected:2}
   status: {
     type: Number,
     default: 2,
   },
-  response_date: Date,
-});
 
-matchSchema.set('toJSON', {
-  getters: true,
-  virtuals: true,
 });
 
 export default mongoose.model('match', matchSchema);
