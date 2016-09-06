@@ -24,9 +24,4 @@ let userSchema = new Schema({
   },
 });
 
-userSchema.set('toJSON', {
-  getters: true,  // Bring all elements include virtuals.
-  virtuals: true,  // Set all virtuals show up in the console.log output.
-});
-
 export default mongoose.model('user', userSchema);
