@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 let surveySchema = new Schema({
-  survey_id: Number,
+  survey_id: String,
   questions: [
     {
       question_index: Number,

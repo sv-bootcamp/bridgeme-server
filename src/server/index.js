@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import methodOverride from 'method-override';
 import session from 'express-session';
 import users from './routes/users.route';
+import survey from './routes/survey.route';
 
 const MongoStore = require('connect-mongostore')(session);
 
@@ -37,6 +38,7 @@ export default (cb) => {
   app.use(bodyParser.json());
   app.use(methodOverride());
   app.use('/users', users);
+  app.use('/survey', survey);
 
   const server = app.listen(8000, cb ? cb : () => {
     /* eslint-disable no-console */

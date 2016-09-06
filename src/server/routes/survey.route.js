@@ -1,11 +1,10 @@
 import express from 'express';
-import * as match from '../controllers/survey.controller';
+import * as survey from '../controllers/survey.controller';
 
 const router = express.Router();
 
-//router.post('/answer', match.getAnswer);
-
-//router.get('/mentor', match.getSurvey);
-//router.get('/mentee', match.getSurvey);
+router.post('/answer', survey.saveAnswer);
+router.get('/saveQuestion', survey.saveQuestion);
+router.get('/request/:survey_id', survey.getRequest);
 
 export default router;
