@@ -123,5 +123,5 @@ export function signin(req, res, next) {
 function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
-  req.session._id = user._id;
+  req.session._id = user._id.toString();
 }
