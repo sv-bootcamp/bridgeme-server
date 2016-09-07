@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
  * Format the email body
  */
 
+const ObjectId = mongoose.Types.ObjectId;
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 
@@ -33,20 +34,18 @@ function sendRequestEmail(res, mentor, mentee, content, callback) {
     html: EMAIL_HTML + content,
   };
   transport.sendMail(mailOptions, function (err, response) {
-      if (err) {
-        if (typeof callback === 'function') {
-          callback(false);
-        }
-      } else {
-        if (typeof callback === 'function') {
-          callback(true);
-        }
+    if (err) {
+      if (typeof callback === 'function') {
+        callback(false);
       }
-
-      transport.close();
+    } else {
+      if (typeof callback === 'function') {
+        callback(true);
+      }
     }
-  )
-  ;
+
+    transport.close();
+  });
 }
 
 // The mentee sent request to Mentor
@@ -55,11 +54,10 @@ export function requestMentoring(req, res, next) {
     let matchData = req.body;
     matchData.mentee_id = req.session._id;
     let match = new Match(matchData);
-    console.log(matchData);
     User.find({ _id: matchData.mentor_id }, (err, mentorDoc) => {  //find mentor_id is existing.
       if (!err) {
         if (mentorDoc.length !== 0) {
-          Match.find({mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id}, (err, matchDoc) => { //find match is existing
+          Match.find({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }, (err, matchDoc) => { //find match is existing
             if (!err) {
               if (matchDoc.length === 0) {
                 sendRequestEmail(res, mentorDoc[0].email, req.session.email, matchData.content, (result) => {  //try to send email
@@ -67,41 +65,35 @@ export function requestMentoring(req, res, next) {
                     match.save((err) => {
                       if (!err) {
                         res.json(matchCallback.successSendMail);
-                      }
-                      else {
+                      } else {
                         matchCallback.fail.errPoint = 'RequestMentoring - Saving MatchData';
                         matchCallback.fail.err = err;
                         res.json(matchCallback.fail);
                       }
                     });
-                  }
-                  else {
+                  } else {
                     matchCallback.fail.errPoint = 'RequestMentoring - Fail to send email.';
                     matchCallback.fail.err = err;
                     res.json(matchCallback.fail);
                   }
                 });
-              }
-              else {  //if match is already existing
+              } else {  //if match is already existing
                 matchCallback.fail.errPoint = 'RequestMentoring - Match is Already exists';
                 matchCallback.fail.err = err;
                 res.json(matchCallback.fail);
               }
-            }
-            else {
+            } else {
               matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding matchData';
               matchCallback.fail.err = err;
               res.json(matchCallback.fail);
             }
           });
-        }
-        else {  //if mentor_id is not existing
+        } else {  //if mentor_id is not existing
           matchCallback.fail.errPoint = 'RequestMentoring - Cannot found mentor.';
           matchCallback.fail.err = err;
           res.json(matchCallback.fail);
         }
-      }
-      else {
+      } else {
         matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding montor_id';
         matchCallback.fail.err = err;
         res.json(matchCallback.fail);
@@ -123,12 +115,12 @@ export function getMyActivity(req, res, next) {
         findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
-            activityData['']
             activityData['requested'] = requestedDoc;
             res.json(activityData);
           });
         });
       });
+
     });
   } else {
     res.status(400).json(authCallback.failSignin);
@@ -139,7 +131,7 @@ function findMenteeActivityByStatus(req, res, status, callback) {
   Match.aggregate([
     {
       $match: {
-        mentee_id: req.session._id,
+        mentee_id: ObjectId(req.session._id),
         status: status,
       },
     },
@@ -168,7 +160,7 @@ function findMentorActivity(req, res, callback) {
   Match.aggregate([
     {
       $match: {
-        mentor_id: req.session._id,
+        mentor_id: ObjectId(req.session._id),
         status: 2,
       },
     },

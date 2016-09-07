@@ -41,8 +41,8 @@ export function getMentorList(req, res, next) {
 
 // Return my profile.
 export function getMyProfile(req, res, next) {
-  if (req.session.email) {
-    User.find({ email: req.session.email }, (err, doc) => {
+  if (req.session._id) {
+    User.findOne({ _id: req.session._id }, (err, doc) => {
       if (err) {
         let cb = authCallback.fail;
         cb.result.msg = err;
@@ -57,9 +57,8 @@ export function getMyProfile(req, res, next) {
 }
 
 export function getProfileById(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined'
-    && req.session.access_token === req.query.access_token) {
-    User.find({ _id: req.params._id }, (err, doc) => {
+  if (req.session._id) {
+    User.findOne({ _id: req.params._id }, (err, doc) => {
       if (err) {
         res.status(400).send(err);
       } else {
