@@ -15,7 +15,7 @@ let matchSchema = new Schema({
     default: Date.now,
   },
   response_date: Date,
-  //status of match {pending:0, accepted:1, rejected:2}
+  //status of match {pending:2, accepted:1, rejected:0}
   status: {
     type: Number,
     default: 2,

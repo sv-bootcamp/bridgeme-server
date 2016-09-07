@@ -13,13 +13,12 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined'
-    && req.session.access_token === req.query.access_token) {
+  if (req.session._id) {
     User.find({}, (err, doc) => {
       if (err) {
         res.status(400).send(err);
       } else {
-        res.status(204).json(doc);
+        res.status(200).json(doc);
       }
     });
   } else {
@@ -29,8 +28,7 @@ export function getAll(req, res, next) {
 
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined'
-    && req.session.access_token === req.query.access_token) {
+  if (req.session._id) {
     User.find({ email: { $ne: req.session.email } }, (err, doc) => {
       // TODO: Longer term, we should migrate to a UserSummary object
       // that contains subset of fields. For now, we return all fields.
