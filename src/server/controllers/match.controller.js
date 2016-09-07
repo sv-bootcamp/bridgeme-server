@@ -53,20 +53,18 @@ export function requestMentoring(req, res, next) {
     matchData.mentee_id = req.session._id;
     let match = new Match(matchData);
 
-    Match.findOne({mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id}).exec()
+    Match.findOne({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }).exec()
       .then(match => {
         if (!match) {
-          return User.findOne({_id: matchData.mentor_id}).exec();
-        }
-        else {
+          return User.findOne({ _id: matchData.mentor_id }).exec();
+        } else {
           throw new Error('RequestMentoring - Match already exist.');
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
-        }
-        else {
+        } else {
           throw new Error('RequestMentoring - Cannot found mentor');
         }
       })
@@ -81,7 +79,7 @@ export function requestMentoring(req, res, next) {
         matchCallback.fail.errPoint = err.message;
         res.status(400).json(matchCallback.fail);
       });
-  } else{
+  } else {
     res.status(400).json(authCallback.failAuth);
   }
 }
@@ -97,7 +95,7 @@ export function getMyActivity(req, res, next) {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
             activityData['requested'] = requestedDoc;
-            res.json(activityData);
+            res.status(400).json(activityData);
           });
         });
       });
