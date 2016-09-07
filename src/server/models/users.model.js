@@ -23,7 +23,7 @@ let userSchema = new Schema({
   job_position: String,
   regDate: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

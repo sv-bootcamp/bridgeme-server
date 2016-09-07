@@ -1,9 +1,15 @@
 import authCallback from '../config/json/auth.callback';
-import * as auth from '../config/auth';
 import mongoose from 'mongoose';
+import request from 'request';
 
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
+
+//FB Graph API constant vars.
+const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
+const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
+const FB_GRAPH_GET_PICTURE_URI = 'picture/';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -13,7 +19,7 @@ export function getAll(req, res, next) {
       if (err) {
         res.status(400).send(err);
       } else {
-        res.status(200).json(doc);
+        res.status(204).json(doc);
       }
     });
   } else {
@@ -70,25 +76,11 @@ export function getProfileById(req, res, next) {
   }
 }
 
-function registerUser(req, res, registerData) {
-  let userData = new User(registerData);
-  userData.save((err, user) => {
-    if (err) {
-      res.status(400).json(authCallback.failRegister);
-    } else {
-      let cb = authCallback.successRegister;
-      cb.result._id = user._id;
-      storeSession(req, res, user);
-      res.status(200).json(cb);
-    }
-  });
-}
-
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
-    auth.crawlByAccessTokenFacebook(req.body.access_token, (facebookResult) => {
+    crawlByAccessTokenFacebook(req.body.access_token, (facebookResult) => {
       if (facebookResult && facebookResult.verified == true) {
-        let registerData = {
+        let registrationData = {
           email: facebookResult.email,
           name: facebookResult.name,
           platform_id: facebookResult.id,
@@ -97,12 +89,12 @@ export function signin(req, res, next) {
           timezone: facebookResult.timezone,
           profile_picture: facebookResult.profile_picture,
         };
-        User.findOne({ email: registerData.email }, (err, user) => {
+        User.findOne({ email: registrationData.email }, (err, user) => {
           if (err) {
             res.status(400).json(err);
           } else {
             if (!user) {
-              registerUser(req, res, registerData);
+              registerUser(req, res, registrationData);
             } else {
               storeSession(req, res, user);
               res.status(200).json(authCallback.successSignin);
@@ -125,4 +117,45 @@ function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
+}
+
+function registerUser(req, res, registrationData) {
+  let userData = new User(registrationData);
+  userData.save((err, user) => {
+    if (err) {
+      res.status(400).json(authCallback.failRegister);
+    } else {
+      let cb = authCallback.successRegister;
+      cb.result._id = user._id;
+      storeSession(req, res, user);
+      res.status(200).json(cb);
+    }
+  });
+}
+
+export function crawlByAccessTokenFacebook(accessToken, responseCallback) {
+  // Crawl user data from facebook by access token.
+  request.get({
+      url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
+      qs: { fields: FB_GRAPH_CRAWL_PARAMS , access_token: accessToken },
+    },
+    (error, response, userBody) => {
+      if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
+        let result = JSON.parse(userBody);
+        // Crawl user profile_picture from facebook by access token.
+        request.get({
+            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
+            qs: { type: 'large', redirect: '0' },
+          }, (error, response, pictureBody) => {
+            if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
+              result.profile_picture = JSON.parse(pictureBody).data.url;
+              responseCallback(result);
+            } else {
+              responseCallback();
+            }
+          });
+      } else {
+        responseCallback();
+      }
+    });
 }

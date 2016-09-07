@@ -12,7 +12,7 @@ let matchSchema = new Schema({
   },
   request_date: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
   response_date: Date,
   //status of match {pending:0, accepted:1, rejected:2}
