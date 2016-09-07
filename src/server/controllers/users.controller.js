@@ -3,7 +3,7 @@ import * as auth from '../config/auth';
 import mongoose from 'mongoose';
 
 const User = mongoose.model('user');
-let platform = { facebook: '1', linkedin: '2' };
+const platform = { facebook: '1', linkedin: '2' };
 
 // Return all users.
 export function getAll(req, res, next) {

@@ -51,8 +51,7 @@ function sendRequestEmail(res, mentor, mentee, content, callback) {
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
-  if (typeof req.session.access_token !== 'undefined'
-    && req.session.access_token === req.body.access_token) {
+  if (req.session._id) {
     let matchData = req.body;
     matchData.mentee_id = req.session._id;
     let match = new Match(matchData);
