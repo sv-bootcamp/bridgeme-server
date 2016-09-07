@@ -29,8 +29,16 @@ export default {
       msg: 'Authentication failed. Please sign in first.',
     },
   },
-  fail: {
+  invalidAccessToken: {
     successCode: 0,
-    result: {},
+    result: {
+      msg: 'invalidAccessToken',
+    },
+  },
+  invalidPlatform: {
+    successCode: 0,
+    result: {
+      msg: 'invalidPlatform',
+    },
   },
 };
