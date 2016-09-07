@@ -1,3 +1,5 @@
+import authCallback from '../config/json/auth.callback';
+import matchCallback from '../config/json/match.callback';
 import mailer from 'nodemailer';
 import mongoose from 'mongoose';
 
@@ -9,76 +11,201 @@ import mongoose from 'mongoose';
  * Format the email body
  */
 
-const matchSchema = mongoose.model('match');
+const Match = mongoose.model('match');
+const User = mongoose.model('user');
+
 const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
-let matchData = new matchSchema();
-let sampleFailResult = {
-  successCode: 0,
-  errPoint: null,
-  err: null,
-};
+const PENDING = 2;
+const ACCEPTED = 1;
+const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
-function sendRequestEmail(res, mentor, mentee, content) {
+function sendRequestEmail(res, mentor, mentee, content, callback) {
   let transport
     = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
   let mailOptions = {
     from: YODA_ACCOUNT,
     to: mentor,
-    replyTo: mentee,
     subject: EMAIL_SUBJECT,
     html: EMAIL_HTML + content,
   };
-
   transport.sendMail(mailOptions, function (err, response) {
-    if (err) {
-      sampleFailResult.errPoint = 'RequestMentoring - transport.sendMail';
-      sampleFailResult.err = err;
-      res.json(sampleFailResult);
-    } else {
-      res.json('Success');
-    }
+      if (err) {
+        if (typeof callback === 'function') {
+          callback(false);
+        }
+      } else {
+        if (typeof callback === 'function') {
+          callback(true);
+        }
+      }
 
-    transport.close();
-  });
+      transport.close();
+    }
+  )
+  ;
 }
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
-  // Todo:
-  // Get Email address from DB with mentorId and menteeId (ObjectId). It's Email address for test now.
-  // Add data to 'matchData'
+  if (typeof req.session.access_token !== 'undefined'
+    && req.session.access_token === req.body.access_token) {
+    let matchData = req.body;
+    matchData.mentee_id = req.session._id;
+    let match = new Match(matchData);
+    console.log(matchData);
+    User.find({ _id: matchData.mentor_id }, (err, mentorDoc) => {  //find mentor_id is existing.
+      if (!err) {
+        if (mentorDoc.length !== 0) {
+          Match.find({mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id}, (err, matchDoc) => { //find match is existing
+            if (!err) {
+              if (matchDoc.length === 0) {
+                sendRequestEmail(res, mentorDoc[0].email, req.session.email, matchData.content, (result) => {  //try to send email
+                  if (result !== false) {
+                    match.save((err) => {
+                      if (!err) {
+                        res.json(matchCallback.successSendMail);
+                      }
+                      else {
+                        matchCallback.fail.errPoint = 'RequestMentoring - Saving MatchData';
+                        matchCallback.fail.err = err;
+                        res.json(matchCallback.fail);
+                      }
+                    });
+                  }
+                  else {
+                    matchCallback.fail.errPoint = 'RequestMentoring - Fail to send email.';
+                    matchCallback.fail.err = err;
+                    res.json(matchCallback.fail);
+                  }
+                });
+              }
+              else {  //if match is already existing
+                matchCallback.fail.errPoint = 'RequestMentoring - Match is Already exists';
+                matchCallback.fail.err = err;
+                res.json(matchCallback.fail);
+              }
+            }
+            else {
+              matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding matchData';
+              matchCallback.fail.err = err;
+              res.json(matchCallback.fail);
+            }
+          });
+        }
+        else {  //if mentor_id is not existing
+          matchCallback.fail.errPoint = 'RequestMentoring - Cannot found mentor.';
+          matchCallback.fail.err = err;
+          res.json(matchCallback.fail);
+        }
+      }
+      else {
+        matchCallback.fail.errPoint = 'RequestMentoring - Error occurred when finding montor_id';
+        matchCallback.fail.err = err;
+        res.json(matchCallback.fail);
+      }
+    });
 
-  matchData.save((err) => {
-    if (err) {
-      sampleFailResult.errPoint = 'RequestMentoring - Saving MatchData';
-      sampleFailResult.err = err;
-      res.json(sampleFailResult);
-    } else {
-      // Todo:
-      // 1. update mentor and mentee's request db
+  } else {
+    res.status(400).json(authCallback.failAuth);
+  }
+}
 
-      // 2. Send Request Mail to Mentor
-      sendRequestEmail(res, req.body.mentorId, req.body.menteeId, req.body.content);
-    }
+export function getMyActivity(req, res, next) {
+  if (req.session._id) {
+    let activityData = {};
+    findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
+      activityData['pending'] = pendingDoc;
+      findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
+        activityData['accepted'] = acceptedDoc;
+        findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
+          activityData['rejected'] = rejectedDoc;
+          findMentorActivity(req, res, (requestedDoc) => {
+            activityData['']
+            activityData['requested'] = requestedDoc;
+            res.json(activityData);
+          });
+        });
+      });
+    });
+  } else {
+    res.status(400).json(authCallback.failSignin);
+  }
+}
+
+function findMenteeActivityByStatus(req, res, status, callback) {
+  Match.aggregate([
+    {
+      $match: {
+        mentee_id: req.session._id,
+        status: status,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'mentor_id',
+        foreignField: '_id',
+        as: 'detail',
+      },
+    },
+    {
+      $project: {
+        status: 1,
+        detail: 1,
+        request_date: 1,
+        response_date: 1,
+      },
+    },
+  ], (err, doc) => {
+    callback(doc);
   });
 }
 
-// The mentor accepted the mentoring request
-export function acceptRequest(req, res, next) {
-  // Todo:
-  // update mentor and mentee's request db
-
-  res.json('Success');
+function findMentorActivity(req, res, callback) {
+  Match.aggregate([
+    {
+      $match: {
+        mentor_id: req.session._id,
+        status: 2,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'mentee_id',
+        foreignField: '_id',
+        as: 'detail',
+      },
+    },
+    {
+      $project: {
+        status: 1,
+        detail: 1,
+        request_date: 1,
+        response_date: 1,
+      },
+    },
+  ], (err, doc) => {
+    callback(doc);
+  });
 }
 
-// The mentor rejected the mentoring request
-export function rejectRequest(req, res, next) {
-  // Todo:
-  // update mentor and mentee's request db
-
-  res.json('Success');
+export function responseMentoring(req, res, next) {
+  if (req.session._id) {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
+      if (err) {
+        matchCallback.fail.errPoint = 'RequestMentoring - Updating MatchData.';
+        matchCallback.fail.err = err;
+        res.json(matchCallback.fail);
+      } else {
+        res.status(200).json(matchCallback.success);
+      }
+    });
+  } else {
+    res.status(400).json(authCallback.failSignin);
+  }
 }

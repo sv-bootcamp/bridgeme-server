@@ -2,27 +2,25 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let matchSchema = new Schema({
-  mentorId: Schema.Types.ObjectId,
-  menteeId: Schema.Types.ObjectId,
-  requestDate: {
+  mentor_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  mentee_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  request_date: {
     type: Date,
     default: Date.now(),
   },
-  isAccepted: {
-    type: Boolean,
-    default: false,
+  response_date: Date,
+  //status of match {pending:0, accepted:1, rejected:2}
+  status: {
+    type: Number,
+    default: 2,
   },
-  acceptDate: Date,
-  isCancelled: {
-    type: Boolean,
-    default: false,
-  },
-  cancelDate: Date,
-});
 
-matchSchema.set('toJSON', {
-  getters: true,
-  virtuals: true,
 });
 
 export default mongoose.model('match', matchSchema);

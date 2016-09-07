@@ -12,15 +12,4 @@ const u = {
 };
 
 describe('Users: models', function () {
-  describe('#create()', function () {
-    it('should create a new User and remove', function (done) {
-      // Create a User object to pass to User.create()
-      User.create(u, function (err, createdUser) {
-        should.not.exist(err);
-        createdUser.name.should.equal('yoda');
-        createdUser.remove();
-        done();
-      });
-    });
-  });
 });
