@@ -137,7 +137,7 @@ export function crawlByAccessTokenFacebook(accessToken, responseCallback) {
   // Crawl user data from facebook by access token.
   request.get({
       url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
-      qs: { fields: FB_GRAPH_CRAWL_PARAMS , access_token: accessToken },
+      qs: { fields: FB_GRAPH_CRAWL_PARAMS, access_token: accessToken },
     },
     (error, response, userBody) => {
       if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
