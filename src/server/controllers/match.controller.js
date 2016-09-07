@@ -10,7 +10,7 @@ import mongoose from 'mongoose';
  * Connect Database
  * Format the email body
  */
-
+const ObjectId = mongoose.Types.ObjectId;
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 
@@ -109,7 +109,7 @@ function findMenteeActivityByStatus(req, res, status, callback) {
   Match.aggregate([
     {
       $match: {
-        mentee_id: req.session._id,
+        mentee_id: ObjectId(req.session._id),
         status: status,
       },
     },
@@ -138,7 +138,7 @@ function findMentorActivity(req, res, callback) {
   Match.aggregate([
     {
       $match: {
-        mentor_id: req.session._id,
+        mentor_id:  ObjectId(req.session._id),
         status: 2,
       },
     },
