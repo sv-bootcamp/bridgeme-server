@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 /*
- * Define the schema model for survey answer.
+ * Define the schema model for survey's answer.
  */
 
 const Schema = mongoose.Schema;

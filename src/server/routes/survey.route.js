@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post('/answer', survey.saveAnswer);
 router.get('/saveQuestion', survey.saveQuestion);
-router.get('/request/:survey_id', survey.getRequest);
+router.get('/request/:type', survey.getRequest);
 
 export default router;
