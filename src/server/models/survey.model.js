@@ -14,10 +14,15 @@ let surveySchema = new Schema({
       allow_multiple_answer: Boolean,
       answers: [
         {
-          answer_index: Number,
-          is_free_form: Boolean, // false: description
-          content: String,
-          next_question_index: Number, // NULL: this is last question
+          title: String,
+          options: [
+            {
+              answer_index: Number,
+              is_free_form: Boolean, // true: description
+              content: String,
+              next_question_index: Number, // NULL: this is last question
+            },
+          ],
         },
       ],
     },

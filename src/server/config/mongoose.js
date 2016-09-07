@@ -7,7 +7,7 @@ import '../models/match.model';
 export default function () {
   mongoose.Promise = global.Promise;
   const db = {
-    development: 'mongodb://localhost:27017/yoda',
+    development: mongoose.connect('mongodb://localhost:27017/yoda'),
     test: 'mongodb://localhost:27017/yoda-test',
   };
   return db;

@@ -8,12 +8,16 @@ const Schema = mongoose.Schema;
 let answerSchema = new Schema({
   survey_id: String,
   user_id: Schema.Types.ObjectId,
-  answers: [
+  questions: [
     {
       question_index: Number,
-      answer_index: Number,
-      is_free_form: Boolean, // false: description
-      content: String,
+      question: String,
+      answers: [
+        {
+          answer_index: Number,
+          content: String,
+        },
+      ],
     },
   ],
   date: {

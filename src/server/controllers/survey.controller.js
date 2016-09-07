@@ -90,13 +90,17 @@ export function getSurvey(res, survey_id) {
 
 // Get answer
 export function saveAnswer(res, req, next) {
-  if (typeof req.session.access_token !== 'undefined'
-    && req.session.access_token === req.query.access_token) {
+  //if (typeof req.session.access_token !== 'undefined'
+  //  && req.session.access_token === req.query.access_token) {
     let answer = new Answer();
-    answer.survey_id = req.body.survey_id;
-    answer.user_id = res.session._id;
-    answer.answers = req.body.answers;
-
+    // answer.survey_id = req.body.survey_id;
+    // answer.user_id = res.session._id;
+    // answer.questions = req.body.questions;
+    let jsonObject = JSON.parse(req.body);
+    console.log('*' + jsonObject);
+    // console.log('**' + req.body.survey_id);
+    
+  
     answer.save((err, doc) => {
       if (err) {
         failureResult.err_point = 'Survey - getAnswer';
@@ -106,7 +110,7 @@ export function saveAnswer(res, req, next) {
         res.json(successResult);
       }
     });
-  } else {
-    res.status(400).json(authCallback.failAuth);
-  }
+  //} else {
+  //  res.status(400).json(authCallback.failAuth);
+  //}
 }

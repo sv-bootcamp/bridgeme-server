@@ -28,9 +28,9 @@ export function getMentorList(req, res, next) {
       // TODO: Longer term, we should migrate to a UserSummary object
       // that contains subset of fields. For now, we return all fields.
       if (err) {
-        res.send(err);
+        res.status(400).send(err);
       } else {
-        res.send(doc);
+        res.status(200).send(doc);
       }
     });
   } else {
