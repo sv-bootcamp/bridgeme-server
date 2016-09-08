@@ -1,3 +1,7 @@
+/*
+ * Sample Data for survey test
+ */
+
 export default {
   surveyQuestion: {
     survey_id: 'A-001',
@@ -28,5 +32,4 @@ export default {
       },
     ],
   },
-  
 };
