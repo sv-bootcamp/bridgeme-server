@@ -1,15 +1,5 @@
-import should from 'should';
-import mongoose from 'mongoose';
-import '../../server/models/users.model';
-
 /*
- * Test for mongodb create.
+ * Test for model.
  */
 
-const User = mongoose.model('user');
-const u = {
-  name: 'yoda',
-};
-
-describe('Users: models', function () {
-});
+// Todo: add test for schema.
