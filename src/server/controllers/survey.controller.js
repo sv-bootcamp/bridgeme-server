@@ -53,7 +53,7 @@ export function saveAnswer(req, res, next) {
 
     answer.save((err, answerItem) => {
       if (err) {
-        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_ANSWER, err_msg: err});
+        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_ANSWER, err_msg: err });
       } else {
         res.status(200).json({ survey_id: answerItem.survey_id });
       }
@@ -70,7 +70,7 @@ export function saveQuestion(req, res, next) {
     questions: surveyQuestion.questions,
   });
 
-  if(survey.survey_id == null || survey.questions == null) {
+  if (survey.survey_id == null || survey.questions == null) {
     res.status(400).json({ err_point: callbackMsg.ERR_SAVE_QUESTION, err_msg: callbackMsg.ERR_INVALID_PARAMS });
   } else {
     survey.save((err, surveyItem) => {
