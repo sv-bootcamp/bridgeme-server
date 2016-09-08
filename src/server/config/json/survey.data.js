@@ -1,8 +1,9 @@
 /*
  * Sample Data for survey test
  */
+
 export default {
-  surveyQuestion : {
+  surveyQuestion: {
     survey_id: 'A-001',
     questions: [
       {
@@ -30,5 +31,5 @@ export default {
         ],
       },
     ],
-  }
+  },
 };
