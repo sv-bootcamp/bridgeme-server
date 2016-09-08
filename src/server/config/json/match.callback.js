@@ -1,5 +1,5 @@
 export default {
-  successSendMail: 'SendMail - Fail to Send an email.',
+  successSendMail: 'SendMail - Success to Send an email.',
   successResponse: 'ResponseMentoring - success Response.',
   failSendMail: 'SendMail - Fail to Send an email.',
   matchAlreadyExist: 'RequestMentoring - Match already exist.',

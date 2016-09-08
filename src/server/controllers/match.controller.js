@@ -5,11 +5,8 @@ import mongoose from 'mongoose';
 
 /*
  * Methods about mentoring request, accept or reject including E-mail Service
- *
- * Todo:
- * Connect Database
- * Format the email body
  */
+
 const ObjectId = mongoose.Types.ObjectId;
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
@@ -35,7 +32,7 @@ function sendRequestEmail(mentor, content) {
     };
     transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          throw new Error({ err_point: matchCallback.failSendMail, err: err, status: 400 });
+          throw new Error(matchCallback.failSendMail);
         } else {
           resolve();
         }
@@ -58,24 +55,24 @@ export function requestMentoring(req, res, next) {
         if (!match) {
           return User.findOne({ _id: matchData.mentor_id }).exec();
         } else {
-          throw new Error({ err_point: matchCallback.matchAlreadyExist, status: 400 });
+          throw new Error(matchCallback.matchAlreadyExist);
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
         } else {
-          throw new Error({ err_point: matchCallback.cannotFoundMentor, status: 400 });
+          throw new Error(matchCallback.cannotFoundMentor);
         }
       })
       .then(() => {
         return match.save();
       })
       .then(() => {
-        res.status(201).json({ msg: matchCallback.successSendMail });
+        res.status(201).json(matchCallback.successSendMail);
       })
-      .catch(err => {
-        res.status(err.status).json(err);
+      .catch((err) => {
+        res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
     res.status(401).json({ err_point: userCallback.failAuth });
@@ -85,29 +82,37 @@ export function requestMentoring(req, res, next) {
 export function getMyActivity(req, res, next) {
   if (req.session._id) {
     let activityData = {};
-    findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
-      activityData['pending'] = pendingDoc;
-      findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
+
+    findMenteeActivityByStatus(req.session._id, PENDING)
+      .then(pendingDoc => {
+        activityData['pending'] = pendingDoc;
+        return findMenteeActivityByStatus(req.session._id, ACCEPTED);
+      })
+      .then(acceptedDoc => {
         activityData['accepted'] = acceptedDoc;
-        findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
-          activityData['rejected'] = rejectedDoc;
-          findMentorActivity(req, res, (requestedDoc) => {
-            activityData['requested'] = requestedDoc;
-            res.status(200).json(activityData);
-          });
-        });
+        return findMenteeActivityByStatus(req.session._id, REJECTED);
+      })
+      .then(rejectedDoc => {
+        activityData['rejected'] = rejectedDoc;
+        return findMentorActivity(req.session._id);
+      })
+      .then(requestedDoc => {
+        activityData['requested'] = requestedDoc;
+        res.json(activityData);
+      })
+      .catch(err => {
+        res.status(400).json({ err_point: err.message, err: err.stack });
       });
-    });
   } else {
     res.status(401).json({ err_point: userCallback.failAuth });
   }
 }
 
-function findMenteeActivityByStatus(req, res, status, callback) {
-  Match.aggregate([
+function findMenteeActivityByStatus(mentee_id, status) {
+  return Match.aggregate([
     {
       $match: {
-        mentee_id: ObjectId(req.session._id),
+        mentee_id: ObjectId(mentee_id),
         status: status,
       },
     },
@@ -127,16 +132,14 @@ function findMenteeActivityByStatus(req, res, status, callback) {
         response_date: 1,
       },
     },
-  ], (err, doc) => {
-    callback(doc);
-  });
+  ]).exec();
 }
 
-function findMentorActivity(req, res, callback) {
-  Match.aggregate([
+function findMentorActivity(mentor_id) {
+  return Match.aggregate([
     {
       $match: {
-        mentor_id:  ObjectId(req.session._id),
+        mentor_id: ObjectId(mentor_id),
         status: 2,
       },
     },
@@ -156,9 +159,7 @@ function findMentorActivity(req, res, callback) {
         response_date: 1,
       },
     },
-  ], (err, doc) => {
-    callback(doc);
-  });
+  ]).exec();
 }
 
 export function responseMentoring(req, res, next) {
