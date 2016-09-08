@@ -49,7 +49,7 @@ export function getRequest(req, res, next) {
   let t = Math.random() * 100; // random number between 0 ~ 101
   if (t > -1) {
     let survey_id;
-    if ( req.params.type == 'mentee') {
+    if (req.params.type == 'mentee') {
       survey_id = 'A001-1';
       getSurvey(res, survey_id);
     } else {
@@ -81,21 +81,21 @@ export function getSurvey(res, survey_id) {
 
 // Get answer
 export function saveAnswer(req, res, next) {
-  // If merge only-accesstoken req.session.email => req.session._id
+  // TODO: If merge only-accesstoken req.session.email => req.session._id
   if (req.session.email) {
     let answer = new Answer();
     answer.survey_id = req.body.survey_id;
     answer.questions = req.body.questions;
-    User.findOne({ email: req.session.email }, (err, user)=>{
+    User.findOne({ email: req.session.email }, (err, user)=> {
       if (err) {
-        failureResult.err_point = 'Survey - findUserSession with email';
+        failureResult.err_point = 'Survey - find UserSession with email';
         failureResult.err_msg = err;
         res.json(failureResult);
       } else {
         answer.user_id = user._id;
       }
     });
-  
+
     answer.save((err, answerItem) => {
       if (err) {
         failureResult.err_point = 'Survey - saveAnswer';
