@@ -9,6 +9,7 @@ import methodOverride from 'method-override';
 import session from 'express-session';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
+import match from './routes/match.route';
 
 const MongoStore = require('connect-mongostore')(session);
 
@@ -28,7 +29,7 @@ export default (cb) => {
     resave: false,
     saveUninitialized: false,
     //session expire after 1Day.
-    cookie: { maxAge: 3600 * 24 },
+    cookie: { maxAge: 1000 * 3600 * 24 },
   }));
 
   app.use(bodyParser.urlencoded({
@@ -36,8 +37,10 @@ export default (cb) => {
   }));
   app.use(bodyParser.json());
   app.use(methodOverride());
+
   app.use('/users', users);
   app.use('/survey', survey);
+  app.use('/match', match);
 
   const server = app.listen(8000, cb ? cb : () => {
     /* eslint-disable no-console */

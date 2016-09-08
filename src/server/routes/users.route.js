@@ -7,8 +7,10 @@ import * as user from '../controllers/users.controller';
 
 const router = express.Router();
 
+//POST method
 router.post('/signIn', user.signin);
 
+//GET method
 router.get('/all', user.getAll);
 router.get('/id/:_id', user.getProfileById);
 router.get('/me', user.getMyProfile);

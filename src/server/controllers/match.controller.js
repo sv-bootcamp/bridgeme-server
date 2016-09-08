@@ -1,3 +1,5 @@
+import authCallback from '../config/json/auth.callback';
+import matchCallback from '../config/json/match.callback';
 import mailer from 'nodemailer';
 import mongoose from 'mongoose';
 
@@ -8,77 +10,171 @@ import mongoose from 'mongoose';
  * Connect Database
  * Format the email body
  */
+const ObjectId = mongoose.Types.ObjectId;
+const Match = mongoose.model('match');
+const User = mongoose.model('user');
 
-const matchSchema = mongoose.model('match');
 const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
-let matchData = new matchSchema();
-let sampleFailResult = {
-  successCode: 0,
-  errPoint: null,
-  err: null,
-};
+const PENDING = 2;
+const ACCEPTED = 1;
+const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
-function sendRequestEmail(res, mentor, mentee, content) {
-  let transport
-    = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
-  let mailOptions = {
-    from: YODA_ACCOUNT,
-    to: mentor,
-    replyTo: mentee,
-    subject: EMAIL_SUBJECT,
-    html: EMAIL_HTML + content,
-  };
+function sendRequestEmail(mentor, content) {
+  return new Promise(function (resolve, reject) {
+    let transport
+      = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
+    let mailOptions = {
+      from: YODA_ACCOUNT,
+      to: mentor,
+      subject: EMAIL_SUBJECT,
+      html: EMAIL_HTML + content,
+    };
+    transport.sendMail(mailOptions, function (err, response) {
+        if (err) {
+          throw new Error('SendEmail - Fail to Send an email.');
+        } else {
+          resolve();
+        }
 
-  transport.sendMail(mailOptions, function (err, response) {
-    if (err) {
-      sampleFailResult.errPoint = 'RequestMentoring - transport.sendMail';
-      sampleFailResult.err = err;
-      res.json(sampleFailResult);
-    } else {
-      res.json('Success');
-    }
-
-    transport.close();
+        transport.close();
+      }
+    );
   });
 }
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
-  // Todo:
-  // Get Email address from DB with mentorId and menteeId (ObjectId). It's Email address for test now.
-  // Add data to 'matchData'
+  if (req.session._id) {
+    let matchData = req.body;
+    matchData.mentee_id = req.session._id;
+    let match = new Match(matchData);
 
-  matchData.save((err) => {
-    if (err) {
-      sampleFailResult.errPoint = 'RequestMentoring - Saving MatchData';
-      sampleFailResult.err = err;
-      res.json(sampleFailResult);
-    } else {
-      // Todo:
-      // 1. update mentor and mentee's request db
+    Match.findOne({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }).exec()
+      .then(match => {
+        if (!match) {
+          return User.findOne({ _id: matchData.mentor_id }).exec();
+        } else {
+          throw new Error('RequestMentoring - Match already exist.');
+        }
+      })
+      .then(mentor => {
+        if (mentor) {
+          return sendRequestEmail(mentor.email, matchData.content);
+        } else {
+          throw new Error('RequestMentoring - Cannot found mentor');
+        }
+      })
+      .then(() => {
+        return match.save();
+      })
+      .then(() => {
+        res.status(200).json(matchCallback.successSendMail);
+      })
+      .catch(err => {
+        matchCallback.fail.err = err.stack;
+        matchCallback.fail.errPoint = err.message;
+        res.status(400).json(matchCallback.fail);
+      });
+  } else {
+    res.status(400).json(authCallback.failAuth);
+  }
+}
 
-      // 2. Send Request Mail to Mentor
-      sendRequestEmail(res, req.body.mentorId, req.body.menteeId, req.body.content);
-    }
+export function getMyActivity(req, res, next) {
+  if (req.session._id) {
+    let activityData = {};
+    findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
+      activityData['pending'] = pendingDoc;
+      findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
+        activityData['accepted'] = acceptedDoc;
+        findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
+          activityData['rejected'] = rejectedDoc;
+          findMentorActivity(req, res, (requestedDoc) => {
+            activityData['requested'] = requestedDoc;
+            res.status(400).json(activityData);
+          });
+        });
+      });
+    });
+  } else {
+    res.status(400).json(authCallback.failAuth);
+  }
+}
+
+function findMenteeActivityByStatus(req, res, status, callback) {
+  Match.aggregate([
+    {
+      $match: {
+        mentee_id: ObjectId(req.session._id),
+        status: status,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'mentor_id',
+        foreignField: '_id',
+        as: 'detail',
+      },
+    },
+    {
+      $project: {
+        status: 1,
+        detail: 1,
+        request_date: 1,
+        response_date: 1,
+      },
+    },
+  ], (err, doc) => {
+    callback(doc);
   });
 }
 
-// The mentor accepted the mentoring request
-export function acceptRequest(req, res, next) {
-  // Todo:
-  // update mentor and mentee's request db
-
-  res.json('Success');
+function findMentorActivity(req, res, callback) {
+  Match.aggregate([
+    {
+      $match: {
+        mentor_id:  ObjectId(req.session._id),
+        status: 2,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'mentee_id',
+        foreignField: '_id',
+        as: 'detail',
+      },
+    },
+    {
+      $project: {
+        status: 1,
+        detail: 1,
+        request_date: 1,
+        response_date: 1,
+      },
+    },
+  ], (err, doc) => {
+    callback(doc);
+  });
 }
 
-// The mentor rejected the mentoring request
-export function rejectRequest(req, res, next) {
-  // Todo:
-  // update mentor and mentee's request db
-
-  res.json('Success');
+export function responseMentoring(req, res, next) {
+  if (req.session._id) {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
+      if (err) {
+        matchCallback.fail.errPoint = 'RequestMentoring - Updating MatchData.';
+        matchCallback.fail.err = err;
+        res.json(matchCallback.fail);
+      } else {
+        res.status(200).json(matchCallback.success);
+      }
+    });
+  } else {
+    res.status(400).json(authCallback.failAuth);
+  }
 }
