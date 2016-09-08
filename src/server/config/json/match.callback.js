@@ -1,14 +1,8 @@
 export default {
-  fail: {
-    successCode: 0,
-    errPoint: null,
-    err: null,
-  },
-  success: {
-    successCode: 1,
-  },
-  successSendMail: {
-    successCode: 1,
-    msg: 'send Email successfully.',
-  },
+  successSendMail: 'SendMail - Fail to Send an email.',
+  successResponse: 'ResponseMentoring - success Response.',
+  failSendMail: 'SendMail - Fail to Send an email.',
+  matchAlreadyExist: 'RequestMentoring - Match already exist.',
+  cannotFoundMentor: 'RequestMentoring - Cannot found mentor.',
+  mongooseErr: 'An error occured at mongoose.',
 };

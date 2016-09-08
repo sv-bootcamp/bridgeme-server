@@ -1,4 +1,4 @@
-import authCallback from '../config/json/auth.callback';
+import userCallback from '../config/json/user.callback';
 import matchCallback from '../config/json/match.callback';
 import mailer from 'nodemailer';
 import mongoose from 'mongoose';
@@ -35,7 +35,7 @@ function sendRequestEmail(mentor, content) {
     };
     transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          throw new Error('SendEmail - Fail to Send an email.');
+          throw new Error({ err_point: matchCallback.failSendMail, err: err, status: 400 });
         } else {
           resolve();
         }
@@ -58,29 +58,27 @@ export function requestMentoring(req, res, next) {
         if (!match) {
           return User.findOne({ _id: matchData.mentor_id }).exec();
         } else {
-          throw new Error('RequestMentoring - Match already exist.');
+          throw new Error({ err_point: matchCallback.matchAlreadyExist, status: 400 });
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
         } else {
-          throw new Error('RequestMentoring - Cannot found mentor');
+          throw new Error({ err_point: matchCallback.cannotFoundMentor, status: 400 });
         }
       })
       .then(() => {
         return match.save();
       })
       .then(() => {
-        res.status(200).json(matchCallback.successSendMail);
+        res.status(201).json({ msg: matchCallback.successSendMail });
       })
       .catch(err => {
-        matchCallback.fail.err = err.stack;
-        matchCallback.fail.errPoint = err.message;
-        res.status(400).json(matchCallback.fail);
+        res.status(err.status).json(err);
       });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.failAuth });
   }
 }
 
@@ -95,13 +93,13 @@ export function getMyActivity(req, res, next) {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
             activityData['requested'] = requestedDoc;
-            res.status(400).json(activityData);
+            res.status(200).json(activityData);
           });
         });
       });
     });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.failAuth });
   }
 }
 
@@ -165,16 +163,14 @@ function findMentorActivity(req, res, callback) {
 
 export function responseMentoring(req, res, next) {
   if (req.session._id) {
-    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now }, (err) => {
       if (err) {
-        matchCallback.fail.errPoint = 'RequestMentoring - Updating MatchData.';
-        matchCallback.fail.err = err;
-        res.json(matchCallback.fail);
+        res.status(400).json({ err_point: matchCallback.mongooseErr, err: err });
       } else {
-        res.status(200).json(matchCallback.success);
+        res.status(200).json({ msg: matchCallback.successResponse });
       }
     });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.failAuth });
   }
 }
