@@ -98,7 +98,7 @@ export function getMyActivity(req, res, next) {
       })
       .then(requestedDoc => {
         activityData['requested'] = requestedDoc;
-        res.json(activityData);
+        res.status(200).json(activityData);
       })
       .catch(err => {
         res.status(400).json({ err_point: err.message, err: err.stack });
