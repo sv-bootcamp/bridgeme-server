@@ -13,9 +13,11 @@ export function getRequest(req, res, next) {
     if (req.params.type == 'mentee') {
       surveyId = 'A001-1';
       getSurvey(res, surveyId);
-    } else {
+    } else if (req.params.type == 'mentor') {
       surveyId = 'B001-1';
       getSurvey(res, surveyId);
+    } else {
+      res.status(400).json({ err_point: callbackMsg.ERR_INVALID_PARAMS });
     }
   } else {
     res.status(204).json();  // 204: No content
@@ -28,11 +30,7 @@ export function getSurvey(res, surveyId) {
     if (err) {
       res.status(400).json({ err_point: callbackMsg.ERR_GET_SURVEY, err_msg: err });
     } else {
-      let result = {
-        survey_id: surveyId,
-        questions: surveyItem.questions,
-      };
-      res.status(200).json(result);
+      res.status(200).json(surveyItem);
     }
   });
 }
@@ -44,9 +42,10 @@ export function saveAnswer(req, res, next) {
     let answer = new Answer();
     answer.survey_id = req.body.survey_id;
     answer.questions = req.body.questions;
+
     User.findOne({ email: req.session.email }, (err, user) => {
       if (err) {
-        res.status(400).json({ err_point: callbackMsg.ERR_GET_SURVEY, err_msg: err });
+        res.status(400).json({ err_point: callbackMsg.ERR_USER_NOT_FOUND, err_msg: err });
       } else {
         answer.user_id = user._id;
       }
@@ -54,18 +53,13 @@ export function saveAnswer(req, res, next) {
 
     answer.save((err, answerItem) => {
       if (err) {
-        failureResult.err_point = 'Survey - saveAnswer';
-        failureResult.err_msg = err;
-        res.json(failureResult);
+        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_ANSWER, err_msg: err});
       } else {
-        successResult.survey_id = answerItem.survey_id;
-        successResult.user_id = answerItem.user_id;
-        successResult.questions = answerItem.questions;
-        res.json(successResult);
+        res.status(200).json({ survey_id: answerItem.survey_id });
       }
     });
   } else {
-    res.status(400).json();
+    res.status(400).json({ err_point: callbackMsg.ERR_INVALID_ACCESS });
   }
 }
 
@@ -75,13 +69,16 @@ export function saveQuestion(req, res, next) {
     survey_id: surveyQuestion.survey_id,
     questions: surveyQuestion.questions,
   });
-  survey.save((err) => {
-    if (err) {
-      failureResult.err_point = 'Survey - saveQuestion';
-      failureResult.err_msg = err;
-      res.json(failureResult);
-    } else {
-      res.json(successResult);
-    }
-  });
+
+  if(survey.survey_id == null || survey.questions == null) {
+    res.status(400).json({ err_point: callbackMsg.ERR_SAVE_QUESTION, err_msg: callbackMsg.ERR_INVALID_PARAMS });
+  } else {
+    survey.save((err, surveyItem) => {
+      if (err) {
+        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_QUESTION, err_msg: err });
+      } else {
+        res.status(200).json({ survey_id: surveyItem.survey_id });
+      }
+    });
+  }
 }
