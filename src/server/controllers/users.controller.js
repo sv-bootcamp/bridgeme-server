@@ -16,13 +16,13 @@ export function getAll(req, res, next) {
   if (req.session._id) {
     User.find({}, (err, doc) => {
       if (err) {
-        res.status(400).json({ err_point: userCallback.mongooseErr, err: err });
+        res.status(400).json({ err_point: userCallback.MONGOOSE_ERR, err: err });
       } else {
         res.status(200).json(doc);
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -33,13 +33,13 @@ export function getMentorList(req, res, next) {
       // TODO: Longer term, we should migrate to a UserSummary object
       // that contains subset of fields. For now, we return all fields.
       if (err) {
-        res.status(400).json({ err_point: userCallback.mongooseErr, err: err });
+        res.status(400).json({ err_point: userCallback.MONGOOSE_ERR, err: err });
       } else {
         res.status(200).json(doc);
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -48,13 +48,13 @@ export function getMyProfile(req, res, next) {
   if (req.session._id) {
     User.findOne({ _id: req.session._id }, (err, doc) => {
       if (err) {
-        res.status(400).json({ err_point: userCallback.mongooseErr, err: err });
+        res.status(400).json({ err_point: userCallback.MONGOOSE_ERR, err: err });
       } else {
         res.status(200).json(doc);
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -63,13 +63,13 @@ export function getProfileById(req, res, next) {
   if (req.session._id) {
     User.findOne({ _id: req.params._id }, (err, doc) => {
       if (err) {
-        res.status(400).json({ err_point: userCallback.mongooseErr, err: err });
+        res.status(400).json({ err_point: userCallback.MONGOOSE_ERR, err: err });
       } else {
         res.status(200).json(doc);
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -88,25 +88,25 @@ export function signin(req, res, next) {
         };
         User.findOne({ email: registrationData.email }, (err, user) => {
           if (err) {
-            res.status(400).json({ err_point: userCallback.mongooseErr, err: err });
+            res.status(400).json({ err_point: userCallback.MONGOOSE_ERR, err: err });
           } else {
             if (!user) {
               registerUser(req, res, registrationData);
             } else {
               storeSession(req, res, user);
-              res.status(200).json({ msg: userCallback.successSignin });
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
             }
           }
         });
       } else {
-        res.status(400).json({ err_point: userCallback.invalidAccessToken });
+        res.status(400).json({ err_point: userCallback.INVALID_ACCESS_TOKEN });
       }
     });
   } else if (req.body.platform_type === platform.linkedin) {
     ///TODO : Validiate accesstoken from linkedin API server.
     res.send("Doesn't support yet.");
   } else {
-    res.status(400).json({ err_point: userCallback.invalidPlatform });
+    res.status(400).json({ err_point: userCallback.INVALID_PLATFORM });
   }
 }
 
@@ -120,9 +120,9 @@ function registerUser(req, res, registrationData) {
   let userData = new User(registrationData);
   userData.save((err, user) => {
     if (err) {
-      res.status(400).json({ err_point: userCallback.failRegister, err: err });
+      res.status(400).json({ err_point: userCallback.FAIL_REGISTER, err: err });
     } else {
-      res.status(201).json({ msg: userCallback.successRegister, _id: user._id });
+      res.status(201).json({ msg: userCallback.SUCCESS_REGISTER, _id: user._id });
     }
   });
 }

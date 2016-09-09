@@ -32,7 +32,7 @@ function sendRequestEmail(mentor, content) {
     };
     transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          throw new Error(matchCallback.failSendMail);
+          throw new Error(matchCallback.FAIL_SEND_MAIL);
         } else {
           resolve();
         }
@@ -55,27 +55,27 @@ export function requestMentoring(req, res, next) {
         if (!match) {
           return User.findOne({ _id: matchData.mentor_id }).exec();
         } else {
-          throw new Error(matchCallback.matchAlreadyExist);
+          throw new Error(matchCallback.MATCH_ALREADY_EXIST);
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
         } else {
-          throw new Error(matchCallback.cannotFoundMentor);
+          throw new Error(matchCallback.CANNOT_FOUND_MENTOR);
         }
       })
       .then(() => {
         return match.save();
       })
       .then(() => {
-        res.status(201).json(matchCallback.successSendMail);
+        res.status(201).json(matchCallback.SUCCESS_SEND_MAIL);
       })
       .catch((err) => {
         res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -104,7 +104,7 @@ export function getMyActivity(req, res, next) {
         res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
 
@@ -166,12 +166,12 @@ export function responseMentoring(req, res, next) {
   if (req.session._id) {
     Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now }, (err) => {
       if (err) {
-        res.status(400).json({ err_point: matchCallback.mongooseErr, err: err });
+        res.status(400).json({ err_point: matchCallback.MONGOOSE_ERR, err: err });
       } else {
-        res.status(200).json({ msg: matchCallback.successResponse });
+        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.failAuth });
+    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
   }
 }
