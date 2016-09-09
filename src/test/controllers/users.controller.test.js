@@ -1,7 +1,7 @@
 import assert from 'assert';
-import requestah from 'requestah';
 import sampleUser from '../fixtures/loggedInUserData';
 import should from 'should';
+import controller from '../../server/controllers/users.controller';
 import mockData from '../fixtures/mockData.js';
 import mongoose from 'mongoose';
 import '../../server/models/users.model';
@@ -11,8 +11,6 @@ import '../../server/models/users.model';
  */
 
 const User = mongoose.model('user');
-let r = requestah(8000);
-let _id;
 
 describe('Test for users.controller', function () {
   describe('#getMentorList()', function () {
@@ -21,6 +19,7 @@ describe('Test for users.controller', function () {
       User.create(u, function (err, createdUser) {
         should.not.exist(err);
         createdUser.name.should.equal('session');
+        //controller.handle();
         // TODO: Add a test to access getMentorList method.
         // TODO: Add a test to check for non-existent user session.
         // TODO: Add a test to check if all users are returned except the user in the session.

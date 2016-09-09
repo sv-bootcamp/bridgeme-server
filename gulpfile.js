@@ -10,7 +10,7 @@ const sourcemaps = require('gulp-sourcemaps');
 
 
 gulp.task('default', () => {
-  runSequence(['build:server','build:test'], 'server:start');
+  runSequence(['build:server','build:test', 'jscs'], 'server:start');
 });
 
 gulp.task('install', () => {
@@ -67,7 +67,7 @@ gulp.task('test:all', () => {
 });
 
 gulp.task('jscs', () => {
-  return gulp.src('src/**/*.js')
+  return gulp.src('./src/**/*.js')
     .pipe(jscs({ fix: true, }))
     .pipe(gulp.dest('src'));
 });
@@ -78,5 +78,4 @@ gulp.task('apidoc', (done) => {
     dest: "apidoc/"
   },done);
 });
-
 
