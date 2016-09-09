@@ -92,7 +92,7 @@ export function getMyActivity(req, res, next) {
           activityData['rejected'] = rejectedDoc;
           findMentorActivity(req, res, (requestedDoc) => {
             activityData['requested'] = requestedDoc;
-            res.status(400).json(activityData);
+            res.status(200).json(activityData);
           });
         });
       });
