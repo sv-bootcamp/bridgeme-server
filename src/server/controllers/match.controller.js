@@ -7,7 +7,6 @@ import mongoose from 'mongoose';
  * Methods about mentoring request, accept or reject including E-mail Service
  */
 
-const ObjectId = mongoose.Types.ObjectId;
 const Match = mongoose.model('match');
 const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
