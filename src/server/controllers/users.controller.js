@@ -2,6 +2,10 @@ import authCallback from '../config/json/auth.callback';
 import mongoose from 'mongoose';
 import request from 'request';
 
+/*
+ * Methods about user, register user and handle session
+ */
+
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
 
@@ -33,9 +37,9 @@ export function getMentorList(req, res, next) {
       // TODO: Longer term, we should migrate to a UserSummary object
       // that contains subset of fields. For now, we return all fields.
       if (err) {
-        res.send(err);
+        res.status(400).send(err);
       } else {
-        res.send(doc);
+        res.status(200).send(doc);
       }
     });
   } else {
