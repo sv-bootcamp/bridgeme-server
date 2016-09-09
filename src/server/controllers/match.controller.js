@@ -9,14 +9,15 @@ import mongoose from 'mongoose';
 
 const ObjectId = mongoose.Types.ObjectId;
 const Match = mongoose.model('match');
+const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 
-const EMAIL_SUBJECT = 'New mentee needs your help!';
 const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
+const EMAIL_SUBJECT = 'New mentee needs your help!';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
-const PENDING = 2;
 const ACCEPTED = 1;
+const PENDING = 2;
 const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
