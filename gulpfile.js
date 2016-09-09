@@ -1,3 +1,4 @@
+const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const gulp = require('gulp');
 const install = require('gulp-install');
@@ -6,6 +7,7 @@ const mocha = require('gulp-mocha');
 const runSequence = require('run-sequence');
 const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
+
 
 gulp.task('default', () => {
   runSequence(['build:server','build:test'], 'server:start');
@@ -54,7 +56,7 @@ gulp.task('test', () => {
   runSequence('jscs','build','test:all');
 });
 
-gulp.task('test:all', function() {
+gulp.task('test:all', () => {
   return gulp.src(['dist-test/**/*.js'], { read: false })
     .pipe(mocha({
       reporter: 'spec',
@@ -68,6 +70,13 @@ gulp.task('jscs', () => {
   return gulp.src('src/**/*.js')
     .pipe(jscs({ fix: true, }))
     .pipe(gulp.dest('src'));
+});
+
+gulp.task('apidoc', (done) => {
+  apidoc({
+    src: "src",
+    dest: "apidoc/"
+  },done);
 });
 
 
