@@ -32,7 +32,7 @@ function sendRequestEmail(mentor, content) {
     };
     transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          throw new Error(matchCallback.FAIL_SEND_MAIL);
+          throw new Error(matchCallback.ERR_FAIL_SEND_MAIL);
         } else {
           resolve();
         }
@@ -55,14 +55,14 @@ export function requestMentoring(req, res, next) {
         if (!match) {
           return User.findOne({ _id: matchData.mentor_id }).exec();
         } else {
-          throw new Error(matchCallback.MATCH_ALREADY_EXIST);
+          throw new Error(matchCallback.ERR_MATCH_ALREADY_EXIST);
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
         } else {
-          throw new Error(matchCallback.CANNOT_FOUND_MENTOR);
+          throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
         }
       })
       .then(() => {
@@ -75,7 +75,7 @@ export function requestMentoring(req, res, next) {
         res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
-    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
@@ -104,7 +104,7 @@ export function getMyActivity(req, res, next) {
         res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
-    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
@@ -166,12 +166,12 @@ export function responseMentoring(req, res, next) {
   if (req.session._id) {
     Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now }, (err) => {
       if (err) {
-        res.status(400).json({ err_point: matchCallback.MONGOOSE_ERR, err: err });
+        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
       } else {
         res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       }
     });
   } else {
-    res.status(401).json({ err_point: userCallback.FAIL_AUTH });
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
