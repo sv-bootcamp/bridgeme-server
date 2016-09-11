@@ -38,8 +38,7 @@ function sendRequestEmail(mentor, content) {
         }
 
         transport.close();
-      }
-    );
+      });
   });
 }
 
