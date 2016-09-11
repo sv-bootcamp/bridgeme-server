@@ -18,7 +18,7 @@ const router = express.Router();
  * @apiParam {Number} content Email contains this content.
  *
  * @apiSuccessExample {json} Success
- *     HTTP/1.1 200 OK
+ *     HTTP/1.1 201 OK
  *     {
  *       "msg": "SendMail - Success to Send an email."
  *     }
@@ -73,8 +73,31 @@ router.post('/response', match.responseMentoring);
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 200 OK
  *     {
- *       "msg": "Success"
- *     }
+ *        "pending": [],
+ *        "accepted": [],
+ *        "rejected": [],
+ *        "requested": [
+ *          {
+ *            "_id": "57d24596b0b2b32740fd28bf",
+ *            "status": 2,
+ *            "request_date": "2016-09-09T05:16:06.432Z",
+ *            "detail": [
+ *              {
+ *                "_id": "57d242d9f92c4e26e12d129c",
+ *                "email": "teosyon@nate.com",
+ *                "name": "Seong Min Park",
+ *                "platform_id": "1087989824589437",
+ *                "platform_type": 1,
+ *                "locale": "ko_KR",
+ *                "timezone": 9,
+ *                "profile_picture": "https://scontent.xx.fbcdn.net/v/t1.0-1/p200x200/1014078_521172781271147_1753395622_n.jpg?oh=d79b1541b1aeec580110ba9e03f2e739&oe=584B8CAC",
+ *                "regDate": "2016-09-09T05:04:25.543Z",
+ *                " __v": 0
+ *              }
+ *            ]
+ *          }
+ *        ]
+ *      }
  * @apiErrorExample {json} Fail
  *     HTTP/1.1 400 Bad Request
  *     {
