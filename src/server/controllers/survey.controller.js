@@ -55,16 +55,16 @@ export function saveAnswer(req, res, next) {
         res.status(400).json({ err_point: callbackMsg.ERR_USER_NOT_FOUND, err_msg: err });
       } else {
         answer.user_id = user._id;
+        answer.save((err, answerItem) => {
+          if (err) {
+            res.status(400).json({ err_point: callbackMsg.ERR_SAVE_ANSWER, err_msg: err });
+          } else {
+            res.status(200).json({ survey_id: answerItem.survey_id });
+          }
+        });
       }
     });
 
-    answer.save((err, answerItem) => {
-      if (err) {
-        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_ANSWER, err_msg: err });
-      } else {
-        res.status(200).json({ survey_id: answerItem.survey_id });
-      }
-    });
   } else {
     res.status(400).json({ err_point: callbackMsg.ERR_INVALID_ACCESS });
   }
