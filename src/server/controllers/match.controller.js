@@ -1,4 +1,4 @@
-import authCallback from '../config/json/auth.callback';
+import userCallback from '../config/json/user.callback';
 import matchCallback from '../config/json/match.callback';
 import mailer from 'nodemailer';
 import mongoose from 'mongoose';
@@ -32,14 +32,13 @@ function sendRequestEmail(mentor, content) {
     };
     transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          throw new Error('SendEmail - Fail to Send an email.');
+          throw new Error(matchCallback.ERR_FAIL_SEND_MAIL);
         } else {
           resolve();
         }
 
         transport.close();
-      }
-    );
+      });
   });
 }
 
@@ -55,58 +54,64 @@ export function requestMentoring(req, res, next) {
         if (!match) {
           return User.findOne({ _id: matchData.mentor_id }).exec();
         } else {
-          throw new Error('RequestMentoring - Match already exist.');
+          throw new Error(matchCallback.ERR_MATCH_ALREADY_EXIST);
         }
       })
       .then(mentor => {
         if (mentor) {
           return sendRequestEmail(mentor.email, matchData.content);
         } else {
-          throw new Error('RequestMentoring - Cannot found mentor');
+          throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
         }
       })
       .then(() => {
         return match.save();
       })
       .then(() => {
-        res.status(200).json(matchCallback.successSendMail);
+        res.status(201).json(matchCallback.SUCCESS_SEND_MAIL);
       })
-      .catch(err => {
-        matchCallback.fail.err = err.stack;
-        matchCallback.fail.errPoint = err.message;
-        res.status(400).json(matchCallback.fail);
+      .catch((err) => {
+        res.status(400).json({ err_point: err.message, err: err.stack });
       });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
 export function getMyActivity(req, res, next) {
   if (req.session._id) {
     let activityData = {};
-    findMenteeActivityByStatus(req, res, PENDING, (pendingDoc) => {
-      activityData['pending'] = pendingDoc;
-      findMenteeActivityByStatus(req, res, ACCEPTED, (acceptedDoc) => {
+
+    findMenteeActivityByStatus(req.session._id, PENDING)
+      .then(pendingDoc => {
+        activityData['pending'] = pendingDoc;
+        return findMenteeActivityByStatus(req.session._id, ACCEPTED);
+      })
+      .then(acceptedDoc => {
         activityData['accepted'] = acceptedDoc;
-        findMenteeActivityByStatus(req, res, REJECTED, (rejectedDoc) => {
-          activityData['rejected'] = rejectedDoc;
-          findMentorActivity(req, res, (requestedDoc) => {
-            activityData['requested'] = requestedDoc;
-            res.status(200).json(activityData);
-          });
-        });
+        return findMenteeActivityByStatus(req.session._id, REJECTED);
+      })
+      .then(rejectedDoc => {
+        activityData['rejected'] = rejectedDoc;
+        return findMentorActivity(req.session._id);
+      })
+      .then(requestedDoc => {
+        activityData['requested'] = requestedDoc;
+        res.status(200).json(activityData);
+      })
+      .catch(err => {
+        res.status(400).json({ err_point: err.message, err: err.stack });
       });
-    });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
-function findMenteeActivityByStatus(req, res, status, callback) {
-  Match.aggregate([
+function findMenteeActivityByStatus(mentee_id, status) {
+  return Match.aggregate([
     {
       $match: {
-        mentee_id: ObjectId(req.session._id),
+        mentee_id: ObjectId(mentee_id),
         status: status,
       },
     },
@@ -126,16 +131,14 @@ function findMenteeActivityByStatus(req, res, status, callback) {
         response_date: 1,
       },
     },
-  ], (err, doc) => {
-    callback(doc);
-  });
+  ]).exec();
 }
 
-function findMentorActivity(req, res, callback) {
-  Match.aggregate([
+function findMentorActivity(mentor_id) {
+  return Match.aggregate([
     {
       $match: {
-        mentor_id:  ObjectId(req.session._id),
+        mentor_id: ObjectId(mentor_id),
         status: 2,
       },
     },
@@ -155,23 +158,19 @@ function findMentorActivity(req, res, callback) {
         response_date: 1,
       },
     },
-  ], (err, doc) => {
-    callback(doc);
-  });
+  ]).exec();
 }
 
 export function responseMentoring(req, res, next) {
   if (req.session._id) {
-    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now }, (err) => {
       if (err) {
-        matchCallback.fail.errPoint = 'RequestMentoring - Updating MatchData.';
-        matchCallback.fail.err = err;
-        res.json(matchCallback.fail);
+        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
       } else {
-        res.status(200).json(matchCallback.success);
+        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       }
     });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
