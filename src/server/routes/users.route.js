@@ -14,6 +14,8 @@ const router = express.Router();
  * @apiName signin
  * @apiGroup User
  *
+ * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
+ *
  * @apiParam {String} access_token access_token gained from Platform API.
  * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
