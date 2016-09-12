@@ -5,11 +5,10 @@ dist-server/
 dist-test/
 coverage/
 .idea/
+apidoc/
 
 # DB Folder
 data/
 
 # scripts
 mongod
-apidoc.json
-
