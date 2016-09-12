@@ -126,7 +126,7 @@ function registerUser(req, res, registrationData) {
     if (err) {
       res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
-      res.status(201).json({ msg: userCallback.SUCCESS_REGISTER, _id: user });
+      res.status(201).json(user);
     }
   });
 }
