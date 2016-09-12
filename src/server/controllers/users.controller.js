@@ -18,13 +18,13 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified';
 // Return all users.
 export function getAll(req, res, next) {
   if (req.session._id) {
-    User.find({}, (err, doc) => {
-      if (err) {
+    User.find({}).exec()
+      .then(getAll => {
+        res.status(200).json(getAll);
+      })
+      .catch((err)=> {
         res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      } else {
-        res.status(200).json(doc);
-      }
-    });
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -33,15 +33,13 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }, (err, doc) => {
-      // TODO: Longer term, we should migrate to a UserSummary object
-      // that contains subset of fields. For now, we return all fields.
-      if (err) {
+    User.find({ email: { $ne: req.session.email } }).exec()
+      .then(mentorList => {
+        res.status(200).json(mentorList);
+      })
+      .catch((err) => {
         res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      } else {
-        res.status(200).json(doc);
-      }
-    });
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -50,13 +48,13 @@ export function getMentorList(req, res, next) {
 // Return my profile.
 export function getMyProfile(req, res, next) {
   if (req.session._id) {
-    User.findOne({ _id: req.session._id }, (err, doc) => {
-      if (err) {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      } else {
-        res.status(200).json(doc);
-      }
-    });
+    User.findOne({ _id: req.session._id }).exec()
+      .then(myProfile => {
+        res.status(200).json(myProfile);
+      })
+      .catch((err) => {
+          res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+        });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -65,13 +63,13 @@ export function getMyProfile(req, res, next) {
 // Return profile by _id.
 export function getProfileById(req, res, next) {
   if (req.session._id) {
-    User.findOne({ _id: req.params._id }, (err, doc) => {
-      if (err) {
+    User.findOne({ _id: req.params._id }).exec()
+      .then(findProfileId => {
+        res.status(200).json(findProfileId);
+      })
+      .catch((err) => {
         res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      } else {
-        res.status(200).json(doc);
-      }
-    });
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
