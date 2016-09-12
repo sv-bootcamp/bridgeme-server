@@ -13,7 +13,7 @@ const platform = { facebook: '1', linkedin: '2' };
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
-const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified,education,work';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -82,6 +82,8 @@ export function signin(req, res, next) {
         let registrationData = {
           email: facebookResult.email,
           name: facebookResult.name,
+          work: facebookResult.work,
+          education: facebookResult.education,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
@@ -124,7 +126,7 @@ function registerUser(req, res, registrationData) {
     if (err) {
       res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
-      res.status(201).json({ msg: userCallback.SUCCESS_REGISTER, _id: user._id });
+      res.status(201).json({ msg: userCallback.SUCCESS_REGISTER, _id: user });
     }
   });
 }
