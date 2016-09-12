@@ -7,10 +7,8 @@ coverage/
 .idea/
 apidoc/
 
-
 # DB Folder
 data/
 
 # scripts
 mongod
-

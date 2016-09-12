@@ -50,6 +50,7 @@ router.post('/signIn', user.signin);
  *     }
  */
 router.get('/all', user.getAll);
+
 /**
  * @api {get} /users/id/:id Request User info
  * @apiName getProfileById
@@ -76,8 +77,8 @@ router.get('/all', user.getAll);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-
 router.get('/id/:_id', user.getProfileById);
+
 /**
  * @api {get} /users/me Request My info
  * @apiName getMyProfile
