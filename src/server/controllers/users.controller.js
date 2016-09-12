@@ -1,4 +1,4 @@
-import authCallback from '../config/json/auth.callback';
+import userCallback from '../config/json/user.callback';
 import mongoose from 'mongoose';
 import request from 'request';
 
@@ -23,10 +23,10 @@ export function getAll(req, res, next) {
         res.status(200).json(getAll);
       })
       .catch((err)=> {
-        res.status(400).json({ err_point: err.message, err: err.stack });
+        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
       });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
@@ -38,10 +38,10 @@ export function getMentorList(req, res, next) {
         res.status(200).json(mentorList);
       })
       .catch((err) => {
-        res.status(400).json({ err_point: err.message, err: err.stack });
+        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
       });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
@@ -53,15 +53,14 @@ export function getMyProfile(req, res, next) {
         res.status(200).json(myProfile);
       })
       .catch((err) => {
-          let cb = authCallback.fail;
-          cb.result.msg = err;
-          res.status(400).json(cb);
+          res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
         });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
+// Return profile by _id.
 export function getProfileById(req, res, next) {
   if (req.session._id) {
     User.findOne({ _id: req.params._id }).exec()
@@ -69,10 +68,10 @@ export function getProfileById(req, res, next) {
         res.status(200).json(findProfileId);
       })
       .catch((err) => {
-        res.status(400).json({ err_point: err.message, err: err.stack });
+        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
       });
   } else {
-    res.status(400).json(authCallback.failAuth);
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
 
@@ -91,25 +90,25 @@ export function signin(req, res, next) {
         };
         User.findOne({ email: registrationData.email }, (err, user) => {
           if (err) {
-            res.status(400).json(err);
+            res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
           } else {
             if (!user) {
               registerUser(req, res, registrationData);
             } else {
               storeSession(req, res, user);
-              res.status(200).json(authCallback.successSignin);
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
             }
           }
         });
       } else {
-        res.status(400).json(authCallback.invalidAccessToken);
+        res.status(400).json({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       }
     });
   } else if (req.body.platform_type === platform.linkedin) {
     ///TODO : Validiate accesstoken from linkedin API server.
     res.send("Doesn't support yet.");
   } else {
-    res.status(400).json(authCallback.invalidPlatform);
+    res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
 }
 
@@ -123,17 +122,14 @@ function registerUser(req, res, registrationData) {
   let userData = new User(registrationData);
   userData.save((err, user) => {
     if (err) {
-      res.status(400).json(authCallback.failRegister);
+      res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
-      let cb = authCallback.successRegister;
-      cb.result._id = user._id;
-      storeSession(req, res, user);
-      res.status(200).json(cb);
+      res.status(201).json({ msg: userCallback.SUCCESS_REGISTER, _id: user._id });
     }
   });
 }
 
-export function crawlByAccessTokenFacebook(accessToken, responseCallback) {
+function crawlByAccessTokenFacebook(accessToken, responseCallback) {
   // Crawl user data from facebook by access token.
   request.get({
       url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
@@ -159,3 +155,4 @@ export function crawlByAccessTokenFacebook(accessToken, responseCallback) {
       }
     });
 }
+
