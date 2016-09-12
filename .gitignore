@@ -5,6 +5,8 @@ dist-server/
 dist-test/
 coverage/
 .idea/
+apidoc/
+
 
 # DB Folder
 data/

@@ -71,10 +71,10 @@ export function saveAnswer(req, res, next) {
 }
 
 // Save question
-export function saveQuestion(req, res, next) {
+export function saveSurvey(req, res, next) {
   let survey = new Survey({
-    survey_id: surveyQuestion.survey_id,
-    questions: surveyQuestion.questions,
+    survey_id: req.params.surveyQuestion.survey_id,
+    questions: req.params.surveyQuestion.questions,
   });
 
   if (survey.survey_id == null || survey.questions == null) {
