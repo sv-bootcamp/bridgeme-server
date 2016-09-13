@@ -33,7 +33,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }).exec()
+    User.find({ email: { $ne: req.session.email } }).sort({ date: 1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -118,6 +118,7 @@ function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
+  req.session.date = user.stamp_login;
 }
 
 function registerUser(req, res, registrationData) {

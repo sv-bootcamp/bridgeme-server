@@ -59,7 +59,11 @@ let userSchema = new Schema({
   timezone: Number,
   profile_picture: String,
   job_position: String,
-  date: {
+  reg_date: {
+    type: Date,
+    default: Date.now,
+  },
+  stamp_login: {
     type: Date,
     default: Date.now,
   },
