@@ -14,6 +14,8 @@ const router = express.Router();
  * @apiName signin
  * @apiGroup User
  *
+ * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
+ *
  * @apiParam {String} access_token access_token gained from Platform API.
  * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
@@ -48,6 +50,7 @@ router.post('/signIn', user.signin);
  *     }
  */
 router.get('/all', user.getAll);
+
 /**
  * @api {get} /users/id/:id Request User info
  * @apiName getProfileById
@@ -74,8 +77,8 @@ router.get('/all', user.getAll);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-
 router.get('/id/:_id', user.getProfileById);
+
 /**
  * @api {get} /users/me Request My info
  * @apiName getMyProfile

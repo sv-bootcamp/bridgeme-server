@@ -7,6 +7,8 @@ import * as survey from '../controllers/survey.controller';
 
 const router = express.Router();
 
+//POST method
+
 /**
  * @api {post} /survey/answer Save user's survey answer
  * @apiName saveAnswer
@@ -70,6 +72,8 @@ const router = express.Router();
  *     }
  */
 router.post('/answer', survey.saveAnswer);
+
+//GET method
 
 /**
  * @api {get} /survey/create Save new survey

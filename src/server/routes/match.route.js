@@ -8,6 +8,7 @@ import * as match from '../controllers/match.controller';
 const router = express.Router();
 
 //POST method
+
 /**
  * @api {post} /match/request Send request to mentor
  * @apiName requestMentoring
@@ -63,6 +64,7 @@ router.post('/request', match.requestMentoring);
 router.post('/response', match.responseMentoring);
 
 //GET method
+
 /**
  * @api {get} /match/activity Request User Activity list
  * @apiName getMyActivity
