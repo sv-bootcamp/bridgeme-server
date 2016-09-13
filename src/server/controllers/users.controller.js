@@ -33,7 +33,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }).sort({ date: 1 }).exec()
+    User.find({ email: { $ne: req.session.email } }).sort({ stamp_login: 1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
