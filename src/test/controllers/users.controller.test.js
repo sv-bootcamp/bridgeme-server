@@ -34,36 +34,36 @@ describe('Test for users.controller', function () {
 
         let data = JSON.parse(res._getData());
         should.not.exist(data.err);
-        data.err_point.should.eql('Invalid access_token.');
+        data.err_point.should.equal('Invalid access_token.');
         done();
       });
 
       controller.signin(req, res);
     });
 
-    it('Valid access_token test.', function (done) {
-      let res = buildResponse();
-      let req  = http_mocks.createRequest({
-        method: 'POST',
-        url: '/users/signIn',
-      });
-
-      req.body = {
-        access_token: '',
-        platform_type: '1',
-      };
-
-      res.on('end', function () {
-        res._isJSON().should.be.true;
-
-        let data = JSON.parse(res._getData());
-        should.not.exist(data.err);
-        //TODO: complete valid session test.
-        done();
-      });
-
-      controller.signin(req, res);
-    });
+    // it('Valid access_token test.', function (done) {
+    //   let res = buildResponse();
+    //   let req  = http_mocks.createRequest({
+    //     method: 'POST',
+    //     url: '/users/signIn',
+    //   });
+    //
+    //   req.body = {
+    //     access_token: '',
+    //     platform_type: '1',
+    //   };
+    //
+    //   res.on('end', function () {
+    //     res._isJSON().should.be.true;
+    //
+    //     let data = JSON.parse(res._getData());
+    //     should.not.exist(data.err);
+    //     //TODO: complete valid session test.
+    //     done();
+    //   });
+    //
+    //   controller.signin(req, res);
+    // });
   });
 
   describe('#getAll()', function () {
