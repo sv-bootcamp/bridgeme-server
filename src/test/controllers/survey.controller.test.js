@@ -5,9 +5,7 @@ import mongoose from 'mongoose';
 import '../../server/models/survey.model';
 
 import chai from 'chai';
-import chaiHttp from 'chai-http';
 import server from '../../server/index';
-//chai.use(chaiHttp);
 //let should = chai.should();
 
 

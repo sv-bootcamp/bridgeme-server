@@ -25,7 +25,6 @@
     "babel-cli": "^6.11.4",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
-    "chai-http": "^3.0.0",
     "co": "^4.6.0",
     "compression": "^1.6.2",
     "config": "^1.21.0",
@@ -43,8 +42,7 @@
     "request": "^2.74.0",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
-    "should": "^11.1.0",
-    "sinon": "^1.17.5"
+    "should": "^11.1.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.13.2",
@@ -61,6 +59,7 @@
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.9",
     "mocha": "^3.0.2",
+    "node-mocks-http": "^1.5.4",
     "nodemon": "^1.10.0",
     "pre-push": "^0.1.1",
     "run-sequence": "^1.2.2"

@@ -68,7 +68,7 @@ export function requestMentoring(req, res, next) {
         return match.save();
       })
       .then(() => {
-        res.status(201).json({msg : matchCallback.SUCCESS_SEND_MAIL});
+        res.status(201).json({ msg: matchCallback.SUCCESS_SEND_MAIL });
       })
       .catch((err) => {
         res.status(400).json({ err_point: err.message, err: err.stack });

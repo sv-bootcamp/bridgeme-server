@@ -17,17 +17,17 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified,education,wor
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (req.session._id) {
-    User.find({}).exec()
-      .then(getAll => {
-        res.status(200).json(getAll);
-      })
-      .catch((err)=> {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  //if (req.session._id) {
+  User.find({}).exec()
+    .then(getAll => {
+      res.status(200).json(getAll);
+    })
+    .catch((err)=> {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
+  // } else {
+  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  //}
 }
 
 // Get all user list except logged in user
@@ -157,4 +157,3 @@ function crawlByAccessTokenFacebook(accessToken, responseCallback) {
       }
     });
 }
-

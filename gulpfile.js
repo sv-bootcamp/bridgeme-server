@@ -57,12 +57,9 @@ gulp.task('test', () => {
 });
 
 gulp.task('test:all', () => {
-  return gulp.src(['dist-test/**/*.js'], { read: false })
+  return gulp.src(['dist-test/**/*.js'], { read: true })
     .pipe(mocha({
-      reporter: 'spec',
-      globals: {
-        should: require('should')
-      }
+      reporter: 'spec'
     }));
 });
 
