@@ -65,7 +65,6 @@ let userSchema = new Schema({
   },
   stamp_login: {
     type: Date,
-    default: Date.now,
   },
 });
 

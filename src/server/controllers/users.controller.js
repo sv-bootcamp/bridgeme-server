@@ -33,7 +33,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }).sort({ stamp_login: 1 }).exec()
+    User.find({ email: { $ne: req.session.email } }).sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -97,8 +97,11 @@ export function signin(req, res, next) {
             if (!user) {
               registerUser(req, res, registrationData);
             } else {
-              storeSession(req, res, user);
-              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+              User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
+                .then(() => {
+                  storeSession(req, res, user);
+                  res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+                });
             }
           }
         });
@@ -118,7 +121,6 @@ function storeSession(req, res, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
-  req.session.date = user.stamp_login;
 }
 
 function registerUser(req, res, registrationData) {
@@ -158,4 +160,3 @@ function crawlByAccessTokenFacebook(accessToken, responseCallback) {
       }
     });
 }
-
