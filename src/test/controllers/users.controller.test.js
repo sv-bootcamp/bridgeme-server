@@ -1,4 +1,4 @@
-//import mockData from '../fixtures/mockData.js';
+import loggedInUserData from '../fixtures/loggedInUserData.js';
 import '../../server/models/users.model';
 import * as controller from '../../server/controllers/users.controller';
 import http_mocks from 'node-mocks-http';
@@ -14,6 +14,22 @@ const User = mongoose.model('user');
 function buildResponse() {
   return http_mocks.createResponse({ eventEmitter: require('events').EventEmitter });
 }
+
+describe('before test', function () {
+  it('save default user', function (done) {
+    User.find({ name: 'session' }, (err, user) => {
+      if (user == '') {
+        let u = loggedInUserData.user;
+        User.create(u, function (err, createdUser) {
+          should.not.exist(err);
+          createdUser.name.should.equal('session');
+        });
+      }
+
+      done();
+    });
+  });
+});
 
 describe('Test for users.controller', function () {
   describe('#signIn()', function () {
@@ -77,6 +93,7 @@ describe('Test for users.controller', function () {
       res.on('end', function () {
         let data = JSON.parse(res._getData());
         data[0].name.should.equal('session');
+        data[0].email.should.equal('session@yoda.com');
         done();
       });
 

@@ -1,6 +1,6 @@
 // Sample data for test getMentorList (session not added)
 export default {
-  loggedInUserData: {
+  user: {
     email: 'session@yoda.com',
     name: 'session',
   },
