@@ -51,7 +51,6 @@ describe('Test for users.controller', function () {
 
       res.on('end', function () {
         let data = JSON.parse(res._getData());
-        console.log(data[0]);
         data[0].name.should.equal('session');
         done();
       });
