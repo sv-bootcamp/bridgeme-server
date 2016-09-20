@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
  * Prepare for mongodb connection to test.
  */
 
-beforeEach(done => {
+before(done => {
   function clearDB() {
     // for (var i in mongoose.connection.collections) {
     //   mongoose.connection.collections[i].remove(function () {});
@@ -28,7 +28,7 @@ beforeEach(done => {
   }
 });
 
-afterEach(done => {
+after(done => {
   mongoose.disconnect();
   return done();
 });

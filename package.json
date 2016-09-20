@@ -18,7 +18,7 @@
     "url": "https://github.com/sv-bootcamp/yoda/issues"
   },
   "pre-push": [
-    "test"
+    "npm test"
   ],
   "homepage": "https://github.com/sv-bootcamp/yoda#readme",
   "dependencies": {

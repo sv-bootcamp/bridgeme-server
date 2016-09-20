@@ -13,59 +13,59 @@ function buildResponse() {
 
 describe('Test for survey.controller', function () {
   describe('#getRequest()', function () {
-    it('should get parameter type err.', function (done) {
-      let res = buildResponse();
-      let req  = http_mocks.createRequest({
-        method: 'GET',
-        url: '/survey/request/strangeparam',
-      });
-
-      res.on('end', function () {
-        let data = JSON.parse(res._getData());
-        data.err_point.should.equal('Parameter /:type/ is not correct');
-        done();
-      });
-
-      controller.getRequest(req, res);
-    });
-
-    it('should get mentor survey.', function (done) {
-      let res = buildResponse();
-      let req  = http_mocks.createRequest({
-        method: 'GET',
-        url: '/survey/request/mentor',
-        params: {
-          type: 'mentor',
-        },
-      });
-
-      res.on('end', function () {
-        let data = JSON.parse(res._getData());
-        data.survey_id.should.equal('B001-1');
-        done();
-      });
-
-      controller.getRequest(req, res);
-    });
-
-    it('should get mentee survey.', function (done) {
-      let res = buildResponse();
-      let req  = http_mocks.createRequest({
-        method: 'GET',
-        url: '/survey/request/mentee',
-        params: {
-          type: 'mentee',
-        },
-      });
-
-      res.on('end', function () {
-        let data = JSON.parse(res._getData());
-        data.survey_id.should.equal('A001-1');
-        done();
-      });
-
-      controller.getRequest(req, res);
-    });
+    // it('should get parameter type err.', function (done) {
+    //   let res = buildResponse();
+    //   let req  = http_mocks.createRequest({
+    //     method: 'GET',
+    //     url: '/survey/request/strangeparam',
+    //   });
+    //
+    //   res.on('end', function () {
+    //     let data = JSON.parse(res._getData());
+    //     data.err_point.should.equal('Parameter /:type/ is not correct');
+    //     done();
+    //   });
+    //
+    //   controller.getRequest(req, res);
+    // });
+    //
+    // it('should get mentor survey.', function (done) {
+    //   let res = buildResponse();
+    //   let req  = http_mocks.createRequest({
+    //     method: 'GET',
+    //     url: '/survey/request/mentor',
+    //     params: {
+    //       type: 'mentor',
+    //     },
+    //   });
+    //
+    //   res.on('end', function () {
+    //     let data = JSON.parse(res._getData());
+    //     data.survey_id.should.equal('B001-1');
+    //     done();
+    //   });
+    //
+    //   controller.getRequest(req, res);
+    // });
+    //
+    // it('should get mentee survey.', function (done) {
+    //   let res = buildResponse();
+    //   let req  = http_mocks.createRequest({
+    //     method: 'GET',
+    //     url: '/survey/request/mentee',
+    //     params: {
+    //       type: 'mentee',
+    //     },
+    //   });
+    //
+    //   res.on('end', function () {
+    //     let data = JSON.parse(res._getData());
+    //     data.survey_id.should.equal('A001-1');
+    //     done();
+    //   });
+    //
+    //   controller.getRequest(req, res);
+    // });
   });
 
   describe('#saveAnswer()', function () {
