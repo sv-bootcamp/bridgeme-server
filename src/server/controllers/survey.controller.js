@@ -12,37 +12,36 @@ const User = mongoose.model('user');
 
 // Get request
 export function getRequest(req, res, next) {
-  //if (req.session._id) {
-  determineUser()
-    .then((isSample) => {
-      if (isSample) {
-        let surveyId;
-        if (req.params.type == 'mentee') {
-          surveyId = 'A001-1';
-        } else if (req.params.type == 'mentor') {
-          surveyId = 'B001-1';
+  if (req.session._id) {
+    determineUser()
+      .then((isSample) => {
+        if (isSample) {
+          let surveyId;
+          if (req.params.type == 'mentee') {
+            surveyId = 'A001-1';
+          } else if (req.params.type == 'mentor') {
+            surveyId = 'B001-1';
+          } else {
+            throw new Error(surveyCallback.ERR_INVALID_PARAMS);
+          }
+          return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
-          throw new Error(surveyCallback.ERR_INVALID_PARAMS);
+          res.status(204).json();
         }
-
-        return Survey.findOne({ survey_id: surveyId }).exec();
-      } else {
-        res.status(204).json();
-      }
-    })
-    .then((surveyItem) => {
-      if (surveyItem)
-        res.status(200).json(surveyItem);
-      else {
-        throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
-      }
-    })
-    .catch((err) => {
-      res.status(400).json({ err_point: err.message, err_msg: err.stack });
-    });
-  //} else {
-  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  //}
+      })
+      .then((surveyItem) => {
+        if (surveyItem)
+          res.status(200).json(surveyItem);
+        else {
+          throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
+        }
+      })
+      .catch((err) => {
+        res.status(400).json({ err_point: err.message, err_msg: err.stack });
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
 }
 
 function determineUser(isSampleCallback) {
@@ -93,13 +92,9 @@ export function saveAnswer(req, res, next) {
 
 // Save question
 export function saveSurvey(req, res, next) {
-  //if (req.session._id) {
-  let survey = new Survey({
-    survey_id: req.params.surveyQuestion.survey_id,
-    questions: req.params.surveyQuestion.questions,
-  });
+  let survey = new Survey(req.body);
 
-  if (survey.survey_id == null || survey.questions == null) {
+  if (survey.survey_id == undefined || survey.questions == undefined) {
     res.status(400).json({
       err_point: surveyCallback.ERR_SAVE_QUESTION,
       err_msg: surveyCallback.ERR_INVALID_PARAMS,
@@ -117,7 +112,4 @@ export function saveSurvey(req, res, next) {
         res.status(400).json({ err_point: err.message, err_msg: err.stack });
       });
   }
-  //} else {
-  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  //}
 }
