@@ -51,7 +51,6 @@ export default (cb) => {
     });
 
   } else if (process.env.NODE_ENV === 'test') {
-    console.log('@@@@ test session created');
     app.use(session({
       secret: 'yodasalt46787asdasdaefgr45refd',
       store: new MongoStore({ db: 'yoda-test' }),
