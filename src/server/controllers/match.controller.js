@@ -139,7 +139,7 @@ function findMentorActivity(mentor_id) {
     {
       $match: {
         mentor_id: ObjectId(mentor_id),
-        status: 2,
+        status: { $ne: 0 },
       },
     },
     {
