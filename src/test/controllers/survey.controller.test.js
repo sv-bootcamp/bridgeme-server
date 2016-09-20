@@ -13,6 +13,7 @@ function buildResponse() {
 
 describe('Test for survey.controller', function () {
   describe('#getRequest()', function () {
+    //TODO: need session check part.
     // it('should get parameter type err.', function (done) {
     //   let res = buildResponse();
     //   let req  = http_mocks.createRequest({
@@ -28,7 +29,7 @@ describe('Test for survey.controller', function () {
     //
     //   controller.getRequest(req, res);
     // });
-    //
+    //TODO: need session check part.
     // it('should get mentor survey.', function (done) {
     //   let res = buildResponse();
     //   let req  = http_mocks.createRequest({
@@ -47,7 +48,7 @@ describe('Test for survey.controller', function () {
     //
     //   controller.getRequest(req, res);
     // });
-    //
+    //TODO: need session check part.
     // it('should get mentee survey.', function (done) {
     //   let res = buildResponse();
     //   let req  = http_mocks.createRequest({

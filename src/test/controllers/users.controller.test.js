@@ -5,6 +5,8 @@ import loggedInUserData from '../fixtures/loggedInUserData.js';
 import mongoose from 'mongoose';
 import should from 'should';
 
+mongoose.Promise = require('bluebird');
+
 /*
  * Test for users.controller.
  */
@@ -12,7 +14,7 @@ import should from 'should';
 const User = mongoose.model('user');
 
 function buildResponse() {
-  return http_mocks.createResponse();
+  return http_mocks.createResponse({ eventEmitter: require('events').EventEmitter });
 }
 
 describe('before test make one user', function () {
@@ -33,29 +35,29 @@ describe('before test make one user', function () {
 
 describe('Test for users.controller', function () {
   describe('#signIn()', function () {
-    // it('Invalid access_token test.', function (done) {
-    //   let res = buildResponse();
-    //   let req  = http_mocks.createRequest({
-    //     method: 'POST',
-    //     url: '/users/signIn',
-    //   });
-    //
-    //   req.body = {
-    //     access_token: '',
-    //     platform_type: '1',
-    //   };
-    //
-    //   res.on('end', function () {
-    //     res._isJSON().should.be.true;
-    //
-    //     let data = JSON.parse(res._getData());
-    //     should.not.exist(data.err);
-    //     data.err_point.should.equal('Invalid access_token.');
-    //     done();
-    //   });
-    //
-    //   controller.signin(req, res);
-    // });
+    it('Invalid access_token test.', function (done) {
+      let res = buildResponse();
+      let req  = http_mocks.createRequest({
+        method: 'POST',
+        url: '/users/signIn',
+      });
+
+      req.body = {
+        access_token: '',
+        platform_type: '1',
+      };
+
+      res.on('end', function () {
+        res._isJSON().should.be.true;
+
+        let data = JSON.parse(res._getData());
+        should.not.exist(data.err);
+        data.err_point.should.equal('Invalid access_token.');
+        done();
+      });
+
+      controller.signin(req, res);
+    });
 
     // it('Valid access_token test.', function (done) {
     //   let res = buildResponse();
@@ -65,7 +67,7 @@ describe('Test for users.controller', function () {
     //   });
     //
     //   req.body = {
-    //     access_token: '', //put your token.
+    //     access_token: '', //put token.
     //     platform_type: '1',
     //   };
     //
@@ -83,6 +85,7 @@ describe('Test for users.controller', function () {
   });
 
   describe('#getAll()', function () {
+    //TODO: need session check part.
     // it('#getAll()', function (done) {
     //   let res = buildResponse();
     //   let req  = http_mocks.createRequest({
