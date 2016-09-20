@@ -24,20 +24,21 @@ export function getRequest(req, res, next) {
           } else {
             throw new Error(surveyCallback.ERR_INVALID_PARAMS);
           }
+
           return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
           res.status(204).json();
         }
       })
       .then((surveyItem) => {
-        if(surveyItem)
+        if (surveyItem)
           res.status(200).json(surveyItem);
         else {
           throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
         }
       })
       .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack })
+        res.status(400).json({ err_point: err.message, err_msg: err.stack });
       });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
@@ -92,31 +93,20 @@ export function saveAnswer(req, res, next) {
 
 // Save question
 export function saveSurvey(req, res, next) {
-  if (req.session._id) {
-    let survey = new Survey({
-      survey_id: req.params.surveyQuestion.survey_id,
-      questions: req.params.surveyQuestion.questions,
-    });
+  let survey = new Survey(req.body);
 
-    if (survey.survey_id == null || survey.questions == null) {
-      res.status(400).json({
-        err_point: surveyCallback.ERR_SAVE_QUESTION,
-        err_msg: surveyCallback.ERR_INVALID_PARAMS,
-      });
-    } else {
-      survey.save().exec()
-        .then((surveyItem) => {
-          if (surveyItem) {
-            res.status(200).json({ survey_id: surveyItem.survey_id });
-          } else {
-            throw new Error(surveyCallback.ERR_SAVE_QUESTION);
-          }
-        })
-        .catch((err) => {
-          res.status(400).json({ err_point: err.message, err_msg: err.stack });
-        });
-    }
+  if (survey.survey_id == undefined || survey.questions == undefined) {
+    res.status(400).json({
+      err_point: surveyCallback.ERR_SAVE_QUESTION,
+      err_msg: surveyCallback.ERR_INVALID_PARAMS,
+    });
   } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+    survey.save((err, surveyItem) => {
+      if (err) {
+        res.status(400).json({ err_point: callbackMsg.ERR_SAVE_QUESTION, err_msg: err });
+      } else {
+        res.status(200).json({ survey_id: surveyItem.survey_id });
+      }
+    });
   }
 }
