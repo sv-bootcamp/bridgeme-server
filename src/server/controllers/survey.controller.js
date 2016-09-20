@@ -37,8 +37,8 @@ export function getRequest(req, res, next) {
         }
       })
       .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack });
-    });
+        res.status(400).json({ err_point: err.message, err_msg: err.stack })
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -66,9 +66,9 @@ export function saveAnswer(req, res, next) {
     answer.survey_id = req.body.survey_id;
     answer.questions = req.body.questions;
 
-    User.findOne({ _id: req.session._id}).exec()
+    User.findOne({ _id: req.session._id }).exec()
       .then((userItem) => {
-        if(userItem) {
+        if (userItem) {
           answer.user_id = user._id;
           return answer.save().exec();
         } else {
@@ -76,7 +76,7 @@ export function saveAnswer(req, res, next) {
         }
       })
       .then((answerItem) => {
-        if(answerItem) {
+        if (answerItem) {
           res.status(200).json({ survey_id: answerItem.survey_id });
         } else {
           return new Error(surveyCallback.ERR_SAVE_ANSWER);
@@ -106,7 +106,7 @@ export function saveSurvey(req, res, next) {
     } else {
       survey.save().exec()
         .then((surveyItem) => {
-          if(surveyItem) {
+          if (surveyItem) {
             res.status(200).json({ survey_id: surveyItem.survey_id });
           } else {
             throw new Error(surveyCallback.ERR_SAVE_QUESTION);
