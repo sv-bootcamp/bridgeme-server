@@ -4,7 +4,7 @@
   "description": "Yoda Sever.",
   "main": "server.js",
   "scripts": {
-    "test": "gulp test",
+    "test": "NODE_ENV=test gulp test",
     "start": "gulp",
     "jscs": "gulp jscs"
   },

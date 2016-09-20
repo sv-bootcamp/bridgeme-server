@@ -1,7 +1,7 @@
-import loggedInUserData from '../fixtures/loggedInUserData.js';
 import '../../server/models/users.model';
 import * as controller from '../../server/controllers/users.controller';
 import http_mocks from 'node-mocks-http';
+import loggedInUserData from '../fixtures/loggedInUserData.js';
 import mongoose from 'mongoose';
 import should from 'should';
 
@@ -12,10 +12,10 @@ import should from 'should';
 const User = mongoose.model('user');
 
 function buildResponse() {
-  return http_mocks.createResponse({ eventEmitter: require('events').EventEmitter });
+  return http_mocks.createResponse();
 }
 
-describe('before test', function () {
+describe('before test make one user', function () {
   it('save default user', function (done) {
     User.find({ name: 'session' }, (err, user) => {
       if (user == '') {
@@ -65,14 +65,14 @@ describe('Test for users.controller', function () {
     //   });
     //
     //   req.body = {
-    //     access_token: '',
+    //     access_token: '', //put your token.
     //     platform_type: '1',
     //   };
     //
     //   res.on('end', function () {
-    //     res._isJSON().should.be.true;
-    //
+    //     //res._isJSON().should.be.true;
     //     let data = JSON.parse(res._getData());
+    //     console.log(data);
     //     should.not.exist(data.err);
     //     //TODO: complete valid session test.
     //     done();
@@ -101,24 +101,15 @@ describe('Test for users.controller', function () {
     });
   });
 
-  // it('#getMentorList()', function (done) {
-  //   let u = sampleUser.loggedInUserData;
-  //   User.create(u, function (err, createdUser) {
-  //     should.not.exist(err);
-  //     createdUser.name.should.equal('session');
-  //     // TODO: Add a test to access getMentorList method.
-  //     // TODO: Add a test to check for non-existent user session.
-  //     // TODO: Add a test to check if all users are returned except the user in the session.
-  //     //createdUser.remove();
-  //     //done();
-  //   });
-  // });
+  describe('#getMentorList()', function () {
+    // TODO: Add a test to getMyProfile method.
+  });
 
-  // describe('#getMyProfile()', function () {
-  //   // TODO: Add a test to getMyProfile method.
-  // });
-  //
-  // describe('#getProfileById()', function () {
-  //   // TODO: Add a test to getProfileById method.
-  // });
+  describe('#getMyProfile()', function () {
+    // TODO: Add a test to getMyProfile method.
+  });
+
+  describe('#getProfileById()', function () {
+    // TODO: Add a test to getProfileById method.
+  });
 });
