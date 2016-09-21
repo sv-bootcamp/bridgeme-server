@@ -12,37 +12,37 @@ const User = mongoose.model('user');
 
 // Get request
 export function getRequest(req, res, next) {
-  if (req.session._id) {
-    determineUser()
-      .then((isSample) => {
-        if (isSample) {
-          let surveyId;
-          if (req.params.type == 'mentee') {
-            surveyId = 'A001-1';
-          } else if (req.params.type == 'mentor') {
-            surveyId = 'B001-1';
-          } else {
-            throw new Error(surveyCallback.ERR_INVALID_PARAMS);
-          }
-
-          return Survey.findOne({ survey_id: surveyId }).exec();
+  //if (req.session._id) {
+  determineUser()
+    .then((isSample) => {
+      if (isSample) {
+        let surveyId;
+        if (req.params.type == 'mentee') {
+          surveyId = 'A001-1';
+        } else if (req.params.type == 'mentor') {
+          surveyId = 'B001-1';
         } else {
-          res.status(204).json();
+          throw new Error(surveyCallback.ERR_INVALID_PARAMS);
         }
-      })
-      .then((surveyItem) => {
-        if (surveyItem)
-          res.status(200).json(surveyItem);
-        else {
-          throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
-        }
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+
+        return Survey.findOne({ survey_id: surveyId }).exec();
+      } else {
+        res.status(204).json();
+      }
+    })
+    .then((surveyItem) => {
+      if (surveyItem)
+        res.status(200).json(surveyItem);
+      else {
+        throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: err.message, err_msg: err.stack });
+    });
+  //} else {
+  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  //}
 }
 
 function determineUser(isSampleCallback) {

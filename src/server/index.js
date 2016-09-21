@@ -20,6 +20,8 @@ export default (cb) => {
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
+  }else if (process.env.NODE_ENV === 'test') {
+    app.use(morgan('dev'));
   } else if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
@@ -51,9 +53,11 @@ export default (cb) => {
     });
 
   } else if (process.env.NODE_ENV === 'test') {
+    console.log('@@@' + process.env.NODE_ENV);
+
     app.use(session({
-      secret: 'yodasalt46787asdasdaefgr45refd',
-      store: new MongoStore({ db: 'yoda-test' }),
+      secret: 'yodasalt46787134refgr45refd',
+      store: new MongoStore({ url: 'mongodb://localhost:27017/yoda-test' }),
       resave: false,
       saveUninitialized: false,
       //session expire after 1Day.
@@ -70,11 +74,11 @@ export default (cb) => {
     app.use('/survey', survey);
     app.use('/match', match);
 
-    server = app.listen(8080, cb ? cb : () => {
-      /* eslint-disable no-console */
-      console.log(`Listening on test port 8080`);
-      /* eslint-enable */
-    });
+    // server = app.listen(8080, cb ? cb : () => {
+    //   /* eslint-disable no-console */
+    //   console.log(`Listening on test port 8080`);
+    //   /* eslint-enable */
+    // });
 
     app.close();
   }
