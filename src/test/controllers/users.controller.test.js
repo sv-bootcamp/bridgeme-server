@@ -14,7 +14,7 @@ mongoose.Promise = require('bluebird');
  * Test for users.controller.
  */
 const User = mongoose.model('user');
-let Session = mongoose.connection.collection();
+let Session = mongoose.connection.collection('session');
 const app = express();
 
 function buildResponse() {
