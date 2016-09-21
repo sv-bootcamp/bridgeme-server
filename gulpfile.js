@@ -53,17 +53,17 @@ gulp.task('server:restart', () => {
 });
 
 gulp.task('test', () => {
-  runSequence('jscs','build','test:all');
+  runSequence('build:test','test:all');
 });
 
 gulp.task('test:all', () => {
   return gulp.src(['dist-test/**/*.js'], { read: false })
     .pipe(mocha({
-      reporter: 'spec',
-      globals: {
-        should: require('should')
-      }
-    }));
+      reporter: 'spec'
+    }))
+    .once('end', function () {
+      process.exit();
+    });
 });
 
 gulp.task('jscs', () => {
