@@ -57,7 +57,10 @@ gulp.task('test', () => {
 });
 
 gulp.task('test:all', () => {
-  return gulp.src(['dist-test/**/*.js'], { read: false })
+  return gulp.src([
+    'dist-test/test/*.js',
+    'dist-test/test/controllers/users.controller.test.js'],
+    { read: false })
     .pipe(mocha({
       reporter: 'spec'
     }))
