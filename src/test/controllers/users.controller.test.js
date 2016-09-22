@@ -12,7 +12,7 @@ import rp from 'request-promise';
 
 const User = mongoose.model('user');
 const API_BASE_URL = 'http://localhost:8000/users';
-const FB_LONG_LIVED_ACCESS_TOKEN = 'EAACEdEose0cBAGvWSJIkvprRmrnZBZAy9BPsYRQUPIIp22U0uyd3glw0efkcottrQ8wXU0TD0nVIdql3SQM982Pbqd0vZBHp5F4bZAAv6nc8MrmeVEi3CaOQAJuQOQuePt3HpcbuTAZCajNZBZAViTkHKZBMPtu7Vl401yjNdYA8zwZDZD';
+const FB_LONG_LIVED_ACCESS_TOKEN = 'EAACEdEose0cBACHnrqbQ4RzysvTgjqZClOZCjOpbvBTHZA2G0bQLeJurZARUZAL2N7ZASGBpGO4jOv36PWopvTeDplt0HjMjZBzwePfyNxGZB6MBs5RYUHV7xoZBLLN7yOKoMl15njcgjZARny70OOuY6ykN86xGS2rQnO47ZAKZBDkeNQZDZD';
 const FB_LONG_LIVED_ACCESS_TOKEN_B = '';
 
 describe('Test User controller', function () {
