@@ -11,6 +11,13 @@ const Survey = mongoose.model('survey');
 const API_BASE_URL = 'http://localhost:8000/survey';
 
 describe('Test Survey controller', function () {
+  describe('Save survey.', function () {
+    //TODO: kyua will comlete
+    // it(': Save survey.', function (done) {
+    //
+    // });
+  });
+  
   describe('Get request survey.', function () {
     //TODO: save survey first
     //TODO : complete get survey
@@ -33,13 +40,6 @@ describe('Test Survey controller', function () {
   describe('Save answer.', function () {
     //TODO: kyua will comlete
     // it(': Save answer.', function (done) {
-    //
-    // });
-  });
-  
-  describe('Save survey.', function () {
-    //TODO: kyua will comlete
-    // it(': Save survey.', function (done) {
     //
     // });
   });

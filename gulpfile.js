@@ -57,8 +57,7 @@ gulp.task('test', () => {
 });
 
 gulp.task('test:all', () => {
-  return gulp.src(['dist-test/server/*.js',
-    'dist-test/test/*.js',
+  return gulp.src(['dist-test/test/*.js',
     'dist-test/test/controllers/users.controller.test.js',
     'dist-test/test/controllers/survey.controller.test.js'], { read: false })
     .pipe(mocha({
