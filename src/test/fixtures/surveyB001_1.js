@@ -1,6 +1,6 @@
 export default {
   surveyB001_1: {
-    survey_id: 'B-001',
+    survey_id: 'B001-1',
     questions: [
       {
         question_index: 0,
