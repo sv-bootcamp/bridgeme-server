@@ -99,7 +99,7 @@ export function signin(req, res, next) {
             } else {
               User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
                 .then(() => {
-                  storeSession(req, res, user);
+                  storeSession(req, user);
                   res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
                 });
             }
@@ -117,7 +117,7 @@ export function signin(req, res, next) {
   }
 }
 
-function storeSession(req, res, user) {
+function storeSession(req, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
@@ -129,6 +129,7 @@ function registerUser(req, res, registrationData) {
     if (err) {
       res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
+      storeSession(req, user);
       res.status(201).json(user);
     }
   });
