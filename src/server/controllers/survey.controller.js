@@ -12,7 +12,7 @@ const User = mongoose.model('user');
 
 // Get request
 export function getRequest(req, res, next) {
-  if (req.session._id) {
+  //if (req.session._id) {
     determineUser()
       .then((isSample) => {
         if (isSample) {
@@ -40,9 +40,9 @@ export function getRequest(req, res, next) {
       .catch((err) => {
         res.status(400).json({ err_point: err.message, err_msg: err.stack });
       });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  //} else {
+  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  //}
 }
 
 function determineUser(isSampleCallback) {
