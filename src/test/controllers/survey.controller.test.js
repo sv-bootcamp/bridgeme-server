@@ -45,7 +45,7 @@ describe('Test Survey controller', function () {
       var options = {
         method: 'POST',
         uri: API_BASE_URL + '/answer',
-        form: mockAnswerData,
+        form: mockAnswerData.answerA001_1,
         resolveWithFullResponse: true,
         json: true,
       };
@@ -53,7 +53,7 @@ describe('Test Survey controller', function () {
       rp(options)
         .then((result) => {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal(mockAnswerData.survey_id);
+          result.body.survey_id.should.equal(mockAnswerData.answerA001_1.survey_id);
           done();
         })
         .catch((err) => {
@@ -69,17 +69,19 @@ describe('Test Survey controller', function () {
       var options = {
         method: 'POST',
         uri: API_BASE_URL + '/create',
-        form: mockSurveyData_mentor,
+        form: mockSurveyData_mentor.surveyA001_1,
         resolveWithFullResponse: true,
         json: true,
       };
 
       rp(options)
         .then((result) => {
+          result.statusCode.should.equal(200);
+          result.body.survey_id.should.equal(mockSurveyData_mentor.surveyA001_1.survey_id);
           done();
         })
         .catch((err) => {
-          done();
+
         })
     });
   });
