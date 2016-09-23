@@ -216,6 +216,7 @@ describe('Test User API', function () {
           body.email.should.equal(regData.email);
           body.name.should.equal(regData.name);
           body.gender.should.equal(regData.gender);
+          body.status.should.equal(0);
           done();
         })
         .catch(function (err) {
