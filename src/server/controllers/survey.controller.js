@@ -24,6 +24,7 @@ export function getRequest(req, res, next) {
           } else {
             throw new Error(surveyCallback.ERR_INVALID_PARAMS);
           }
+
           return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
           res.status(204).json();
@@ -69,8 +70,8 @@ export function saveAnswer(req, res, next) {
     User.findOne({ _id: req.session._id }).exec()
       .then((userItem) => {
         if (userItem) {
-          answer.user_id = user._id;
-          return answer.save().exec();
+          answer.user_id = userItem._id;
+          return answer.save();
         } else {
           return new Error(surveyCallback.ERR_USER_NOT_FOUND);
         }
