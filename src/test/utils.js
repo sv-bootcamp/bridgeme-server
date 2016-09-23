@@ -1,37 +1,16 @@
 process.env.NODE_ENV = 'test';
-
-import mongoose from 'mongoose';
+import server from '../server/index';
 
 /*
  * Prepare for mongodb connection to test.
  */
 
-beforeEach(done => {
-  function clearDB() {
-    /*
-     * This part is hided because it always cleanDB even when dev-mode,
-     * so if test, dev DB separated, this would be added for test.
-     */
-    // for (var i in mongoose.connection.collections) {
-    //   mongoose.connection.collections[i].remove(function() {});
-    // }
-    return done();
-  }
+let app;
 
-  if (mongoose.connection.readyState === 0) {
-    mongoose.connect('mongodb://localhost:27017/yoda-test', function (err) {
-      if (err) {
-        throw err;
-      }
-
-      return clearDB();
-    });
-  } else {
-    return clearDB();
-  }
+it('server open test.', function (done) {
+  this.timeout(5000);
+  app = server(()=> {
+    done();
+  });
 });
 
-afterEach(done => {
-  mongoose.disconnect();
-  return done();
-});
