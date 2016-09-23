@@ -13,7 +13,7 @@ const platform = { facebook: '1', linkedin: '2' };
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
-const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified,education,work';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,gender,location,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -83,6 +83,8 @@ export function signin(req, res, next) {
           email: facebookResult.email,
           name: facebookResult.name,
           work: facebookResult.work,
+          gender: facebookResult.gender,
+          location: facebookResult.location.name,
           education: facebookResult.education,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
