@@ -24,6 +24,7 @@ export function getRequest(req, res, next) {
           } else {
             throw new Error(surveyCallback.ERR_INVALID_PARAMS);
           }
+
           return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
           res.status(204).json();

@@ -13,7 +13,7 @@ const platform = { facebook: '1', linkedin: '2' };
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
-const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,verified,education,work';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,gender,location,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -83,6 +83,8 @@ export function signin(req, res, next) {
           email: facebookResult.email,
           name: facebookResult.name,
           work: facebookResult.work,
+          gender: facebookResult.gender,
+          location: facebookResult.location.name,
           education: facebookResult.education,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
@@ -99,7 +101,7 @@ export function signin(req, res, next) {
             } else {
               User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
                 .then(() => {
-                  storeSession(req, res, user);
+                  storeSession(req, user);
                   res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
                 });
             }
@@ -117,7 +119,7 @@ export function signin(req, res, next) {
   }
 }
 
-function storeSession(req, res, user) {
+function storeSession(req, user) {
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
@@ -129,6 +131,7 @@ function registerUser(req, res, registrationData) {
     if (err) {
       res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
+      storeSession(req, user);
       res.status(201).json(user);
     }
   });
