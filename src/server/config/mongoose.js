@@ -12,7 +12,6 @@ const DATABASE_ENV_URL = {
 
 export default function () {
   mongoose.Promise = global.Promise;
-
   mongoose.connect(DATABASE_BASE_URL + DATABASE_ENV_URL[process.env.NODE_ENV], () => {
     if (process.env.NODE_ENV === 'test') {
       mongoose.connection.db.dropDatabase();
