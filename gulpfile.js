@@ -8,7 +8,6 @@ const mocha = require('gulp-mocha');
 const runSequence = require('run-sequence');
 const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
-const tap = require('gulp-tap');
 
 gulp.task('default', () => {
   runSequence(['build:server', 'build:test', 'jscs'], 'server:start');
