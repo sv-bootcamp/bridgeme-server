@@ -137,7 +137,6 @@ function registerUser(req, res, registrationData) {
   let userData = new User(registrationData);
   userData.save((err, user) => {
     if (err) {
-
       res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
     } else {
       storeSession(req, user);

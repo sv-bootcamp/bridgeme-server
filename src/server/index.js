@@ -27,7 +27,7 @@ export default (cb) => {
     secret: 'yodasalt46787134refgr45refd',
     store: new MongoStore({ db: db }),
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     //session expire after 1Day.
     cookie: { maxAge: 1000 * 3600 * 24 },
   }));
