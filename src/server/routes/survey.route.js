@@ -89,6 +89,8 @@ router.post('/answer', survey.saveAnswer);
  *           "question_index": 0,
  *           "question": "이 멘토를 통해서 얻고자 하는 것은?",
  *           "answers": [
+ *           {
+ *            options: [
  *             {
  *               "answer_index": 0,
  *               "is_free_form": false,
@@ -101,6 +103,9 @@ router.post('/answer', survey.saveAnswer);
  *               "content": "다른 의견",
  *               "next_question_index": 1
  *             }
+ *            ]
+ *            }
+ *            ]
  *           ]
  *          }
  *       ]

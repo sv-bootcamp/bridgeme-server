@@ -84,7 +84,7 @@ export function signin(req, res, next) {
           name: facebookResult.name,
           work: facebookResult.work,
           gender: facebookResult.gender,
-          location: facebookResult.location.name,
+          location: facebookResult.location ? facebookResult.location.name : undefined,
           education: facebookResult.education,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
