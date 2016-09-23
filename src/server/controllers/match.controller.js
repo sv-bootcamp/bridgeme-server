@@ -15,9 +15,9 @@ const EMAIL_HTML = '<h1>Hi,</br> new mentee needs your mentoring.</h1>';
 const EMAIL_SUBJECT = 'New mentee needs your help!';
 const YODA_ACCOUNT = '"Yoda Service Team" <yoda.mentor.lab@gmail.com>';
 
-const ACCEPTED = 1;
-const PENDING = 2;
-const REJECTED = 0;
+export const ACCEPTED = 1;
+export const PENDING = 2;
+export const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(mentor, content) {

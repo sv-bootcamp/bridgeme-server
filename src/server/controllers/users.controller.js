@@ -1,4 +1,5 @@
 import userCallback from '../config/json/user.callback';
+import * as matchController from './match.controller';
 import mongoose from 'mongoose';
 import request from 'request';
 
@@ -6,6 +7,7 @@ import request from 'request';
  * Methods about user, register user and handle session
  */
 
+const Match = mongoose.model('match');
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
 
@@ -63,9 +65,15 @@ export function getMyProfile(req, res, next) {
 // Return profile by _id.
 export function getProfileById(req, res, next) {
   if (req.session._id) {
+    let userProfile = {};
     User.findOne({ _id: req.params._id }).exec()
-      .then(findProfileId => {
-        res.status(200).json(findProfileId);
+      .then(profile => {
+        userProfile = JSON.parse(JSON.stringify(profile));
+        return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.session._id }).exec();
+      })
+      .then(match => {
+        userProfile.status = match ? match.status : matchController.REJECTED;
+        res.status(200).json(userProfile);
       })
       .catch((err) => {
         res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
