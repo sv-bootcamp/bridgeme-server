@@ -15,6 +15,8 @@ const API_BASE_URL = 'http://localhost:8000/users';
 const FB_LONG_LIVED_ACCESS_TOKEN = 'EAAaAu6BRYD4BALZCP5ZAREwtNVZA5sTLcsoEP0oG0gsrwA3ZCzxTPPQ5BMFfG44A9eRoUoZB00prufczZCylhIoujY14lV3NIGRCriZC5iBtpAj6ZA8pC8pjtC75ca9kS3FU3V31gBzotZAOJXhI0YDw4ZBzsHNkq7UsMZD';
 const FB_LONG_LIVED_ACCESS_TOKEN_B = '';
 
+// rp = rp.defaults({ jar: true });
+
 describe('Test User controller', function () {
   describe('Signup & Signin facebook user.', function () {
 
@@ -77,7 +79,7 @@ describe('Test User controller', function () {
         resolveWithFullResponse: true,
         json: true,
       };
-  
+
       rp(options)
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -85,7 +87,7 @@ describe('Test User controller', function () {
           done();
         })
         .catch(function (err) {
-      
+
         });
     });
 
