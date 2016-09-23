@@ -2,15 +2,16 @@ const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const gulp = require('gulp');
 const install = require('gulp-install');
+const istanbul = require('gulp-istanbul');
 const jscs = require('gulp-jscs');
 const mocha = require('gulp-mocha');
 const runSequence = require('run-sequence');
 const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
-
+const tap = require('gulp-tap');
 
 gulp.task('default', () => {
-  runSequence(['build:server','build:test', 'jscs'], 'server:start');
+  runSequence(['build:server', 'build:test', 'jscs'], 'server:start');
 });
 
 gulp.task('install', () => {
@@ -52,18 +53,19 @@ gulp.task('server:restart', () => {
   gulp.watch(['server'], server.restart);
 });
 
-gulp.task('test', () => {
-  runSequence('build:test','test:all');
+gulp.task('pre-test',['build:test'], function () {
+  return gulp.src(['dist-test/server/**/*.js'])
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
 });
 
-gulp.task('test:all', () => {
+gulp.task('test', ['pre-test'], function () {
   return gulp.src([
     'dist-test/test/*.js',
-    'dist-test/test/controllers/users.controller.test.js'],
-    { read: false })
-    .pipe(mocha({
-      reporter: 'spec'
-    }))
+    'dist-test/test/controllers/users.controller.test.js',])
+    .pipe(mocha())
+    .pipe(istanbul.writeReports())
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: 40 } }))
     .once('end', function () {
       process.exit();
     });
@@ -71,7 +73,7 @@ gulp.task('test:all', () => {
 
 gulp.task('jscs', () => {
   return gulp.src('./src/**/*.js')
-    .pipe(jscs({ fix: true, }))
+    .pipe(jscs({fix: true,}))
     .pipe(gulp.dest('src'));
 });
 
@@ -79,6 +81,6 @@ gulp.task('apidoc', (done) => {
   apidoc({
     src: "src",
     dest: "apidoc/"
-  },done);
+  }, done);
 });
 

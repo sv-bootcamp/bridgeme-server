@@ -1,15 +1,14 @@
 process.env.NODE_ENV = 'test';
-
-import mongoose from 'mongoose';
+import server from '../server/index';
 
 /*
  * Prepare for mongodb connection to test.
  */
-import server from '../server/index';
+
 let app;
 
 it('server open test.', function (done) {
-  this.timeout(10000);
+  this.timeout(5000);
   app = server(()=> {
     done();
   });
