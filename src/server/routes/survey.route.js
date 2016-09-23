@@ -76,7 +76,7 @@ router.post('/answer', survey.saveAnswer);
 //GET method
 
 /**
- * @api {get} /survey/create Save new survey
+ * @api {post} /survey/create Save new survey
  * @apiName saveSurvey
  * @apiDescription Store new survey
  * @apiGroup Survey
@@ -92,12 +92,14 @@ router.post('/answer', survey.saveAnswer);
  *             {
  *               "answer_index": 0,
  *               "is_free_form": false,
- *               "content": "지원 과정"
+ *               "content": "지원 과정",
+ *               "next_question_index": 1
  *             },
  *             {
  *               "answer_index": 5,
  *               "is_free_form": true,
- *               "content": "다른 의견"
+ *               "content": "다른 의견",
+ *               "next_question_index": 1
  *             }
  *           ]
  *          }
@@ -110,6 +112,7 @@ router.post('/answer', survey.saveAnswer);
  * @apiParam {Number} answer_index Index of each answer (start with 0)
  * @apiParam {Boolean} is_free_form true: Description, false: Static
  * @apiParam {String} content Content of Answer
+ * @apiParam {Number} next_question_index Next question when this answer had picked
  *
  * @apiSuccess {String} survey_id Saved survey's id as a proof of success
  *
@@ -131,7 +134,7 @@ router.post('/answer', survey.saveAnswer);
  *       "err": {Detail Error Message}
  *     }
  */
-router.get('/create', survey.saveSurvey);
+router.post('/create', survey.saveSurvey);
 
 /**
  * @api {get} /survey/request Retrieve Survey

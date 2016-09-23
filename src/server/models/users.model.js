@@ -52,6 +52,8 @@ let userSchema = new Schema({
   work: [workSchema],
   locale: String,
   age: Number,
+  gender: String,
+  location: String,
   field: String,
   region: String,
   skills: String,
