@@ -14,8 +14,13 @@ let answerSchema = new Schema({
       question: String,
       answers: [
         {
-          answer_index: Number,
-          content: String,
+          options: [
+            {
+              answer_index: Number,
+              is_free_form: Boolean,
+              content: String,
+            },
+          ],
         },
       ],
     },
