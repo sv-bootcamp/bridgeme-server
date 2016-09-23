@@ -27,7 +27,7 @@ export default (cb) => {
     secret: 'yodasalt46787134refgr45refd',
     store: new MongoStore({ db: db }),
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     //session expire after 1Day.
     cookie: { maxAge: 1000 * 3600 * 24 },
   }));
@@ -36,6 +36,9 @@ export default (cb) => {
     extended: true,
   }));
   app.use(bodyParser.json());
+
+  //app.use(cookieParser());
+
   app.use(methodOverride());
 
   app.use('/users', users);

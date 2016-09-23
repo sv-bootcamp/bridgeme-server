@@ -57,11 +57,13 @@ gulp.task('test', () => {
 });
 
 gulp.task('test:all', () => {
-  return gulp.src(['dist-test/test/*.js',
-    'dist-test/test/controllers/users.controller.test.js',
-    'dist-test/test/controllers/survey.controller.test.js'], { read: false })
+  return gulp.src(['dist-test/test/**/*.js'
+    ], { read: false })
     .pipe(mocha({
-      reporter: 'spec'
+      reporter: 'spec',
+      globals: {
+        should: require('should')
+      }
     }))
     .once('end', function () {
       process.exit();
