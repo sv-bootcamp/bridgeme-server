@@ -17,7 +17,31 @@ const API_BASE_URL = 'http://localhost:8000/survey';
 const FB_LONG_LIVED_ACCESS_TOKEN = 'EAAaAu6BRYD4BALZCP5ZAREwtNVZA5sTLcsoEP0oG0gsrwA3ZCzxTPPQ5BMFfG44A9eRoUoZB00prufczZCylhIoujY14lV3NIGRCriZC5iBtpAj6ZA8pC8pjtC75ca9kS3FU3V31gBzotZAOJXhI0YDw4ZBzsHNkq7UsMZD';
 
 describe('Test Survey controller', function () {
-  it(': Sign in valid Facebook user.', function (done) {
+  it(': First sign up valid Facebook user.', function (done) {
+    this.timeout(4000);
+    let options = {
+      method: 'POST',
+      jar: cookieJar,
+      uri: 'http://localhost:8000/users' + '/signin',
+      form: {
+        access_token: FB_LONG_LIVED_ACCESS_TOKEN,
+        platform_type: '1',
+      },
+      resolveWithFullResponse: true,
+      json: true,
+    };
+    
+    rp(options)
+      .then(function (result) {
+        result.statusCode.should.equal(201);
+        done();
+      })
+      .catch(function (err) {
+        
+      });
+  });
+  
+  it(': First sign in valid Facebook user.', function (done) {
     this.timeout(4000);
     let options = {
       method: 'POST',
@@ -33,7 +57,8 @@ describe('Test Survey controller', function () {
 
     rp(options)
       .then(function (result) {
-        //result.statusCode.should.equal(201);
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal('Sign in success.');
         done();
       })
       .catch(function (err) {
@@ -81,10 +106,33 @@ describe('Test Survey controller', function () {
 
         });
     });
-
   });
 
   describe('Get request survey.', function () {
+    it(': Invalid parameter.', function (done) {
+      this.timeout(4000);
+      let options = {
+        method: 'GET',
+        jar: cookieJar,
+        uri: API_BASE_URL + '/request/mm',
+        params: {
+          type: 'mm',
+        },
+        resolveWithFullResponse: true,
+        json: true,
+      };
+    
+      rp(options)
+        .then(function (result) {
+        
+        })
+        .catch(function (err) {
+          err.statusCode.should.equal(400);
+          err.error.err_point.should.equal('Parameter /:type/ is not correct');
+          done();
+        });
+    });
+    
     it(': Valid parameter mentee.', function (done) {
       this.timeout(4000);
       let options = {
@@ -132,30 +180,6 @@ describe('Test Survey controller', function () {
 
         });
     });
-
-    it(': Invalid parameter.', function (done) {
-      this.timeout(4000);
-      let options = {
-        method: 'GET',
-        jar: cookieJar,
-        uri: API_BASE_URL + '/request/mm',
-        params: {
-          type: 'mm',
-        },
-        resolveWithFullResponse: true,
-        json: true,
-      };
-
-      rp(options)
-        .then(function (result) {
-
-        })
-        .catch(function (err) {
-          err.statusCode.should.equal(400);
-          err.body.msg.should.equal('Parameter /:type/ is not correct');
-          done();
-        });
-    });
   });
 
   describe('Save answer.', function () {
@@ -171,16 +195,38 @@ describe('Test Survey controller', function () {
 
       rp(options)
         .then((result) => {
-          // result.statusCode.should.equal(200);
-          // result.body.survey_id.should.equal(mockAnswerData.answerA001_1.survey_id);
-          // done();
+           result.statusCode.should.equal(200);
+           result.body.survey_id.should.equal(mockAnswerData.answerA001_1.survey_id);
+           done();
         })
         .catch((err) => {
-          //TODO: this should not be Authentication failed error
-          err.statusCode.should.equal(401);
-          done();
-          //TODO: after solve problem this would be delete
+          
         });
     });
+  });
+  
+  it(': First sign in valid Facebook user.', function (done) {
+    this.timeout(4000);
+    let options = {
+      method: 'POST',
+      jar: cookieJar,
+      uri: 'http://localhost:8000/users' + '/signin',
+      form: {
+        access_token: FB_LONG_LIVED_ACCESS_TOKEN,
+        platform_type: '1',
+      },
+      resolveWithFullResponse: true,
+      json: true,
+    };
+    
+    rp(options)
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal('Sign in success.');
+        done();
+      })
+      .catch(function (err) {
+        
+      });
   });
 });
