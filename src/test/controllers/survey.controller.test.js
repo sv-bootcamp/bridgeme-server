@@ -14,7 +14,7 @@ const Survey = mongoose.model('survey');
 const API_BASE_URL = 'http://localhost:8000/survey';
 
 describe('Test Survey API', function () {
-  describe('Save survey.', function () {
+  describe('/create', function () {
     it(': Save mentee survey.', function (done) {
       let options = {
         method: 'POST',
@@ -56,8 +56,8 @@ describe('Test Survey API', function () {
     });
   });
 
-  describe('Get request survey.', function () {
-    it(': Invalid parameter.', function (done) {
+  describe('/request/:type', function () {
+    it('request /request/:type with Invalid parameter.', function (done) {
       this.timeout(4000);
       let options = {
         method: 'GET',
@@ -81,7 +81,7 @@ describe('Test Survey API', function () {
         });
     });
     
-    it(': Valid parameter mentee.', function (done) {
+    it('request /request/:type with mentee (Valid parameter).', function (done) {
       this.timeout(4000);
       let options = {
         method: 'GET',
@@ -105,7 +105,7 @@ describe('Test Survey API', function () {
         });
     });
 
-    it(': Valid parameter mentor.', function (done) {
+    it('request /request/:type with mentor (Valid parameter).', function (done) {
       this.timeout(4000);
       let options = {
         method: 'GET',
@@ -130,8 +130,8 @@ describe('Test Survey API', function () {
     });
   });
 
-  describe('Save answer.', function () {
-    it(': Save right answer.', function (done) {
+  describe('/answer', function () {
+    it(': Save answer.', function (done) {
       let options = {
         method: 'POST',
         jar: true,
