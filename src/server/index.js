@@ -25,7 +25,7 @@ export default (cb) => {
 
   app.use(session({
     secret: 'yodasalt46787134refgr45refd',
-    store: new MongoStore({ db: 'yoda' }),
+    store: new MongoStore({ db: db }),
     resave: false,
     saveUninitialized: false,
     //session expire after 1Day.
