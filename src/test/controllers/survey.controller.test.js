@@ -3,6 +3,7 @@ import mockSurveyData_mentee from '../fixtures/surveyA001_1';
 import mockSurveyData_mentor from '../fixtures/surveyB001_1';
 import mongoose from 'mongoose';
 import should from 'should';
+import surveyCallback from '../../server/config/json/survey.callback';
 import rp from 'request-promise';
 
 /*
@@ -69,18 +70,18 @@ describe('Test Survey API', function () {
         resolveWithFullResponse: true,
         json: true,
       };
-    
+
       rp(options)
         .then(function (result) {
-        
+
         })
         .catch(function (err) {
           err.statusCode.should.equal(400);
-          err.error.err_point.should.equal('Parameter /:type/ is not correct');
+          err.error.err_point.should.equal(surveyCallback.ERR_INVALID_PARAMS);
           done();
         });
     });
-    
+
     it('request /request/:type with mentee (Valid parameter).', function (done) {
       this.timeout(4000);
       let options = {
@@ -97,7 +98,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then(function (result) {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal('A001-1');
+          result.body.survey_id.should.equal(mockSurveyData_mentee.surveyA001_1.survey_id);
           done();
         })
         .catch(function (err) {
@@ -121,7 +122,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then(function (result) {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal('B001-1');
+          result.body.survey_id.should.equal(mockSurveyData_mentor.surveyB001_1.survey_id);
           done();
         })
         .catch(function (err) {
@@ -143,12 +144,12 @@ describe('Test Survey API', function () {
 
       rp(options)
         .then((result) => {
-           result.statusCode.should.equal(200);
-           result.body.survey_id.should.equal(mockAnswerData.answerA001_1.survey_id);
-           done();
+          result.statusCode.should.equal(200);
+          result.body.survey_id.should.equal(mockAnswerData.answerA001_1.survey_id);
+          done();
         })
         .catch((err) => {
-          
+
         });
     });
   });
