@@ -33,7 +33,6 @@ function sendRequestEmail(mentor, content) {
 
       transport.sendMail(mailOptions, function (err, response) {
         if (err) {
-          console.log(err);
           throw new Error(matchCallback.ERR_FAIL_SEND_MAIL);
         }
         else {
