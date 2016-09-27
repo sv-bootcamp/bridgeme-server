@@ -21,15 +21,21 @@ export const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(mentor, content) {
-  return new Promise(function (resolve, reject) {
-    let transport
-      = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
-    let mailOptions = {
-      from: YODA_ACCOUNT,
-      to: mentor,
-      subject: EMAIL_SUBJECT,
-      html: EMAIL_HTML + content,
-    };
+
+  if (process.env.NODE_ENV === 'test') {
+    return new Promise(function (resolve, reject) {
+      resolve();
+    });
+  } else{
+    return new Promise(function (resolve, reject) {
+      let transport
+        = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
+      let mailOptions = {
+        from: YODA_ACCOUNT,
+        to: mentor,
+        subject: EMAIL_SUBJECT,
+        html: EMAIL_HTML + content,
+      };
 
       transport.sendMail(mailOptions, function (err, response) {
         if (err) {
@@ -42,7 +48,9 @@ function sendRequestEmail(mentor, content) {
         transport.close();
       });
 
-  });
+    });
+  }
+
 }
 
 // The mentee sent request to Mentor
