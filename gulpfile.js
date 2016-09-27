@@ -61,7 +61,8 @@ gulp.task('pre-test',['build:test'], function () {
 gulp.task('test', ['pre-test'], function () {
   return gulp.src([
     'dist-test/test/*.js',
-    'dist-test/test/controllers/users.controller.test.js',])
+    'dist-test/test/controllers/users.controller.test.js',
+    'dist-test/test/controllers/survey.controller.test.js'])
     .pipe(mocha())
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({ thresholds: { global: 40 } }))

@@ -1,8 +1,7 @@
-import should from 'should';
 import mongoose from 'mongoose';
-import '../../server/models/users.model';
-import userCallback from '../../server/config/json/user.callback';
 import rp from 'request-promise';
+import should from 'should';
+import userCallback from '../../server/config/json/user.callback';
 
 /*
  * Test for User API
@@ -12,8 +11,8 @@ const User = mongoose.model('user');
 
 const API_BASE_URL = 'http://localhost:8000/users';
 const FB_LONG_LIVED_ACCESS_TOKEN
-  = 'EAAEKfDmZBjtkBAFAowzMiwDkZBIV2VQlMzsud8C4teGBXtpaZCZArhZBn9jBzytRoDtTlNjq7OupEEvzsZChd' +
-  'S4k8tdsZBkZBgoEy0QWIwRdGXQ8lTwpAZCjW8RbQYHYnXoY9KLcQVrmRZBEWXNpXH8NZBTquZCMDmrZAoHwZD';
+  = 'EAAEKfDmZBjtkBAHaZCLHZBGY6U19QCluMFyXyaz6fE7TraEfHDCgKBKZCzTKMPDFlvue4iirZAE4gFHg9' +
+  'kdrzhgsBhdgYuiDJNKdPhuSqR99VMfZCAdpHVEC6zrq1XZCY4DTmIDajqznDUiKZCUV6ujMxWGntJkZAKukZD';
 let regData;
 
 describe('Test User API', function () {
@@ -242,5 +241,4 @@ function anauthorizedAccessTest(uri, done) {
       err.statusCode.should.equal(401);
       done();
     });
-
 }
