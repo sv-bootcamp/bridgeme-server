@@ -4,7 +4,7 @@ export default {
     questions: [
       {
         question_index: 0,
-        question: '왜 해당 멘토를 선택하였는가?',
+        question: 'Why did you pick this person as a Mentor?',
         allow_multiple_answer: true,
         answers: [
           {
@@ -45,63 +45,63 @@ export default {
       },
       {
         question_index: 1,
-        question: '이 멘토를 통해서 얻고자 하는 목표는?',
+        question: 'What kind of advices do you expect to get from this Mentor?',
         allow_multiple_answer: true,
         answers: [
           {
-            title: '유학',
+            title: 'Study abroad',
             options: [
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: '지원 과정 (토플/GRE, Statement of Purpose, GPA 등)',
+                content: 'Process (TOEFL/GRE, Statement of Purpose, GPA etc)',
                 next_question_index: 2,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: '학교 선택 (학과, 교수 선택, 학교 인지도, 취업에 도움 등)',
+                content: 'Selecting School (Department, Professor, Awareness etc)',
                 next_question_index: 2,
               },
             ],
           },
           {
-            title: '취업/이직',
+            title: 'Getting a job/Moving a job',
             options: [
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: '지원 과정',
+                content: 'Process',
                 next_question_index: 2,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: '회사 선택',
+                content: 'Selecting company',
                 next_question_index: 2,
               },
               {
                 answer_index: 4,
                 is_free_form: false,
-                content: '인터뷰 과정',
+                content: 'Interview',
                 next_question_index: 2,
               },
               {
                 answer_index: 5,
                 is_free_form: false,
-                content: '연봉 협상 - 처우/복리후생',
+                content: 'Salary negotiations - treatments/benefits',
                 next_question_index: 2,
               },
               {
                 answer_index: 6,
                 is_free_form: false,
-                content: '갖추어야 할 능력',
+                content: 'Needed Skills',
                 next_question_index: 2,
               },
             ],
           },
           {
-            title: '창업',
+            title: 'Foundation',
             options: [
               {
                 answer_index: 7,
@@ -112,53 +112,53 @@ export default {
               {
                 answer_index: 8,
                 is_free_form: false,
-                content: '프로덕트',
+                content: 'Products',
                 next_question_index: 2,
               },
               {
                 answer_index: 9,
                 is_free_form: false,
-                content: '시장상황',
+                content: 'Market Trends',
                 next_question_index: 2,
               },
               {
                 answer_index: 10,
                 is_free_form: false,
-                content: '투자 받기',
+                content: 'Getting investments',
                 next_question_index: 2,
               },
               {
                 answer_index: 11,
                 is_free_form: false,
-                content: '팀빌딩',
+                content: 'Team building',
                 next_question_index: 2,
               },
             ],
           },
           {
-            title: '인생 조언',
+            title: 'Life Advices',
             options: [
               {
                 answer_index: 12,
                 is_free_form: false,
-                content: '동기 부여',
+                content: 'Motivation',
                 next_question_index: 2,
               },
               {
                 answer_index: 13,
                 is_free_form: false,
-                content: '커리어 개발 (승진, 직무 전환 등)',
+                content: 'Career development (Promotion, Job conversion etc)',
                 next_question_index: 2,
               },
             ],
           },
           {
-            title: '인맥 관리',
+            title: 'Networking',
             options: [
               {
                 answer_index: 14,
                 is_free_form: false,
-                content: '기술적 방법론 (e.g. 링크드인)',
+                content: 'Technical methodology (e.g. LinkedIn)',
                 next_question_index: 2,
               },
               {
@@ -183,7 +183,7 @@ export default {
       },
       {
         question_index: 2,
-        question: '매칭 후 소통 방식은 어떤 것이 좋은 가?',
+        question: 'Which platform do you prefer for communication?',
         allow_multiple_answer: true,
         answers: [
           {
