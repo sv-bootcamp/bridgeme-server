@@ -38,7 +38,8 @@
     "morgan": "^1.7.0",
     "nodemailer": "^2.5.0",
     "path": "^0.12.7",
-    "request": "^2.74.0",
+    "request": "^2.75.0",
+    "request-promise": "^4.1.1",
     "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
     "should": "^11.1.0"
@@ -52,6 +53,7 @@
     "gulp-develop-server": "^0.5.2",
     "gulp-eslint": "^3.0.1",
     "gulp-install": "^0.6.0",
+    "gulp-istanbul": "^1.1.1",
     "gulp-jscs": "^4.0.0",
     "gulp-nodemon": "^2.1.0",
     "gulp-sourcemaps": "^1.6.0",

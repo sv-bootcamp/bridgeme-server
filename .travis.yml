@@ -3,10 +3,6 @@ node_js:
   - "6"
 services:
   - mongodb
-before_script:
-  - npm install -g gulp
-  - gulp &
-  - sleep 10
-script: gulp test
+script: npm test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv
