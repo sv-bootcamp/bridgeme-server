@@ -21,13 +21,7 @@ export const REJECTED = 0;
 
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(mentor, content) {
-
-  if (process.env.NODE_ENV === 'test') {
-    return new Promise(function (resolve, reject) {
-      resolve();
-    });
-  } else{
-    return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
       let transport
         = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
       let mailOptions = {
@@ -49,8 +43,6 @@ function sendRequestEmail(mentor, content) {
       });
 
     });
-  }
-
 }
 
 // The mentee sent request to Mentor
@@ -71,7 +63,12 @@ export function requestMentoring(req, res, next) {
       })
       .then(mentor => {
         if (mentor) {
-          return sendRequestEmail(mentor.email, matchData.content);
+          if (process.env.NODE_ENV === 'test') {
+            return;
+          } else {
+            return sendRequestEmail(mentor.email, matchData.content);
+          }
+
         }
         else {
           throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
