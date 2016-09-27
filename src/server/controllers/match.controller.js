@@ -30,7 +30,6 @@ function sendRequestEmail(mentor, content) {
       subject: EMAIL_SUBJECT,
       html: EMAIL_HTML + content,
     };
-
     transport.sendMail(mailOptions, function (err, response) {
       if (err) {
         throw new Error(matchCallback.ERR_FAIL_SEND_MAIL);
