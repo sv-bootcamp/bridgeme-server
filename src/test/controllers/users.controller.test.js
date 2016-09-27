@@ -1,7 +1,7 @@
 import should from 'should';
 import '../../server/models/users.model';
-import userCallback from '../../server/config/json/user.callback';
 import rp from 'request-promise';
+import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
 
 /*

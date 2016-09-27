@@ -29,6 +29,8 @@ describe('Test Match API', function () {
         .then(function (result) {
           result.statusCode.should.equal(201);
           userData.USER_B_DATA = result.body;
+          console.log(userData.USER_A_DATA.email);
+          console.log(userData.USER_B_DATA.email);
           done();
         })
         .catch(function (err) {
@@ -236,12 +238,6 @@ describe('Test Match API', function () {
     });
   });
 });
-
-//describe('User B request mentoring to User A.',  () =>  {
-//  it(': Sign up valid Facebook user B.', done => {
-//    done();
-//  });
-//});
 
 function anauthorizedAccessTest(method, uri, done) {
   rp({
