@@ -4,7 +4,7 @@ export default {
     questions: [
       {
         question_index: 0,
-        question: 'Why did you accept this person as a mentee?',
+        question: '왜 이 멘티의 요청을 수락했는가?',
         allow_multiple_answer: true,
         answers: [
           {
@@ -12,37 +12,37 @@ export default {
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: 'Profession (experience, jobs)',
+                content: '경력',
                 next_question_index: 1,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: 'Education',
+                content: '학력',
                 next_question_index: 1,
               },
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: 'Profile Pic 사진',
+                content: '사진',
                 next_question_index: 1,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: 'Gender 성별',
+                content: '성별',
                 next_question_index: 1,
               },
               {
                 answer_index: 4,
                 is_free_form: false,
-                content: 'Message: Contents od Mentee message',
+                content: '메시지: 멘티의 메시지의 내용',
                 next_question_index: 1,
               },
               {
                 answer_index: 5,
                 is_free_form: false,
-                content: 'No special reason',
+                content: '무조건적 수락 (특별한 이유 없음)',
                 next_question_index: 1,
               },
             ],
@@ -51,7 +51,7 @@ export default {
       },
       {
         question_index: 1,
-        question: 'What kind of advices do you expect to give Mentee?',
+        question: '이 멘티에게 어떤 종류의 조언을 해줄 수 있다고 예상하는가?',
         allow_multiple_answer: true,
         answers: [
           {
@@ -59,31 +59,31 @@ export default {
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: 'Study abroad',
+                content: '유학',
                 next_question_index: 2,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: 'Getting a job/Moving a job',
+                content: '취업/이직',
                 next_question_index: 2,
               },
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: 'Foundation',
+                content: '창업',
                 next_question_index: 2,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: 'Life Advices',
+                content: '인생 조언',
                 next_question_index: 2,
               },
               {
                 answer_index: 4,
                 is_free_form: false,
-                content: 'Networking',
+                content: '인맥 관리',
                 next_question_index: 2,
               },
               {
@@ -98,7 +98,7 @@ export default {
       },
       {
         question_index: 2,
-        question: 'Which platform do you prefer for communication?',
+        question: '멘토링 소통 방식이 어떤 것이 좋은가?',
         allow_multiple_answer: true,
         answers: [
           {
@@ -139,7 +139,7 @@ export default {
       },
       {
         question_index: 3,
-        question: 'Why do you offer mentoring?',
+        question: '멘토링을 제공하는 동기는?',
         allow_multiple_answer: true,
         answers: [
           {
@@ -147,25 +147,25 @@ export default {
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: 'For social responsibility',
+                content: '사회적 책임감',
                 next_question_index: 4,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: 'To get connection with other generation',
+                content: '후배 세대와의 소통',
                 next_question_index: 4,
               },
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: 'To get self satisfaction',
+                content: '자기 만족',
                 next_question_index: 4,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: 'To meet new people',
+                content: '새로운 사람들과의 만남',
                 next_question_index: 4,
               },
               {
@@ -180,7 +180,7 @@ export default {
       },
       {
         question_index: 4,
-        question: 'How many time will you allocate for mentoring in 1 week?',
+        question: '1주일에 얼마나 많은 시간을 멘토링에 투자하실 계획이십니까?',
         allow_multiple_answer: true,
         answer: [
           {
@@ -188,25 +188,25 @@ export default {
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: '30 minites',
+                content: '30분',
                 next_question_index: null,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: '1 hour',
+                content: '1시간',
                 next_question_index: null,
               },
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: '2 hours',
+                content: '2시간',
                 next_question_index: null,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: 'Over 5 hours',
+                content: '5시간 이상',
                 next_question_index: null,
               },
               {
