@@ -108,6 +108,7 @@ export function signin(req, res, next) {
               registerUser(req, res, registrationData);
             } else {
               User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
+
                 .then(() => {
                   storeSession(req, user);
                   res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });

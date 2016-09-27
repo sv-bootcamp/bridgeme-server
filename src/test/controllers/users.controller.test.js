@@ -1,20 +1,14 @@
 import should from 'should';
-import mongoose from 'mongoose';
 import '../../server/models/users.model';
 import userCallback from '../../server/config/json/user.callback';
 import rp from 'request-promise';
+import userData from '../fixtures/userData';
 
 /*
  * Test for User API
  */
 
-const User = mongoose.model('user');
-
 const API_BASE_URL = 'http://localhost:8000/users';
-const FB_LONG_LIVED_ACCESS_TOKEN
-  = 'EAAEKfDmZBjtkBAFAowzMiwDkZBIV2VQlMzsud8C4teGBXtpaZCZArhZBn9jBzytRoDtTlNjq7OupEEvzsZChd' +
-  'S4k8tdsZBkZBgoEy0QWIwRdGXQ8lTwpAZCjW8RbQYHYnXoY9KLcQVrmRZBEWXNpXH8NZBTquZCMDmrZAoHwZD';
-let regData;
 
 describe('Test User API', function () {
   describe('/signin : FACEBOOK.', function () {
@@ -64,12 +58,12 @@ describe('Test User API', function () {
         });
     });
 
-    it(': Sign up valid Facebook user.', done => {
+    it(': Sign up valid Facebook user A.', done => {
       rp({
         method: 'POST',
         uri: API_BASE_URL + '/signin',
         form: {
-          access_token: FB_LONG_LIVED_ACCESS_TOKEN,
+          access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
         },
         jar: true,
@@ -78,7 +72,7 @@ describe('Test User API', function () {
       })
         .then(function (result) {
           result.statusCode.should.equal(201);
-          regData = result.body;
+          userData.USER_A_DATA = result.body;
           done();
         })
         .catch(function (err) {
@@ -88,12 +82,12 @@ describe('Test User API', function () {
         });
     });
 
-    it(': Sign in valid Facebook user.', done => {
+    it(': Sign in valid Facebook user A.', done => {
       rp({
         method: 'POST',
         uri: API_BASE_URL + '/signin',
         form: {
-          access_token: FB_LONG_LIVED_ACCESS_TOKEN,
+          access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
         },
         jar: true,
@@ -128,10 +122,10 @@ describe('Test User API', function () {
         .then(function (result) {
           result.statusCode.should.equal(200);
           let body = result.body;
-          body[0]._id.should.equal(regData._id);
-          body[0].email.should.equal(regData.email);
-          body[0].name.should.equal(regData.name);
-          body[0].gender.should.equal(regData.gender);
+          body[0]._id.should.equal(userData.USER_A_DATA._id);
+          body[0].email.should.equal(userData.USER_A_DATA.email);
+          body[0].name.should.equal(userData.USER_A_DATA.name);
+          body[0].gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -157,10 +151,10 @@ describe('Test User API', function () {
         .then(function (result) {
           result.statusCode.should.equal(200);
           let body = result.body;
-          body._id.should.equal(regData._id);
-          body.email.should.equal(regData.email);
-          body.name.should.equal(regData.name);
-          body.gender.should.equal(regData.gender);
+          body._id.should.equal(userData.USER_A_DATA._id);
+          body.email.should.equal(userData.USER_A_DATA.email);
+          body.name.should.equal(userData.USER_A_DATA.name);
+          body.gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -198,13 +192,13 @@ describe('Test User API', function () {
 
   describe('/id/:id', function () {
     it('request /id/:id without session coockie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/id/' + regData._id, done);
+      anauthorizedAccessTest(API_BASE_URL + '/id/' + userData.USER_A_DATA._id, done);
     });
 
     it('request /id/:id with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/id/' + regData._id,
+        uri: API_BASE_URL + '/id/' + userData.USER_A_DATA._id,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -212,10 +206,10 @@ describe('Test User API', function () {
         .then(function (result) {
           result.statusCode.should.equal(200);
           let body = result.body;
-          body._id.should.equal(regData._id);
-          body.email.should.equal(regData.email);
-          body.name.should.equal(regData.name);
-          body.gender.should.equal(regData.gender);
+          body._id.should.equal(userData.USER_A_DATA._id);
+          body.email.should.equal(userData.USER_A_DATA.email);
+          body.name.should.equal(userData.USER_A_DATA.name);
+          body.gender.should.equal(userData.USER_A_DATA.gender);
           body.status.should.equal(0);
           done();
         })
