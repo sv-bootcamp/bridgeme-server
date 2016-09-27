@@ -1,6 +1,6 @@
 import mockAnswerData from '../fixtures/answerA001_1';
-import mockSurveyData_mentee from '../fixtures/surveyA001_1';
-import mockSurveyData_mentor from '../fixtures/surveyB001_1';
+import menteeData from '../fixtures/surveyA001_1';
+import mentorData from '../fixtures/surveyB001_1';
 import mongoose from 'mongoose';
 import should from 'should';
 import surveyCallback from '../../server/config/json/survey.callback';
@@ -20,7 +20,7 @@ describe('Test Survey API', function () {
       let options = {
         method: 'POST',
         uri: API_BASE_URL + '/create',
-        form: mockSurveyData_mentee.surveyA001_1,
+        form: menteeData.surveyA001_1,
         resolveWithFullResponse: true,
         json: true,
       };
@@ -28,7 +28,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then((result) => {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal(mockSurveyData_mentee.surveyA001_1.survey_id);
+          result.body.survey_id.should.equal(menteeData.surveyA001_1.survey_id);
           done();
         })
         .catch((err) => {
@@ -40,7 +40,7 @@ describe('Test Survey API', function () {
       let options = {
         method: 'POST',
         uri: API_BASE_URL + '/create',
-        form: mockSurveyData_mentor.surveyB001_1,
+        form: mentorData.surveyB001_1,
         resolveWithFullResponse: true,
         json: true,
       };
@@ -48,7 +48,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then((result) => {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal(mockSurveyData_mentor.surveyB001_1.survey_id);
+          result.body.survey_id.should.equal(mentorData.surveyB001_1.survey_id);
           done();
         })
         .catch((err) => {
@@ -98,7 +98,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then(function (result) {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal(mockSurveyData_mentee.surveyA001_1.survey_id);
+          result.body.survey_id.should.equal(menteeData.surveyA001_1.survey_id);
           done();
         })
         .catch(function (err) {
@@ -122,7 +122,7 @@ describe('Test Survey API', function () {
       rp(options)
         .then(function (result) {
           result.statusCode.should.equal(200);
-          result.body.survey_id.should.equal(mockSurveyData_mentor.surveyB001_1.survey_id);
+          result.body.survey_id.should.equal(mentorData.surveyB001_1.survey_id);
           done();
         })
         .catch(function (err) {
