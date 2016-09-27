@@ -1,6 +1,6 @@
-import should from 'should';
 import '../../server/models/users.model';
 import rp from 'request-promise';
+import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
 
@@ -236,5 +236,4 @@ function anauthorizedAccessTest(uri, done) {
       err.statusCode.should.equal(401);
       done();
     });
-
 }
