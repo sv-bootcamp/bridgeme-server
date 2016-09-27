@@ -64,7 +64,7 @@ export function requestMentoring(req, res, next) {
       .then(mentor => {
         if (mentor) {
           if (process.env.NODE_ENV === 'test') {
-            return;
+            return
           } else {
             return sendRequestEmail(mentor.email, matchData.content);
           }
