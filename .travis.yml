@@ -11,7 +11,7 @@ addons:
       - mongodb-org-shell
       - oracle-java8-installer
 services:
-   - mongodb
+  - mongodb
 script: npm test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv

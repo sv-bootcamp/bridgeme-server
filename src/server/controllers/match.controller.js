@@ -44,8 +44,6 @@ function sendRequestEmail(mentor, content) {
 
         transport.close();
       });
-
-      transport.close();
     });
   }
 }
