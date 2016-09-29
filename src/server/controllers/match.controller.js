@@ -22,30 +22,21 @@ export const REJECTED = 0;
 // Send mentoring request pushing Email to mentor(receiver)
 function sendRequestEmail(mentor, content) {
   if (process.env.NODE_ENV === 'test') {
-    return new Promise(function (resolve, reject) {
-      resolve();
-    });
-  } else {
-    return new Promise(function (resolve, reject) {
-      let transport
-        = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
-      let mailOptions = {
-        from: YODA_ACCOUNT,
-        to: mentor,
-        subject: EMAIL_SUBJECT,
-        html: EMAIL_HTML + content,
-      };
-      transport.sendMail(mailOptions, function (err, response) {
-        if (err) {
-          throw new Error(matchCallback.ERR_FAIL_SEND_MAIL);
-        } else {
-          resolve();
-        }
-
-        transport.close();
-      });
-    });
+    return;
   }
+
+  let transport
+    = mailer.createTransport('smtps://yoda.mentor.lab%40gmail.com:svbootcamp@!@smtp.gmail.com');
+  let mailOptions = {
+    from: YODA_ACCOUNT,
+    to: mentor,
+    subject: EMAIL_SUBJECT,
+    html: EMAIL_HTML + content,
+  };
+  transport.sendMail(mailOptions, function (err, response) {
+    transport.close();
+  });
+
 }
 
 // The mentee sent request to Mentor
@@ -65,13 +56,11 @@ export function requestMentoring(req, res, next) {
       })
       .then(mentor => {
         if (mentor) {
-          return sendRequestEmail(mentor.email, matchData.content);
+          sendRequestEmail(mentor.email, matchData.content);
+          return match.save();
         } else {
           throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
         }
-      })
-      .then(() => {
-        return match.save();
       })
       .then(() => {
         res.status(201).json({ msg: matchCallback.SUCCESS_SEND_MAIL });
