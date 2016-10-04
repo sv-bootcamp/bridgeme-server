@@ -169,13 +169,24 @@ function findMentorActivity(mentor_id) {
 
 export function responseMentoring(req, res, next) {
   if (req.session._id) {
-    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
-      if (err) {
-        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
-      } else {
-        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
-      }
-    });
+    ///todo: Validiate  match_id & option params (Luke Lee)
+    if (req.body.option === '0') {
+      Match.remove({ _id: req.body.match_id }, (err) => {
+        if (err) {
+          res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
+        } else {
+          res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
+        }
+      });
+    } else {
+      Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
+        if (err) {
+          res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
+        } else {
+          res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
+        }
+      });
+    }
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
