@@ -104,12 +104,11 @@ export function signin(req, res, next) {
         return User.findOne({ email: registrationData.email }).exec();
       })
       .then((existingUser) => {
-        //console.log(existingUser);
         if (!existingUser) {
           let userData = new User(registrationData);
           userData.save()
             .then((registerdUser) => {
-              storeSession(req, registerdUser);
+              return storeSession(req, registerdUser);
             })
             .then((storedUser)=> {
               res.status(201).json(storedUser);
@@ -120,7 +119,6 @@ export function signin(req, res, next) {
         } else {
           storeSession(req, existingUser)
             .then((storedUser)=> {
-              console.log(storedUser);
               res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
             })
             .catch((err) => {
@@ -140,12 +138,13 @@ export function signin(req, res, next) {
 }
 
 function storeSession(req, user) {
+
+  req.session.access_token = req.body.access_token;
+  req.session.email = user.email;
+  req.session._id = user._id.toString();
   return new Promise((resolve, reject) => {
     User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
-      .then(() => {
-        req.session.access_token = reqs.body.access_token;
-        req.session.email = user.email;
-        req.session._id = user._id.toString();
+      .then((data) => {
         resolve(user);
       })
       .catch((err) => {
