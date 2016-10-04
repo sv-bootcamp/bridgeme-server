@@ -86,8 +86,6 @@ export function getProfileById(req, res, next) {
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
     let registrationData;
-    let userItem;
-    let success_code;
     crawlByAccessTokenFacebook(req.body.access_token)
       .then((facebookResult) => {
         registrationData = {
@@ -105,34 +103,34 @@ export function signin(req, res, next) {
         };
         return User.findOne({ email: registrationData.email }).exec();
       })
-      .then((user) => {
-        if (!user) {
+      .then((existingUser) => {
+        //console.log(existingUser);
+        if (!existingUser) {
           let userData = new User(registrationData);
-          success_code = 201;
-          return userData.save();
+          userData.save()
+            .then((registerdUser) => {
+              storeSession(req, registerdUser);
+            })
+            .then((storedUser)=> {
+              res.status(201).json(storedUser);
+            })
+            .catch((err) => {
+              res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
+            });
         } else {
-          return new Promise((resolve, reject) => {
-            success_code = 200;
-            resolve(user);
-          });
-        }
-      })
-      .then((user) => {
-        userItem = user;
-        return User.update({ _id: user._id }, { stamp_login: Date.now() }).exec();
-      })
-      .then((user) => {
-        storeSession(req, userItem);
-        if (success_code === 200) {
-          res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
-        } else if (success_code === 201) {
-          res.status(201).json(userItem);
+          storeSession(req, existingUser)
+            .then((storedUser)=> {
+              console.log(storedUser);
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+            })
+            .catch((err) => {
+              res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNIN });
+            });
         }
       })
       .catch((err) => {
         res.status(400).json(err);
       });
-
   } else if (req.body.platform_type === platform.linkedin) {
     // TODO : Validiate accesstoken from linkedin API server.
     res.status(400).send("Doesn't support yet.");
@@ -142,9 +140,18 @@ export function signin(req, res, next) {
 }
 
 function storeSession(req, user) {
-  req.session.access_token = req.body.access_token;
-  req.session.email = user.email;
-  req.session._id = user._id.toString();
+  return new Promise((resolve, reject) => {
+    User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
+      .then(() => {
+        req.session.access_token = reqs.body.access_token;
+        req.session.email = user.email;
+        req.session._id = user._id.toString();
+        resolve(user);
+      })
+      .catch((err) => {
+        reject();
+      });
+  });
 }
 
 function crawlByAccessTokenFacebook(accessToken) {
