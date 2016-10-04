@@ -11,7 +11,7 @@ const Match = mongoose.model('match');
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
 
-//FB Graph API constant vars.
+// FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
@@ -85,42 +85,55 @@ export function getProfileById(req, res, next) {
 
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
-    crawlByAccessTokenFacebook(req.body.access_token, (facebookResult) => {
-      if (facebookResult && facebookResult.verified == true) {
-        let registrationData = {
-          email: facebookResult.email,
-          name: facebookResult.name,
-          work: facebookResult.work,
-          gender: facebookResult.gender,
-          location: facebookResult.location ? facebookResult.location.name : undefined,
-          education: facebookResult.education,
-          platform_id: facebookResult.id,
-          platform_type: req.body.platform_type,
-          locale: facebookResult.locale,
-          timezone: facebookResult.timezone,
-          profile_picture: facebookResult.profile_picture,
-        };
-        User.findOne({ email: registrationData.email }, (err, user) => {
-          if (err) {
-            res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    crawlByAccessTokenFacebook(req.body.access_token)
+      .then((facebookResult) => {
+        return new Promise((resolve, reject) => {
+          if (facebookResult && facebookResult.verified == true) {
+            let registrationData = {
+              email: facebookResult.email,
+              name: facebookResult.name,
+              work: facebookResult.work,
+              gender: facebookResult.gender,
+              location: facebookResult.location ? facebookResult.location.name : undefined,
+              education: facebookResult.education,
+              platform_id: facebookResult.id,
+              platform_type: req.body.platform_type,
+              locale: facebookResult.locale,
+              timezone: facebookResult.timezone,
+              profile_picture: facebookResult.profile_picture,
+            };
+            resolve(registrationData);
           } else {
-            if (!user) {
-              registerUser(req, res, registrationData);
-            } else {
-              User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
-                .then(() => {
-                  storeSession(req, user);
-                  res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
-                });
-            }
+            reject(Error(userCallback.ERR_INVALID_ACCESS_TOKEN));
           }
         });
-      } else {
-        res.status(400).json({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
-      }
-    });
+      })
+      .then((registrationData) => {
+        return User.findOne({ email: registrationData.email }).exec();
+      })
+      .then((user) => {
+        if(!user) {
+          let userData = new User(registrationData);
+          return userData.save();
+        } else {
+          return new Promise((resolve, reject) => {
+            resolve(uesr);
+          });
+        }
+      })
+      .then((user) =>{
+        return User.update({ _id: user._id }, { stamp_login: Date.now() }).exec();
+      })
+      .then((user) => {
+        storeSession(req, uesr);
+        res.status(201).json(user);
+      })
+      .catch((err) => {
+        res.status(400).json({ err_point: err.message, err_msg: err.stack });
+      });
+
   } else if (req.body.platform_type === platform.linkedin) {
-    ///TODO : Validiate accesstoken from linkedin API server.
+    // TODO : Validiate accesstoken from linkedin API server.
     res.send("Doesn't support yet.");
   } else {
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
@@ -145,17 +158,18 @@ function registerUser(req, res, registrationData) {
   });
 }
 
-function crawlByAccessTokenFacebook(accessToken, responseCallback) {
-  // Crawl user data from facebook by access token.
-  request.get({
-      url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
-      qs: { fields: FB_GRAPH_CRAWL_PARAMS, access_token: accessToken },
-    },
-    (error, response, userBody) => {
-      if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
-        let result = JSON.parse(userBody);
-        // Crawl user profile_picture from facebook by access token.
-        request.get({
+function crawlByAccessTokenFacebook(accessToken) {
+  return new Promise((resolve, reject) => {
+    // Crawl user data from facebook by access token.
+    request.get({
+        url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
+        qs: { fields: FB_GRAPH_CRAWL_PARAMS, access_token: accessToken },
+      },
+      (error, response, userBody) => {
+        if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
+          let result = JSON.parse(userBody);
+          // Crawl user profile_picture from facebook by access token.
+          request.get({
             url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
             qs: { type: 'large', redirect: '0' },
           }, (error, response, pictureBody) => {
@@ -166,8 +180,11 @@ function crawlByAccessTokenFacebook(accessToken, responseCallback) {
               responseCallback();
             }
           });
-      } else {
-        responseCallback();
-      }
-    });
+        } else {
+          responseCallback();
+        }
+      });
+  });
+
+
 }
