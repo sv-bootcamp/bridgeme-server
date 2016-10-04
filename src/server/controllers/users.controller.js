@@ -1,7 +1,7 @@
-import userCallback from '../config/json/user.callback';
 import * as matchController from './match.controller';
 import mongoose from 'mongoose';
 import request from 'request';
+import userCallback from '../config/json/user.callback';
 
 /*
  * Methods about user, register user and handle session
@@ -85,11 +85,14 @@ export function getProfileById(req, res, next) {
 
 export function signin(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
+    let registrationData;
+    let userItem;
+    let success_code;
     crawlByAccessTokenFacebook(req.body.access_token)
       .then((facebookResult) => {
         return new Promise((resolve, reject) => {
           if (facebookResult && facebookResult.verified == true) {
-            let registrationData = {
+            registrationData = {
               email: facebookResult.email,
               name: facebookResult.name,
               work: facebookResult.work,
@@ -102,31 +105,38 @@ export function signin(req, res, next) {
               timezone: facebookResult.timezone,
               profile_picture: facebookResult.profile_picture,
             };
-            resolve(registrationData);
+            resolve();
           } else {
-            reject(Error(userCallback.ERR_INVALID_ACCESS_TOKEN));
+            throw new Error(userCallback.ERR_INVALID_ACCESS_TOKEN);
           }
         });
       })
-      .then((registrationData) => {
+      .then(() => {
         return User.findOne({ email: registrationData.email }).exec();
       })
       .then((user) => {
-        if(!user) {
+        if (!user) {
           let userData = new User(registrationData);
+          success_code = 201;
           return userData.save();
         } else {
           return new Promise((resolve, reject) => {
-            resolve(uesr);
+            success_code = 200;
+            resolve(user);
           });
         }
       })
-      .then((user) =>{
+      .then((user) => {
+        userItem = user;
         return User.update({ _id: user._id }, { stamp_login: Date.now() }).exec();
       })
       .then((user) => {
-        storeSession(req, uesr);
-        res.status(201).json(user);
+        storeSession(req, userItem);
+        if (success_code === 200) {
+          res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+        } else if (success_code === 201) {
+          res.status(201).json(userItem);
+        }
       })
       .catch((err) => {
         res.status(400).json({ err_point: err.message, err_msg: err.stack });
@@ -146,18 +156,6 @@ function storeSession(req, user) {
   req.session._id = user._id.toString();
 }
 
-function registerUser(req, res, registrationData) {
-  let userData = new User(registrationData);
-  userData.save((err, user) => {
-    if (err) {
-      res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER, err: err });
-    } else {
-      storeSession(req, user);
-      res.status(201).json(user);
-    }
-  });
-}
-
 function crawlByAccessTokenFacebook(accessToken) {
   return new Promise((resolve, reject) => {
     // Crawl user data from facebook by access token.
@@ -175,16 +173,15 @@ function crawlByAccessTokenFacebook(accessToken) {
           }, (error, response, pictureBody) => {
             if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
               result.profile_picture = JSON.parse(pictureBody).data.url;
-              responseCallback(result);
+              resolve(result);
             } else {
-              responseCallback();
+              resolve();
             }
           });
         } else {
-          responseCallback();
+          resolve();
         }
       });
   });
-
 
 }
