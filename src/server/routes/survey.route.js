@@ -58,21 +58,21 @@ const router = express.Router();
  *       "survey_id": "A-001"
  *     }
  * @apiErrorExample {json} Fail
- *     HTTP/1.1 401 No matching user
+ *     HTTP/1.1 400 No matching user
  *     {
  *       "err_point": "User Not Found - No Matching user",
  *       "err": {Detail error message}
  *     }
  * @apiErrorExample {json}
- *     HTTP/1.1 401 Wrong Format
+ *     HTTP/1.1 400 Wrong Format
  *     {
  *       "err_point": "Cannot save answer",
  *       "err": {Detail error message}
  *     }
  * @apiErrorExample {json}
- *     HTTP/1.1 401 Invalid Access
+ *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Session Error"
+ *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
 router.post('/answer', survey.saveAnswer);

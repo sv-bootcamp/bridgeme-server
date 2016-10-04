@@ -1,4 +1,4 @@
-# yoda
+# yoda  [![Build Status](https://travis-ci.org/sv-bootcamp/yoda.svg?branch=master)](https://travis-ci.org/sv-bootcamp/yoda)
 Codename Yoda. Mentoring.
 
 [Go to yoda wiki page](https://github.com/sv-bootcamp/wiki/wiki/Project-Yoda)
