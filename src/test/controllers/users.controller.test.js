@@ -30,7 +30,7 @@ describe('Test User API', function () {
         })
         .catch(function (err) {
           err.statusCode.should.equal(400);
-         // err.response.body.err_point.should.equal(userCallback.ERR_INVALID_ACCESS_TOKEN);
+          // err.response.body.err_point.should.equal(userCallback.ERR_INVALID_ACCESS_TOKEN);
           done();
         });
     });

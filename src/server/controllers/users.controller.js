@@ -1,6 +1,6 @@
 import * as matchController from './match.controller';
 import mongoose from 'mongoose';
-import request from 'request';
+import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
 
 /*
@@ -55,8 +55,8 @@ export function getMyProfile(req, res, next) {
         res.status(200).json(myProfile);
       })
       .catch((err) => {
-          res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-        });
+        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -90,28 +90,19 @@ export function signin(req, res, next) {
     let success_code;
     crawlByAccessTokenFacebook(req.body.access_token)
       .then((facebookResult) => {
-        return new Promise((resolve, reject) => {
-          if (facebookResult && facebookResult.verified == true) {
-            registrationData = {
-              email: facebookResult.email,
-              name: facebookResult.name,
-              work: facebookResult.work,
-              gender: facebookResult.gender,
-              location: facebookResult.location ? facebookResult.location.name : undefined,
-              education: facebookResult.education,
-              platform_id: facebookResult.id,
-              platform_type: req.body.platform_type,
-              locale: facebookResult.locale,
-              timezone: facebookResult.timezone,
-              profile_picture: facebookResult.profile_picture,
-            };
-            resolve();
-          } else {
-            throw new Error(userCallback.ERR_INVALID_ACCESS_TOKEN);
-          }
-        });
-      })
-      .then(() => {
+        registrationData = {
+          email: facebookResult.email,
+          name: facebookResult.name,
+          work: facebookResult.work,
+          gender: facebookResult.gender,
+          location: facebookResult.location ? facebookResult.location.name : undefined,
+          education: facebookResult.education,
+          platform_id: facebookResult.id,
+          platform_type: req.body.platform_type,
+          locale: facebookResult.locale,
+          timezone: facebookResult.timezone,
+          profile_picture: facebookResult.profile_picture,
+        };
         return User.findOne({ email: registrationData.email }).exec();
       })
       .then((user) => {
@@ -139,12 +130,12 @@ export function signin(req, res, next) {
         }
       })
       .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack });
+        res.status(400).json(err);
       });
 
   } else if (req.body.platform_type === platform.linkedin) {
     // TODO : Validiate accesstoken from linkedin API server.
-    res.send("Doesn't support yet.");
+    res.status(400).send("Doesn't support yet.");
   } else {
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
@@ -159,28 +150,33 @@ function storeSession(req, user) {
 function crawlByAccessTokenFacebook(accessToken) {
   return new Promise((resolve, reject) => {
     // Crawl user data from facebook by access token.
-    request.get({
-        url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
-        qs: { fields: FB_GRAPH_CRAWL_PARAMS, access_token: accessToken },
-      },
-      (error, response, userBody) => {
-        if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
-          let result = JSON.parse(userBody);
+    let result;
+    request({
+      method: 'GET',
+      url: FB_GRAPH_BASE_URL + FB_GRAPH_GET_MY_PROFILE_URI,
+      qs: { fields: FB_GRAPH_CRAWL_PARAMS, access_token: accessToken },
+      resolveWithFullResponse: true,
+    })
+      .then((facebookDataResult) => {
+        result = JSON.parse(facebookDataResult.body);
+        if (facebookDataResult.statusCode === 200 && result.verified === true) {  // if HTTP request&response successfully.
           // Crawl user profile_picture from facebook by access token.
-          request.get({
+          return request({
+            method: 'GET',
             url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
             qs: { type: 'large', redirect: '0' },
-          }, (error, response, pictureBody) => {
-            if (!error && response.statusCode == 200) {  // if HTTP request&response successfully.
-              result.profile_picture = JSON.parse(pictureBody).data.url;
-              resolve(result);
-            } else {
-              resolve();
-            }
+            resolveWithFullResponse: true,
           });
-        } else {
-          resolve();
         }
+      })
+      .then((facebookPictureResult) => {
+        if (facebookPictureResult.statusCode === 200) {  // if HTTP request&response successfully.
+          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          resolve(result);
+        }
+      })
+      .catch(function (err) {
+        reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
   });
 
