@@ -105,8 +105,7 @@ export function signin(req, res, next) {
       })
       .then((existingUser) => {
         if (!existingUser) {
-          let userData = new User(registrationData);
-          userData.save()
+          new User(registrationData).save()
             .then((registerdUser) => {
               return storeSession(req, registerdUser);
             })
