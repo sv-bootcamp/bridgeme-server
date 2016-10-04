@@ -1,7 +1,7 @@
-import userCallback from '../config/json/user.callback';
 import * as matchController from './match.controller';
 import mongoose from 'mongoose';
 import request from 'request';
+import userCallback from '../config/json/user.callback';
 
 /*
  * Methods about user, register user and handle session
@@ -170,4 +170,16 @@ function crawlByAccessTokenFacebook(accessToken, responseCallback) {
         responseCallback();
       }
     });
+}
+
+export function signout(req, res, next) {
+  if (req.session._id) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNOUT, err: err });
+      } else {
+        res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+      }
+    });
+  }
 }

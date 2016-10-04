@@ -22,6 +22,29 @@ const router = express.Router();
  */
 router.post('/signIn', user.signin);
 
+//POST method
+
+/**
+ * @api {post} /users/signout Request Sign out
+ * @apiName signout
+ * @apiGroup User
+ *
+ * @apiDescription If you sign out, server will destroy user session.
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *        Sign out success.
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "err_point": "Failed to sign out."
+ *     }
+ */
+router.post('/signOut', user.signout);
+
 //GET method
 
 /**
