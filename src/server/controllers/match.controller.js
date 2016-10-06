@@ -159,7 +159,7 @@ function findMentorActivity(mentor_id) {
 export function responseMentoring(req, res, next) {
   if (req.session._id) {
     ///todo: Validiate  match_id & option params (Luke Lee)
-    if (req.body.option === '0') {
+    if (Number(req.body.option) === REJECTED) {
       Match.remove({ _id: req.body.match_id }, (err) => {
         if (err) {
           res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
