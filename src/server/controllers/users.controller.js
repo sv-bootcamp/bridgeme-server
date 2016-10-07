@@ -137,7 +137,6 @@ export function signin(req, res, next) {
 }
 
 function storeSession(req, user) {
-
   req.session.access_token = req.body.access_token;
   req.session.email = user.email;
   req.session._id = user._id.toString();
@@ -164,7 +163,9 @@ function crawlByAccessTokenFacebook(accessToken) {
     })
       .then((facebookDataResult) => {
         result = JSON.parse(facebookDataResult.body);
-        if (facebookDataResult.statusCode === 200 && result.verified === true) {  // if HTTP request&response successfully.
+
+        // if HTTP request&response successfully.
+        if (facebookDataResult.statusCode === 200 && result.verified === true) {
           // Crawl user profile_picture from facebook by access token.
           return request({
             method: 'GET',
@@ -175,7 +176,8 @@ function crawlByAccessTokenFacebook(accessToken) {
         }
       })
       .then((facebookPictureResult) => {
-        if (facebookPictureResult.statusCode === 200) {  // if HTTP request&response successfully.
+        // if HTTP request&response successfully.
+        if (facebookPictureResult.statusCode === 200) {
           result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
           resolve(result);
         }
