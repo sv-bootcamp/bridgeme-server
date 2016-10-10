@@ -45,7 +45,7 @@ export function getRequest(req, res, next) {
   }
 }
 
-function determineUser(isSampleCallback) {
+function determineUser() {
   // TODO: traffic management
   // In this version we send survey to all user.
   // after launch we can manage traffic by setting t.
