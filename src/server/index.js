@@ -29,7 +29,7 @@ export default (cb) => {
     resave: false,
     saveUninitialized: false,
     //session expire after 1Day.
-    cookie: { maxAge: 1000 * 3600 * 24 },
+    cookie: { maxAge: 1000 * 3600 * 24 * 365 },
   }));
 
   app.use(bodyParser.urlencoded({
