@@ -210,7 +210,8 @@ describe('Test User API', function () {
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
           body.gender.should.equal(userData.USER_A_DATA.gender);
-          body.status.should.equal(0);
+          body.relation.asMentee.should.equal(0);
+          body.relation.asMentor.should.equal(0);
           done();
         })
         .catch(function (err) {

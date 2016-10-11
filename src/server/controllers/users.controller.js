@@ -66,13 +66,21 @@ export function getMyProfile(req, res, next) {
 export function getProfileById(req, res, next) {
   if (req.session._id) {
     let userProfile = {};
+
     User.findOne({ _id: req.params._id }).exec()
       .then(profile => {
         userProfile = JSON.parse(JSON.stringify(profile));
         return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.session._id }).exec();
       })
-      .then(match => {
-        userProfile.status = match ? match.status : matchController.REJECTED;
+      .then(matchAsMentee => {
+        userProfile.relation = {};
+        userProfile.relation.asMentee =
+          matchAsMentee ? matchAsMentee.status : matchController.REJECTED;
+        return Match.findOne({ mentor_id: req.session._id, mentee_id: userProfile._id }).exec();
+      })
+      .then(matchAsMentor => {
+        userProfile.relation.asMentor =
+          matchAsMentor ? matchAsMentor.status : matchController.REJECTED;
         res.status(200).json(userProfile);
       })
       .catch((err) => {
