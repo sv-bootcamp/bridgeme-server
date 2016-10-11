@@ -20,34 +20,14 @@ export function getRequest(req, res, next) {
       .then((isSample) => {
         if (isSample) {
           if (req.params.type == 'mentee') {
-            surveyId = 'A001-1';
+            res.status(200).json(menteeSurvey.data);
           } else if (req.params.type == 'mentor') {
-            surveyId = 'B001-1';
+            res.status(200).json(mentorSurvey.data);
           } else {
             throw new Error(surveyCallback.ERR_INVALID_PARAMS);
           }
-
-          return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
           res.status(204).json();
-        }
-      })
-      .then((surveyItem) => {
-        if (surveyItem) {
-          res.status(200).json(surveyItem);
-        } else {
-          if (surveyId == 'A001-1') {
-            return Survey(menteeSurvey.data).save();
-          } else if (surveyId == 'B001-1') {
-            return Survey(mentorSurvey.data).save();
-          }
-        }
-      })
-      .then((surveySaved) => {
-        if (surveySaved) {
-          res.status(200).json(surveySaved);
-        } else {
-          throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
         }
       })
       .catch((err) => {
