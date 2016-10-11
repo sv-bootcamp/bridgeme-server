@@ -1,5 +1,5 @@
-import menteeData from '../config/json/surveyA001_1';
-import mentorData from '../config/json/surveyB001_1';
+import menteeSurvey from '../config/json/surveyA001-1';
+import mentorSurvey from '../config/json/surveyB001-1';
 import mongoose from 'mongoose';
 import surveyCallback from '../config/json/survey.callback';
 import userCallback from '../config/json/user.callback';
@@ -37,9 +37,9 @@ export function getRequest(req, res, next) {
           res.status(200).json(surveyItem);
         } else {
           if (surveyId == 'A001-1') {
-            return Survey(menteeData.surveyA001_1).save();
+            return Survey(menteeSurvey.data).save();
           } else if (surveyId == 'B001-1') {
-            return Survey(mentorData.surveyB001_1).save();
+            return Survey(mentorSurvey.data).save();
           }
         }
       })
