@@ -182,7 +182,7 @@ export default {
         question_index: 4,
         question: '1주일에 얼마나 많은 시간을 멘토링에 투자하실 계획이십니까?',
         allow_multiple_answer: false,
-        answer: [
+        answers: [
           {
             options: [
               {
