@@ -28,7 +28,7 @@ export default (cb) => {
     store: new MongoStore({ db: db }),
     resave: false,
     saveUninitialized: false,
-    //session expire after 1Day.
+    //session expire after 1Year.
     cookie: { maxAge: 1000 * 3600 * 24 * 365 },
   }));
 
