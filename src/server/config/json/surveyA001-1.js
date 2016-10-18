@@ -89,7 +89,7 @@ export default {
               {
                 answer_index: 6,
                 is_free_form: false,
-                content: '포트롤리오',
+                content: '포트폴리오',
                 next_question_index: 2,
               },
               {
@@ -106,13 +106,13 @@ export default {
               {
                 answer_index: 8,
                 is_free_form: false,
-                content: '기업가정신',
+                content: '기업가 정신',
                 next_question_index: 2,
               },
               {
                 answer_index: 9,
                 is_free_form: false,
-                content: '창업아이템 선정',
+                content: '창업 아이템 선정',
                 next_question_index: 2,
               },
               {
