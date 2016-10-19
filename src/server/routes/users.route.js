@@ -22,6 +22,138 @@ const router = express.Router();
  */
 router.post('/signIn', user.signin);
 
+/**
+ * @api {post} /users/edit Request Edit
+ * @apiName edit
+ * @apiGroup User
+ *
+ *  * @apiParamExample {json} Parameter Sample
+ *     {
+ *        "name": "조사라",
+ *        "gender": "female",
+ *         "email": "joytutu29@naver.com",
+ *         "languages": "Korean, English",
+ *         "location": "",
+ *         "about": "Hi, I am Sarah",
+ *         "work" : [],
+ *         "education" : [
+ *              {
+ *                  "type" : "High School",
+ *                  "school" : {
+ *                      "name" : "노은고등학교"
+ *                  }
+ *              },
+ *              {
+ *                  "type" : "College",
+ *                  "concentration" : [
+ *                      {
+ *                          "name" : "IT공학과"
+ *                      }
+ *                  ],
+ *                  "school" : {
+ *                      "name" : "숙명여자대학교 Sookmyung Women's University"
+ *                  }
+ *              }
+ *         ]
+ *     }
+ * @apiDescription {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Update success"
+ *     }
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ *
+ * @apiParam {String} name Name of User.
+ * @apiParam {String} gender Information of user gender.
+ * @apiParam {String} languages Information of user languages.
+ * @apiParam {String} location Information of user location.
+ * @apiParam {String} about One short sentence about User.
+ * @apiParam {Array} work Information of user work history.
+ * @apiParam {Array} education Information of user education history.
+ *
+ */
+router.post('/edit', user.editProfile);
+
+/**
+ * @api {post} /users/signup Request Sign up
+ * @apiName signup
+ * @apiGroup User
+ *
+ *  * @apiParamExample {json} Parameter Sample
+ *     {
+ *         "job" : [
+ *              {
+ *                  "area" : "Design",
+ *                  "role" : "Visual / UI",
+ *                  "years" : "0-2 years",
+ *                  "education_background" : "Bachelor's"
+ *              }
+ *         ],
+ *         "help" : [
+ *              {
+ *                  "select" : "Requirement"
+ *              },
+ *              {
+ *                  "select" : "Resume"
+ *              },
+ *              {
+ *                  "select" : "Portfolio"
+ *              }
+ *         ],
+ *         "personality" : [
+ *              {
+ *                  "option" : "Extroverts",
+ *                  "score" : 0
+ *
+ *              },
+ *                  "option" : "Introverts",
+ *                  "score" : 0
+ *              },
+ *                  "option" : "Sensors",
+ *                  "score" : 1
+ *              },
+ *                  "option" : "Thinkers",
+ *                  "score" : 1
+ *              },
+ *                  "option" : "Judgers",
+ *                  "score" : 2
+ *              },
+ *                  "option" : "Listener",
+ *                  "score" : 2
+ *              },
+ *                  "option" : "Energetic",
+ *                  "score" : 2
+ *              },
+ *                  "option" : "Unexacting",
+ *                  "score" : 1
+ *              },
+ *                  "option" : "Traditional",
+ *                  "score" : 1
+ *              }
+ *         ]
+ *     }
+ * @apiDescription {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Sign up success."
+ *     }
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ *
+ * @apiParam {Array} job Information of user job.
+ * @apiParam {Array} help Information of user help.
+ * @apiParam {Array} personality Information of user personality.
+ *
+ */
+router.post('/signup', user.singup);
+
 //GET method
 
 /**
@@ -136,5 +268,27 @@ router.get('/me', user.getMyProfile);
  *
  */
 router.get('/mentorlist', user.getMentorList);
+
+/**
+ * @api {get} /users/job Request job category list
+ * @apiName getJobCategory
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        Job category Info
+ *      },....
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ *
+ */
+router.get('/job', user.getJobCategory);
 
 export default router;

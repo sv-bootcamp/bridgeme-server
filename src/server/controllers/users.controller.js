@@ -1,4 +1,5 @@
 import * as matchController from './match.controller';
+import jobcategory from '../config/json/jobcategory';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
@@ -35,7 +36,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }).sort({ stamp_login: -1 }).exec()
+    User.find({ _id: { $ne: req.session._id } }).sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -97,12 +98,13 @@ export function signin(req, res, next) {
     crawlByAccessTokenFacebook(req.body.access_token)
       .then((facebookResult) => {
         registrationData = {
-          email: facebookResult.email,
           name: facebookResult.name,
-          work: facebookResult.work,
           gender: facebookResult.gender,
+          email: facebookResult.email,
+          languages: facebookResult.languages,
           location: facebookResult.location ? facebookResult.location.name : undefined,
           education: facebookResult.education,
+          work: facebookResult.work,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
@@ -195,4 +197,78 @@ function crawlByAccessTokenFacebook(accessToken) {
       });
   });
 
+}
+
+export function getJobCategory(req, res, next) {
+  if (req.session._id) {
+    res.status(200).json(jobcategory.data);
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editProfile(req, res, next) {
+  if (req.session._id) {
+    if (req.body.email === null || req.body.email === undefined) {
+      res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
+    } else {
+      validateEmail(req.body.email)
+        .then(() => {
+          User.update({ _id: req.session._id }, {
+            $set: {
+              name: req.body.name,
+              gender: req.body.gender,
+              email: req.body.email,
+              languages: req.body.languages,
+              location: req.body.location,
+              about: req.body.about,
+              education: req.body.education,
+              work: req.body.work,
+            },
+          }).exec();
+        })
+        .then((data) => {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
+        });
+    }
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+function validateEmail(req) {
+  return new Promise((resolve, reject) => {
+    let email = req;
+    let filter = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (filter.test(email)) {
+      resolve(true);
+    } else {
+      reject(false);
+    }
+  });
+}
+
+export function singup(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
+        job: req.body.job,
+        help: req.body.help,
+        personality: req.body.personality,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_SIGNUP });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
 }

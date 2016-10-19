@@ -38,7 +38,22 @@ let educationSchema = new Schema({
   year: {
     name: String,
   },
+});
 
+const jobSchema = new Schema({
+  area: String,
+  role: String,
+  years: String,
+  education_background: String,
+});
+
+const helpSchema = new Schema({
+  select: String,
+});
+
+const personalitySchema = new Schema({
+  option: String,
+  score: Number,
 });
 
 let userSchema = new Schema({
@@ -50,6 +65,9 @@ let userSchema = new Schema({
   name: String,
   education: [educationSchema],
   work: [workSchema],
+  job: [jobSchema],
+  help: [helpSchema],
+  personality: [personalitySchema],
   locale: String,
   age: Number,
   gender: String,
@@ -61,6 +79,8 @@ let userSchema = new Schema({
   timezone: Number,
   profile_picture: String,
   job_position: String,
+  about: String,
+  languages: String,
   reg_date: {
     type: Date,
     default: Date.now,

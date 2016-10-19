@@ -3,6 +3,7 @@ import rp from 'request-promise';
 import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
+import userEditData from '../fixtures/editData';
 
 /*
  * Test for User API
@@ -219,6 +220,28 @@ describe('Test User API', function () {
           done();
         });
     });
+  });
+});
+
+describe('/edit', function () {
+  it('request /edit with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: API_BASE_URL + '/edit',
+      form: userEditData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
   });
 });
 
