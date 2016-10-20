@@ -241,10 +241,10 @@ describe('/job', function () {
       .then(function (result) {
         result.statusCode.should.equal(200);
         let body = result.body;
-        body.area.toString().should.equal(jobData.data.area.toString());
-        body.years.toString().should.equal(jobData.data.years.toString());
+        body.area.toString().should.equal(jobData.area.toString());
+        body.years.toString().should.equal(jobData.years.toString());
         body.education_background.toString()
-          .should.equal(jobData.data.education_background.toString());
+          .should.equal(jobData.education_background.toString());
         done();
       })
       .catch(function (err) {
