@@ -1,5 +1,7 @@
 import '../../server/models/users.model';
+import jobData from '../../server/config/json/jobcategory';
 import rp from 'request-promise';
+import signupData from '../fixtures/signupData';
 import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
@@ -223,6 +225,35 @@ describe('Test User API', function () {
   });
 });
 
+describe('/job', function () {
+  it('request /job without session coockie.', done => {
+    anauthorizedAccessTest(API_BASE_URL + '/job', done);
+  });
+
+  it('request /job with session coockie.', done => {
+    rp({
+      method: 'GET',
+      uri: API_BASE_URL + '/job',
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        let body = result.body;
+        body.area.toString().should.equal(jobData.data.area.toString());
+        body.years.toString().should.equal(jobData.data.years.toString());
+        body.education_background.toString()
+          .should.equal(jobData.data.education_background.toString());
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
 describe('/edit', function () {
   it('request /edit with session coockie.', done => {
     rp({
@@ -236,6 +267,28 @@ describe('/edit', function () {
       .then(function (result) {
         result.statusCode.should.equal(200);
         result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/signup', function () {
+  it('request /signup with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: API_BASE_URL + '/signup',
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_SIGNUP);
         done();
       })
       .catch(function (err) {

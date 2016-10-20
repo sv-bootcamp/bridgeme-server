@@ -2,9 +2,8 @@ export default {
   data: {
     name: '조사라',
     gender: 'female',
-    email: 'joytutu29@naver.com',
     languages: 'Korean, English',
-    location: '',
+    location: 'Seoul',
     about: 'Hi, I am Sarah',
     work: [],
     education: [

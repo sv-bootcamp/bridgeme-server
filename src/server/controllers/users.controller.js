@@ -209,32 +209,41 @@ export function getJobCategory(req, res, next) {
 
 export function editProfile(req, res, next) {
   if (req.session._id) {
-    if (req.body.email === null || req.body.email === undefined) {
-      res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
-    } else {
-      validateEmail(req.body.email)
-        .then(() => {
-          User.update({ _id: req.session._id }, {
-            $set: {
-              name: req.body.name,
-              gender: req.body.gender,
-              email: req.body.email,
-              languages: req.body.languages,
-              location: req.body.location,
-              about: req.body.about,
-              education: req.body.education,
-              work: req.body.work,
-            },
-          }).exec();
-        })
-        .then((data) => {
+    let editData = {
+      name: req.body.name,
+      gender: req.body.gender,
+      languages: req.body.languages,
+      location: req.body.location,
+      about: req.body.about,
+      education: req.body.education,
+      work: req.body.work,
+    };
+    User.findOne({ _id: req.session._id, email: { $ne: null } }).exec()
+      .then((userWithEmail) => {
+        if (!userWithEmail) {
+          if (req.body.email === null || req.body.email === undefined) {
+            res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
+          } else {
+            validateEmail(req.body.email)
+              .then((isValid) => {
+                return User.update({ _id: req.session._id },
+                  { $set: { email: req.body.email }, editData }).exec();
+              });
+          }
+        } else {
+          return User.update({ _id: req.session._id }, { $set: editData }).exec();
+        }
+      })
+      .then((updateData) => {
+        if (updateData) {
           res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-        })
-        .catch((err) => {
-          console.log(err);
+        } else {
           res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
-        });
-    }
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
