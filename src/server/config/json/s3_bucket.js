@@ -1,8 +1,12 @@
 export default {
   aws: {
-    path: 'images/',
-    region: 'us-east-1',
+    region: 'ap-northeast-2',
+    path: 'profile/',
     acl: 'public-read',
+    params: {
+      Bucket: 'yodabucket',
+      Body: null,
+    },
   },
   cleanup: {
     versions: true,

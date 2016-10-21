@@ -2,9 +2,7 @@ import * as matchController from './match.controller';
 import jobcategory from '../config/json/jobcategory';
 import mongoose from 'mongoose';
 import request from 'request-promise';
-import s3_bucket from '../config/json/s3_bucket';
 import userCallback from '../config/json/user.callback';
-import upload from 's3-uploader';
 
 /*
  * Methods about user, register user and handle session
@@ -13,7 +11,6 @@ import upload from 's3-uploader';
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
-let uploader = new upload('profile', s3_bucket);
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -261,16 +258,6 @@ function validateEmail(req) {
     } else {
       reject(false);
     }
-  });
-}
-
-export function imageEdit(req, res, next) {
-  uploader.upload('/profile/image.jpg', {}, function (err, versions, meta) {
-    if (err) { throw err; }
-
-    versions.forEach(function (image) {
-      console.log(image.width, image.height, image.url);
-    });
   });
 }
 

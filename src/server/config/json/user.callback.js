@@ -7,6 +7,7 @@ export default {
   ERR_INVALID_PLATFORM: 'Platforom not supported.',
   ERR_INVALID_UPDATE: 'User Email should not be empty.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
+  SUCCESS_PROFILE_UPDATE: 'Profile upload success.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
   SUCCESS_SIGNIN: 'Sign in success.',
   SUCCESS_SIGNUP: 'Sign up success.',
