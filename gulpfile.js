@@ -62,6 +62,7 @@ gulp.task('test', ['pre-test'], function () {
   return gulp.src([
     'dist-test/test/*.js',
     'dist-test/test/controllers/users.controller.test.js',
+    'dist-test/test/controllers/image.controller.test.js',
     'dist-test/test/controllers/survey.controller.test.js',
     'dist-test/test/controllers/match.controller.test.js',])
     .pipe(mocha())

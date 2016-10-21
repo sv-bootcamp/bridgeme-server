@@ -1,4 +1,5 @@
 export default {
+  ERR_AWS_S3: 'Error in aws s3',
   ERR_FAIL_REGISTER: 'Failed to register',
   ERR_FAIL_SIGNIN: 'Failed to sign in.',
   ERR_FAIL_AUTH: 'Authentication failed. Please sign in first.',
