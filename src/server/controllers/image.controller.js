@@ -1,25 +1,31 @@
 import AWS from 'aws-sdk';
+import config from '../../test/config';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import userCallback from '../config/json/user.callback';
 
-AWS.config.accessKeyId = '~/.aws/config.access_key';
-AWS.config.secretAccessKey = '~/.aws/config.secret_key';
-
 const User = mongoose.model('user');
 
 export function uploadImage(req, res, next) {
+  if (process.env.NODE_ENV === 'test') {
+    AWS.config.accessKeyId = config.accessKeyId;
+    AWS.config.secretAccessKey = config.secretAccessKey;
+  } else {
+    AWS.config.accessKeyId = '~/.aws/config.access_key';
+    AWS.config.secretAccessKey = '~/.aws/config.secret_key';
+  }
+  
   if (req.session._id) {
     const imageurl = req.body.url;
     // TODO: Need to validate file.
     let bucketName = 'yodabucket';
     let readStream = fs.createReadStream(imageurl);
-    let Key = 'profile/' + req.session._id + '.png';
+    let imageKey = 'profile/' + req.session._id + '.png';
 
     const S3 = new AWS.S3({ region: 'ap-northeast-2' });
     let params = {
       Bucket: bucketName,
-      Key: Key,
+      Key: imageKey,
       ACL: 'public-read',
       Body: readStream,
     };
@@ -27,7 +33,7 @@ export function uploadImage(req, res, next) {
     S3.putObject(params).promise()
       .then((data, err) => {
         if (!err) {
-          let profileUrl = S3.endpoint.href + bucketName + '/' + Key;
+          let profileUrl = S3.endpoint.href + bucketName + '/' + imageKey;
           return updateProfile(req, profileUrl);
         } else {
           throw err;
