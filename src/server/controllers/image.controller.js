@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
-import config from '../../test/config';
+import config from '././././config';
+//import config from './config';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import userCallback from '../config/json/user.callback';
@@ -11,10 +12,12 @@ export function uploadImage(req, res, next) {
     AWS.config.accessKeyId = config.accessKeyId;
     AWS.config.secretAccessKey = config.secretAccessKey;
   } else {
-    AWS.config.accessKeyId = '~/.aws/config.access_key';
-    AWS.config.secretAccessKey = '~/.aws/config.secret_key';
+    AWS.config.accessKeyId = config.accessKeyId;
+    AWS.config.secretAccessKey = config.secretAccessKey;
+    console.log('config.accessKeyId : ' + config.accessKeyId);
+    console.log('config.secretAccessKey : ' + config.secretAccessKey);
   }
-  
+
   if (req.session._id) {
     const imageurl = req.body.url;
     // TODO: Need to validate file.
