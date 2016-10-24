@@ -7,6 +7,7 @@ export default {
   ERR_INVALID_EMAIL: 'Invalid email.',
   ERR_INVALID_PLATFORM: 'Platforom not supported.',
   ERR_INVALID_UPDATE: 'User Email should not be empty.',
+  ERR_IMAGE_PATH: 'Image Path err.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
   SUCCESS_PROFILE_UPDATE: 'Profile upload success.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
