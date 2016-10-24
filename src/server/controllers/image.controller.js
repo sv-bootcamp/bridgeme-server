@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import config from '../../../config';
+import config from '../config/json/aws_config';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import userCallback from '../config/json/user.callback';
