@@ -10,7 +10,6 @@ import session from 'express-session';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
 import match from './routes/match.route';
-import image from './routes/image.route';
 
 const MongoStore = require('connect-mongostore')(session);
 
@@ -42,7 +41,6 @@ export default (cb) => {
   app.use('/users', users);
   app.use('/survey', survey);
   app.use('/match', match);
-  app.use('/image', image);
 
   const server = app.listen(8000, cb ? cb : () => {
     /* eslint-disable no-console */

@@ -95,20 +95,22 @@ router.post('/edit', user.editProfile);
  *         ],
  *         "help" : [
  *              {
- *                  "select" : "Requirement"
+ *                  "select" : "Requirement",
+ *                  "index" : 0
  *              },
  *              {
- *                  "select" : "Resume"
+ *                  "select" : "Resume",
+ *                  "index" : 1
  *              },
  *              {
- *                  "select" : "Portfolio"
+ *                  "select" : "Portfolio",
+ *                  "index" : 2
  *              }
  *         ],
  *         "personality" : [
  *              {
  *                  "option" : "Extroverts",
  *                  "score" : 0
- *
  *              },
  *                  "option" : "Introverts",
  *                  "score" : 0

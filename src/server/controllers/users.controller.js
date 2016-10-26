@@ -1,4 +1,7 @@
 import * as matchController from './match.controller';
+import AWS from 'aws-sdk';
+import formidable from 'formidable';
+import fs from 'fs';
 import jobcategory from '../config/json/jobcategory';
 import mongoose from 'mongoose';
 import request from 'request-promise';
@@ -8,6 +11,7 @@ import userCallback from '../config/json/user.callback';
  * Methods about user, register user and handle session
  */
 
+const Key = mongoose.model('key');
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
@@ -208,45 +212,54 @@ export function getJobCategory(req, res, next) {
 }
 
 export function editProfile(req, res, next) {
-  if (req.session._id) {
-    let editData = {
-      name: req.body.name,
-      gender: req.body.gender,
-      languages: req.body.languages,
-      location: req.body.location,
-      about: req.body.about,
-      education: req.body.education,
-      work: req.body.work,
-    };
-    User.findOne({ _id: req.session._id, email: { $ne: null } }).exec()
-      .then((userWithEmail) => {
-        if (!userWithEmail) {
-          if (req.body.email === null || req.body.email === undefined) {
-            res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
-          } else {
-            validateEmail(req.body.email)
-              .then((isValid) => {
-                return User.update({ _id: req.session._id },
-                  { $set: { email: req.body.email }, editData }).exec();
-              });
-          }
+  console.log(req);
+  //if (req.session._id) {
+  let request = JSON.stringify(req.info);
+  let editData = {
+    name: request.name,
+    gender: request.gender,
+    languages: request.languages,
+    location: request.location,
+    about: request.about,
+    education: request.education,
+    work: request.work,
+  };
+  User.findOne({ _id: req.session._id, email: { $ne: null } }).exec()
+    .then((userWithEmail) => {
+      if (!userWithEmail) {
+        if (request.email === null || request.email === undefined) {
+          res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
         } else {
-          return User.update({ _id: req.session._id }, { $set: editData }).exec();
+          validateEmail(request.email)
+            .then((isValid) => {
+              return User.update({ _id: req.session._id },
+                { $set: { email: request.email }, editData }).exec();
+            });
         }
-      })
-      .then((updateData) => {
-        if (updateData) {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-        } else {
-          res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
-        }
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+      } else {
+        return User.update({ _id: req.session._id }, { $set: editData }).exec();
+      }
+    })
+    .then((updateData) => {
+      if (updateData) {
+        return uploadImage(req, res);
+      } else {
+        res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
+      }
+    })
+    .then((uploadedImage) => {
+      if (uploadedImage) {
+        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+      } else {
+        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err_msg: err_stack });
+    });
+  //} else {
+  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  //}
 }
 
 function validateEmail(req) {
@@ -258,6 +271,87 @@ function validateEmail(req) {
     } else {
       reject(false);
     }
+  });
+}
+
+function uploadImage(req, res, next) {
+  return new Promise((resolve, reject) => {
+    setKey()
+      .then((data) => {
+        if (data) {
+          let file = null;
+          let form = new formidable.IncomingForm();
+          form.encoding = 'utf-8';
+          form.parse(req, function (err, fields, files) {
+            if (err) {
+              res.status(400).json({ err_point: userCallback.ERR_IMAGE_PARSE });
+            } else {
+              file = files.file; // file when postman test.
+            }
+
+            let bucketName = 'yodabucket';
+            let imageKey = 'profile/' + req.session._id + '.png';
+            let readStream = fs.createReadStream(file.path);
+
+            const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+            let params = {
+              Bucket: bucketName,
+              Key: imageKey,
+              ACL: 'public-read',
+              Body: readStream,
+            };
+            S3.putObject(params).promise()
+              .then((data, err) => {
+                if (data) {
+                  let profileUrl = S3.endpoint.href + bucketName + '/' + imageKey;
+                  return updateProfile(req, profileUrl);
+                } else {
+                  res.status(400).json({ err_point: userCallback.ERR_AWS_S3 });
+                }
+              })
+              .then((success) => {
+                if (success) {
+                  resolve(true);
+                } else {
+                  resolve(false);
+                }
+              });
+          });
+        } else {
+          res.status(400).json({ err_point: userCallback.ERR_AWS_KEY });
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  });
+}
+
+function setKey() {
+  return new Promise((resolve, reject) => {
+    Key.findOne({ index: 0 }).exec()
+      .then((key) => {
+        AWS.config.accessKeyId = key.accessKeyId;
+        AWS.config.secretAccessKey = key.secretAccessKey;
+        resolve(true);
+      })
+      .catch((err) => {
+        reject(false);
+      });
+  });
+}
+
+function updateProfile(req, profileUrl) {
+  return new Promise((resolve, reject) => {
+    User.update({ _id: req.session._id }, {
+      $set: { profile_picture: profileUrl },
+    }).exec()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject();
+      });
   });
 }
 

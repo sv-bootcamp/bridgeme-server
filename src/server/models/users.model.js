@@ -49,6 +49,7 @@ const jobSchema = new Schema({
 
 const helpSchema = new Schema({
   select: String,
+  index: Number,
 });
 
 const personalitySchema = new Schema({

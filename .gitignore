@@ -12,4 +12,3 @@ data/
 
 # scripts
 mongod
-aws_config.js

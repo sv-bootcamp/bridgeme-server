@@ -1,5 +1,7 @@
 export default {
+  ERR_AWS_KEY: 'AWS Key not found',
   ERR_AWS_S3: 'Error in aws s3',
+  ERR_IMAGE_PARSE: 'Error in Image parsing',
   ERR_FAIL_REGISTER: 'Failed to register',
   ERR_FAIL_SIGNIN: 'Failed to sign in.',
   ERR_FAIL_AUTH: 'Authentication failed. Please sign in first.',
@@ -7,7 +9,6 @@ export default {
   ERR_INVALID_EMAIL: 'Invalid email.',
   ERR_INVALID_PLATFORM: 'Platforom not supported.',
   ERR_INVALID_UPDATE: 'User Email should not be empty.',
-  ERR_IMAGE_PATH: 'Image Path err.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
   SUCCESS_PROFILE_UPDATE: 'Profile upload success.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
