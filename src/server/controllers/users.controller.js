@@ -93,7 +93,7 @@ export function getProfileById(req, res, next) {
 }
 
 export function localSignIn(req, res, next) {
-  let cipher = crypro.createCipher('aes256', req.body.email);
+  let cipher = crypto.createCipher('aes256', req.body.email);
   cipher.update(req.body.password, 'ascii', 'hex');
   let cryptedPassword = cipher.final('hex');
 
@@ -105,26 +105,25 @@ export function localSignIn(req, res, next) {
     gender: req.body.gender,
     location: req.body.location,
     education: req.body.education,
-    platform_type: req.body.platform_type,
+    platform_type: 0,
     profile_picture: req.body.profile_picture,
   };
 
   User.findOne({ email: registrationData.email }).exec()
     .then(existingUser => {
-      if(!existingUser) {
-        // JOIN
+      if (!existingUser) {
         new User(registrationData).save()
           .then(registeredUser => {
-            return storeSession(req. registeredUser);
+            return storeSession(req, registeredUser);
           })
           .then(storedUser => {
-            res.status(201).json(sotredUser);
+            res.status(201).json(storedUser);
           })
           .catch(err => {
             res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
           });
       } else {
-        if(registrationData.password === existingUser.password) {
+        if (registrationData.password === existingUser.password) {
           storeSession(req, existingUser)
             .then((storedUser) => {
               res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
@@ -136,6 +135,9 @@ export function localSignIn(req, res, next) {
           req.status(405).json({ err_point: userCallback.ERR_WRONG_PASSWORD });
         }
       }
+    })
+    .catch(err => {
+      res.status(400).json(err);
     });
 }
 
@@ -162,8 +164,8 @@ export function signIn(req, res, next) {
       .then((existingUser) => {
         if (!existingUser) {
           new User(registrationData).save()
-            .then((registerdUser) => {
-              return storeSession(req, registerdUser);
+            .then((registeredUser) => {
+              return storeSession(req, registeredUser);
             })
             .then((storedUser)=> {
               res.status(201).json(storedUser);
@@ -187,7 +189,7 @@ export function signIn(req, res, next) {
   } else if (req.body.platform_type === platform.linkedin) {
     // TODO : Validiate accesstoken from linkedin API server.
     res.status(400).send("Doesn't support yet.");
-  } else{
+  } else {
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
 }

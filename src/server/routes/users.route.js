@@ -30,7 +30,7 @@ router.post('/local_signin', user.localSignIn);
  * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
  *
  * @apiParam {String} access_token access_token gained from Platform API.
- * @apiParam {Number} platform_type Platform that user used when join { Local: 0, Facebook: 1,  LinkedIn: 2 }.
+ * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
  */
 router.post('/signin', user.signIn);
