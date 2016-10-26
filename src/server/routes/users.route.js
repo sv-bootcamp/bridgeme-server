@@ -10,6 +10,19 @@ const router = express.Router();
 //POST method
 
 /**
+ * @api {post} /users/local_signin Request Local Sign in
+ * @apiName localSignin
+ * @apiGroup User
+ *
+ * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/local_signin', user.localSignIn);
+
+/**
  * @api {post} /users/signin Request Sign in
  * @apiName signin
  * @apiGroup User
@@ -17,10 +30,10 @@ const router = express.Router();
  * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
  *
  * @apiParam {String} access_token access_token gained from Platform API.
- * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
+ * @apiParam {Number} platform_type Platform that user used when join { Local: 0, Facebook: 1,  LinkedIn: 2 }.
  *
  */
-router.post('/signIn', user.signin);
+router.post('/signin', user.signIn);
 
 //GET method
 

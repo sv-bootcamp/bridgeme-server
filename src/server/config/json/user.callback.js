@@ -5,6 +5,7 @@ export default {
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access_token.',
   ERR_INVALID_PLATFORM: 'Platforom not supported.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
+  ERR_WRONG_PASSWORD: 'The password is not correct.',
   SUCCESS_SIGNIN: 'Sign in success.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
 };

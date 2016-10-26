@@ -2,6 +2,7 @@ import * as matchController from './match.controller';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
+import crypto from 'crypto';
 
 /*
  * Methods about user, register user and handle session
@@ -9,7 +10,7 @@ import userCallback from '../config/json/user.callback';
 
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
-const platform = { facebook: '1', linkedin: '2' };
+const platform = { local: '0', facebook: '1', linkedin: '2' };
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -91,7 +92,54 @@ export function getProfileById(req, res, next) {
   }
 }
 
-export function signin(req, res, next) {
+export function localSignIn(req, res, next) {
+  let cipher = crypro.createCipher('aes256', req.body.email);
+  cipher.update(req.body.password, 'ascii', 'hex');
+  let cryptedPassword = cipher.final('hex');
+
+  let registrationData = {
+    email: req.body.email,
+    password: cryptedPassword,
+    name: req.body.name,
+    work: req.body.work,
+    gender: req.body.gender,
+    location: req.body.location,
+    education: req.body.education,
+    platform_type: req.body.platform_type,
+    profile_picture: req.body.profile_picture,
+  };
+
+  User.findOne({ email: registrationData.email }).exec()
+    .then(existingUser => {
+      if(!existingUser) {
+        // JOIN
+        new User(registrationData).save()
+          .then(registeredUser => {
+            return storeSession(req. registeredUser);
+          })
+          .then(storedUser => {
+            res.status(201).json(sotredUser);
+          })
+          .catch(err => {
+            res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
+          });
+      } else {
+        if(registrationData.password === existingUser.password) {
+          storeSession(req, existingUser)
+            .then((storedUser) => {
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+            })
+            .catch(err => {
+              res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNIN });
+            });
+        } else {
+          req.status(405).json({ err_point: userCallback.ERR_WRONG_PASSWORD });
+        }
+      }
+    });
+}
+
+export function signIn(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
     let registrationData;
     crawlByAccessTokenFacebook(req.body.access_token)
@@ -139,7 +187,7 @@ export function signin(req, res, next) {
   } else if (req.body.platform_type === platform.linkedin) {
     // TODO : Validiate accesstoken from linkedin API server.
     res.status(400).send("Doesn't support yet.");
-  } else {
+  } else{
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
 }
