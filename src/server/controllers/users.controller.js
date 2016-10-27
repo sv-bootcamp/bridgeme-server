@@ -20,7 +20,7 @@ const platform = { facebook: '1', linkedin: '2' };
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
-const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,gender,location,verified';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -273,7 +273,7 @@ export function editGeneralProfile(req, res, next) {
           res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
         } else {
           let bucketName = 'yodabucket';
-          let imageKey = 'profile/' + req.session._id + '.png';
+          let imageKey = `profile/${req.session._id}.png`;
           let readStream = fs.createReadStream(file.path);
 
           const S3 = new AWS.S3({ region: 'ap-northeast-2' });
@@ -286,7 +286,7 @@ export function editGeneralProfile(req, res, next) {
           S3.putObject(params).promise()
             .then((data, err) => {
               if (data) {
-                let profileUrl = S3.endpoint.href + bucketName + '/' + imageKey;
+                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
                 return updateProfile(req, profileUrl);
               } else {
                 res.status(400).json({ err_point: userCallback.ERR_AWS_S3 });

@@ -23,14 +23,13 @@ const router = express.Router();
 router.post('/signIn', user.signin);
 
 /**
- * @api {post} /users/edit Request Edit
- * @apiName edit
+ * @api {post} /users/editGeneral Request Edit general information
+ * @apiName editGeneral
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
  *        "name": "조사라",
- *        "gender": "female",
  *         "email": "joytutu29@naver.com",
  *         "languages": "Korean, English",
  *         "location": "",
@@ -68,7 +67,7 @@ router.post('/signIn', user.signin);
  *     }
  *
  * @apiParam {String} name Name of User.
- * @apiParam {String} gender Information of user gender.
+ * @apiParam {String} email Information of user email.
  * @apiParam {String} languages Information of user languages.
  * @apiParam {String} location Information of user location.
  * @apiParam {String} about One short sentence about User.
@@ -79,8 +78,8 @@ router.post('/signIn', user.signin);
 router.post('/editGeneral', user.editGeneralProfile);
 
 /**
- * @api {post} /users/signup Request Sign up
- * @apiName signup
+ * @api {post} /users/editOption Request Edit optional information
+ * @apiName editOption
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
