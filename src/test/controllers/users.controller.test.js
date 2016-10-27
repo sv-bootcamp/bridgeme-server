@@ -5,7 +5,6 @@ import signupData from '../fixtures/signupData';
 import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
-import userEditData from '../fixtures/editData';
 
 /*
  * Test for User API
@@ -251,11 +250,11 @@ describe('/job', function () {
   });
 });
 
-describe('/signup', function () {
+describe('/editOption', function () {
   it('request /signup with session coockie.', done => {
     rp({
       method: 'POST',
-      uri: API_BASE_URL + '/signup',
+      uri: API_BASE_URL + '/editOption',
       form: signupData.data,
       jar: true,
       resolveWithFullResponse: true,

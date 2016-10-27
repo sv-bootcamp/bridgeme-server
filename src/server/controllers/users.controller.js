@@ -103,7 +103,6 @@ export function signin(req, res, next) {
       .then((facebookResult) => {
         registrationData = {
           name: facebookResult.name,
-          gender: facebookResult.gender,
           email: facebookResult.email,
           languages: facebookResult.languages,
           location: facebookResult.location ? facebookResult.location.name : undefined,
@@ -211,7 +210,7 @@ export function getJobCategory(req, res, next) {
   }
 }
 
-export function editProfile(req, res, next) {
+export function editGeneralProfile(req, res, next) {
   if (req.session._id) {
     let file = null;
     let field = null;
@@ -357,7 +356,7 @@ function updateProfile(req, profileUrl) {
   });
 }
 
-export function singup(req, res, next) {
+export function editOptionalProfile(req, res, next) {
   if (req.session._id) {
     User.update({ _id: req.session._id }, {
       $set: {

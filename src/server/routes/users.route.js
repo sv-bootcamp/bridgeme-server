@@ -76,7 +76,7 @@ router.post('/signIn', user.signin);
  * @apiParam {Array} education Information of user education history.
  *
  */
-router.post('/edit', user.editProfile);
+router.post('/editGeneral', user.editGeneralProfile);
 
 /**
  * @api {post} /users/signup Request Sign up
@@ -154,7 +154,7 @@ router.post('/edit', user.editProfile);
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/signup', user.singup);
+router.post('/editOption', user.editOptionalProfile);
 
 //GET method
 
