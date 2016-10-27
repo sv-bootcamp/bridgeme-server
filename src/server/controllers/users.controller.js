@@ -220,7 +220,7 @@ export function editGeneralProfile(req, res, next) {
     new Promise((resolve, reject) => {
       form.parse(req, function (err, fields, files) {
         if (err) {
-          reject(false);
+          reject();
         } else {
           file = files.image; // file when postman test.
           field = JSON.parse(unescape(fields.info));
@@ -232,19 +232,18 @@ export function editGeneralProfile(req, res, next) {
             education: field.education,
             work: field.work,
           };
-          console.log(editData);
           resolve(true);
         }
       });
     })
-    .then((parsed) => {
+    .then(parsed => {
       if (parsed) {
         return User.findOne({ _id: req.session._id, email: { $ne: null } }).exec();
       } else {
-        res.status(400).json({ err_point: userCallback.ERR_IMAGE_PARSE });
+        throw new err;
       }
     })
-    .then((userWithEmail) => {
+    .then(userWithEmail => {
       if (!userWithEmail) {
         if (field.email === null || field.email === undefined) {
           res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
@@ -259,14 +258,14 @@ export function editGeneralProfile(req, res, next) {
         return User.update({ _id: req.session._id }, { $set: editData }).exec();
       }
     })
-    .then((updateData) => {
+    .then(updateData => {
       if (updateData) {
         return setKey();
       } else {
-        res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
+        throw new err;
       }
     })
-    .then((data) => {
+    .then(data => {
       if (data) {
         console.log(file);
         if (file === undefined) {
@@ -289,7 +288,7 @@ export function editGeneralProfile(req, res, next) {
                 let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
                 return updateProfile(req, profileUrl);
               } else {
-                res.status(400).json({ err_point: userCallback.ERR_AWS_S3 });
+                throw new err;
               }
             })
             .then((success) => {
@@ -300,15 +299,14 @@ export function editGeneralProfile(req, res, next) {
               }
             })
             .catch((err) => {
-              console.log(err);
               res.status(400).json({ err_msg: err_stack });
             });
         }
       } else {
-        res.status(400).json({ err_point: userCallback.ERR_AWS_KEY });
+        throw err;
       }
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(400).json({ err_msg: err_stack });
     });
   } else {
