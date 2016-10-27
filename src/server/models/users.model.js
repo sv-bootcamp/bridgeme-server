@@ -71,7 +71,6 @@ let userSchema = new Schema({
   personality: [personalitySchema],
   locale: String,
   age: Number,
-  gender: String,
   location: String,
   field: String,
   region: String,

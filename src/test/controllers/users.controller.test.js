@@ -128,7 +128,6 @@ describe('Test User API', function () {
           body[0]._id.should.equal(userData.USER_A_DATA._id);
           body[0].email.should.equal(userData.USER_A_DATA.email);
           body[0].name.should.equal(userData.USER_A_DATA.name);
-          body[0].gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -157,7 +156,6 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -212,7 +210,6 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
           body.relation.asMentee.should.equal(0);
           body.relation.asMentor.should.equal(0);
           done();
@@ -245,28 +242,6 @@ describe('/job', function () {
         body.years.toString().should.equal(jobData.years.toString());
         body.education_background.toString()
           .should.equal(jobData.education_background.toString());
-        done();
-      })
-      .catch(function (err) {
-        should.fail();
-        done();
-      });
-  });
-});
-
-describe('/edit', function () {
-  it('request /edit with session coockie.', done => {
-    rp({
-      method: 'POST',
-      uri: API_BASE_URL + '/edit',
-      form: userEditData.data,
-      jar: true,
-      resolveWithFullResponse: true,
-      json: true,
-    })
-      .then(function (result) {
-        result.statusCode.should.equal(200);
-        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
         done();
       })
       .catch(function (err) {

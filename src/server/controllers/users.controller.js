@@ -212,28 +212,48 @@ export function getJobCategory(req, res, next) {
 }
 
 export function editProfile(req, res, next) {
-  console.log(req);
-  //if (req.session._id) {
-  let request = JSON.stringify(req.info);
-  let editData = {
-    name: request.name,
-    gender: request.gender,
-    languages: request.languages,
-    location: request.location,
-    about: request.about,
-    education: request.education,
-    work: request.work,
-  };
-  User.findOne({ _id: req.session._id, email: { $ne: null } }).exec()
+  if (req.session._id) {
+    let file = null;
+    let field = null;
+    let editData = null;
+    let form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    new Promise((resolve, reject) => {
+      form.parse(req, function (err, fields, files) {
+        if (err) {
+          reject(false);
+        } else {
+          file = files.image; // file when postman test.
+          field = JSON.parse(unescape(fields.info));
+          editData = {
+            name: field.name,
+            languages: field.languages,
+            location: field.location,
+            about: field.about,
+            education: field.education,
+            work: field.work,
+          };
+          console.log(editData);
+          resolve(true);
+        }
+      });
+    })
+    .then((parsed) => {
+      if (parsed) {
+        return User.findOne({ _id: req.session._id, email: { $ne: null } }).exec();
+      } else {
+        res.status(400).json({ err_point: userCallback.ERR_IMAGE_PARSE });
+      }
+    })
     .then((userWithEmail) => {
       if (!userWithEmail) {
-        if (request.email === null || request.email === undefined) {
+        if (field.email === null || field.email === undefined) {
           res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
         } else {
-          validateEmail(request.email)
+          validateEmail(field.email)
             .then((isValid) => {
               return User.update({ _id: req.session._id },
-                { $set: { email: request.email }, editData }).exec();
+                { $set: { email: field.email }, editData }).exec();
             });
         }
       } else {
@@ -242,24 +262,59 @@ export function editProfile(req, res, next) {
     })
     .then((updateData) => {
       if (updateData) {
-        return uploadImage(req, res);
+        return setKey();
       } else {
         res.status(400).json({ err_point: userCallback.ERR_INVALID_EMAIL });
       }
     })
-    .then((uploadedImage) => {
-      if (uploadedImage) {
-        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+    .then((data) => {
+      if (data) {
+        console.log(file);
+        if (file === undefined) {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+        } else {
+          let bucketName = 'yodabucket';
+          let imageKey = 'profile/' + req.session._id + '.png';
+          let readStream = fs.createReadStream(file.path);
+
+          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+          let params = {
+            Bucket: bucketName,
+            Key: imageKey,
+            ACL: 'public-read',
+            Body: readStream,
+          };
+          S3.putObject(params).promise()
+            .then((data, err) => {
+              if (data) {
+                let profileUrl = S3.endpoint.href + bucketName + '/' + imageKey;
+                return updateProfile(req, profileUrl);
+              } else {
+                res.status(400).json({ err_point: userCallback.ERR_AWS_S3 });
+              }
+            })
+            .then((success) => {
+              if (success) {
+                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+              } else {
+                throw err;
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(400).json({ err_msg: err_stack });
+            });
+        }
       } else {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE });
+        res.status(400).json({ err_point: userCallback.ERR_AWS_KEY });
       }
     })
     .catch((err) => {
       res.status(400).json({ err_msg: err_stack });
     });
-  //} else {
-  //  res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  //}
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
 }
 
 function validateEmail(req) {
@@ -271,59 +326,6 @@ function validateEmail(req) {
     } else {
       reject(false);
     }
-  });
-}
-
-function uploadImage(req, res, next) {
-  return new Promise((resolve, reject) => {
-    setKey()
-      .then((data) => {
-        if (data) {
-          let file = null;
-          let form = new formidable.IncomingForm();
-          form.encoding = 'utf-8';
-          form.parse(req, function (err, fields, files) {
-            if (err) {
-              res.status(400).json({ err_point: userCallback.ERR_IMAGE_PARSE });
-            } else {
-              file = files.file; // file when postman test.
-            }
-
-            let bucketName = 'yodabucket';
-            let imageKey = 'profile/' + req.session._id + '.png';
-            let readStream = fs.createReadStream(file.path);
-
-            const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-            let params = {
-              Bucket: bucketName,
-              Key: imageKey,
-              ACL: 'public-read',
-              Body: readStream,
-            };
-            S3.putObject(params).promise()
-              .then((data, err) => {
-                if (data) {
-                  let profileUrl = S3.endpoint.href + bucketName + '/' + imageKey;
-                  return updateProfile(req, profileUrl);
-                } else {
-                  res.status(400).json({ err_point: userCallback.ERR_AWS_S3 });
-                }
-              })
-              .then((success) => {
-                if (success) {
-                  resolve(true);
-                } else {
-                  resolve(false);
-                }
-              });
-          });
-        } else {
-          res.status(400).json({ err_point: userCallback.ERR_AWS_KEY });
-        }
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
   });
 }
 
