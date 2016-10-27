@@ -22,6 +22,7 @@
   ],
   "homepage": "https://github.com/sv-bootcamp/yoda#readme",
   "dependencies": {
+    "aws-sdk": "^2.6.12",
     "babel-cli": "^6.11.4",
     "body-parser": "^1.15.2",
     "co": "^4.6.0",
