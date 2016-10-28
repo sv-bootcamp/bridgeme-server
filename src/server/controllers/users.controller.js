@@ -1,4 +1,8 @@
 import * as matchController from './match.controller';
+import AWS from 'aws-sdk';
+import formidable from 'formidable';
+import fs from 'fs';
+import jobcategory from '../config/json/jobcategory';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
@@ -7,6 +11,7 @@ import userCallback from '../config/json/user.callback';
  * Methods about user, register user and handle session
  */
 
+const Key = mongoose.model('key');
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 const platform = { facebook: '1', linkedin: '2' };
@@ -15,7 +20,7 @@ const platform = { facebook: '1', linkedin: '2' };
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
-const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,gender,location,verified';
+const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
 // Return all users.
 export function getAll(req, res, next) {
@@ -35,7 +40,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ email: { $ne: req.session.email } }).sort({ stamp_login: -1 }).exec()
+    User.find({ _id: { $ne: req.session._id } }).sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -97,12 +102,12 @@ export function signin(req, res, next) {
     crawlByAccessTokenFacebook(req.body.access_token)
       .then((facebookResult) => {
         registrationData = {
-          email: facebookResult.email,
           name: facebookResult.name,
-          work: facebookResult.work,
-          gender: facebookResult.gender,
+          email: facebookResult.email,
+          languages: facebookResult.languages,
           location: facebookResult.location ? facebookResult.location.name : undefined,
           education: facebookResult.education,
+          work: facebookResult.work,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
@@ -195,4 +200,212 @@ function crawlByAccessTokenFacebook(accessToken) {
       });
   });
 
+}
+
+export function getJobCategory(req, res, next) {
+  if (req.session._id) {
+    res.status(200).json(jobcategory);
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editGeneralProfile(req, res, next) {
+  if (req.session._id) {
+    let file = null;
+    let field = null;
+    let editData = null;
+    let form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    new Promise((resolve, reject) => {
+      form.parse(req, function (err, fields, files) {
+        if (err) {
+          reject(false);
+        } else {
+          file = files.image; // file when postman test.
+          field = JSON.parse(unescape(fields.info));
+          editData = {
+            name: field.name,
+            languages: field.languages,
+            location: field.location,
+            about: field.about,
+            education: field.education,
+            work: field.work,
+          };
+          resolve(true);
+        }
+      });
+    })
+    .then(parsed => {
+      if (parsed) {
+        return User.findOne({ _id: req.session._id, email: { $ne: null } }).exec();
+      } else {
+        throw new err;
+      }
+    })
+    .then(userWithEmail => {
+      if (!userWithEmail) {
+        if (field.email === null) {
+          res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
+        } else {
+          validateEmail(field.email)
+            .then((isValid) => {
+              return User.update({ _id: req.session._id },
+                { $set: { email: field.email }, editData }).exec();
+            });
+        }
+      } else {
+        return User.update({ _id: req.session._id }, { $set: editData }).exec();
+      }
+    })
+    .then(updateData => {
+      if (updateData) {
+        return setKey();
+      } else {
+        throw new err;
+      }
+    })
+    .then(data => {
+      if (data) {
+        if (file === undefined) {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+        } else {
+          let bucketName = 'yodabucket';
+          let imageKey = `profile/${req.session._id}.png`;
+          let readStream = fs.createReadStream(file.path);
+
+          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+          let params = {
+            Bucket: bucketName,
+            Key: imageKey,
+            ACL: 'public-read',
+            Body: readStream,
+          };
+          S3.putObject(params).promise()
+            .then((data, err) => {
+              if (data) {
+                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
+                return updateProfile(req, profileUrl);
+              } else {
+                throw new err;
+              }
+            })
+            .then((success) => {
+              if (success) {
+                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+              } else {
+                throw err;
+              }
+            })
+            .catch((err) => {
+              res.status(400).json({ err_msg: err_stack });
+            });
+        }
+      } else {
+        throw err;
+      }
+    })
+    .catch(err => {
+      res.status(400).json({ err_msg: err_stack });
+    });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+function validateEmail(req) {
+  return new Promise((resolve, reject) => {
+    let email = req;
+    let filter = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (filter.test(email)) {
+      resolve(true);
+    } else {
+      reject(false);
+    }
+  });
+}
+
+function setKey() {
+  return new Promise((resolve, reject) => {
+    Key.findOne({ index: 0 }).exec()
+      .then((key) => {
+        AWS.config.accessKeyId = key.accessKeyId;
+        AWS.config.secretAccessKey = key.secretAccessKey;
+        resolve(true);
+      })
+      .catch((err) => {
+        reject(false);
+      });
+  });
+}
+
+function updateProfile(req, profileUrl) {
+  return new Promise((resolve, reject) => {
+    User.update({ _id: req.session._id }, {
+      $set: { profile_picture: profileUrl },
+    }).exec()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject();
+      });
+  });
+}
+
+export function editJob(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
+        job: req.body.job,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editHelp(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
+        help: req.body.help,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editPersonality(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
+        personality: req.body.personality,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
 }
