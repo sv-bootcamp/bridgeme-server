@@ -77,7 +77,7 @@ export default {
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: '인생 조언',
+                content: '커리어 개발',
                 next_question_index: 2,
               },
               {
@@ -88,8 +88,14 @@ export default {
               },
               {
                 answer_index: 5,
+                is_free_form: false,
+                content: '커뮤니케이션 스킬',
+                next_question_index: 2,
+              },
+              {
+                answer_index: 6,
                 is_free_form: true,
-                content: 'Other',
+                content: '기타',
                 next_question_index: 2,
               },
             ],
@@ -106,31 +112,31 @@ export default {
               {
                 answer_index: 0,
                 is_free_form: false,
-                content: 'Text Chat',
+                content: '채팅',
                 next_question_index: 3,
               },
               {
                 answer_index: 1,
                 is_free_form: false,
-                content: 'Video Chat',
+                content: '화상통화',
                 next_question_index: 3,
               },
               {
                 answer_index: 2,
                 is_free_form: false,
-                content: 'Voice Chat',
+                content: '음성통화',
                 next_question_index: 3,
               },
               {
                 answer_index: 3,
                 is_free_form: false,
-                content: 'Email',
+                content: '이메일',
                 next_question_index: 3,
               },
               {
                 answer_index: 4,
                 is_free_form: true,
-                content: 'Other',
+                content: '기타',
                 next_question_index: 3,
               },
             ],
@@ -171,7 +177,7 @@ export default {
               {
                 answer_index: 4,
                 is_free_form: true,
-                content: 'Other',
+                content: '기타',
                 next_question_index: 4,
               },
             ],
@@ -212,7 +218,7 @@ export default {
               {
                 answer_index: 4,
                 is_free_form: true,
-                content: 'Other',
+                content: '기타',
                 next_question_index: null,
               },
             ],
