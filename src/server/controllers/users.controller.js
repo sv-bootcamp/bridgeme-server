@@ -220,7 +220,7 @@ export function editGeneralProfile(req, res, next) {
     new Promise((resolve, reject) => {
       form.parse(req, function (err, fields, files) {
         if (err) {
-          reject();
+          reject(false);
         } else {
           file = files.image; // file when postman test.
           field = JSON.parse(unescape(fields.info));
@@ -245,7 +245,7 @@ export function editGeneralProfile(req, res, next) {
     })
     .then(userWithEmail => {
       if (!userWithEmail) {
-        if (field.email === null || field.email === undefined) {
+        if (field.email === null) {
           res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
         } else {
           validateEmail(field.email)
@@ -267,7 +267,6 @@ export function editGeneralProfile(req, res, next) {
     })
     .then(data => {
       if (data) {
-        console.log(file);
         if (file === undefined) {
           res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
         } else {
