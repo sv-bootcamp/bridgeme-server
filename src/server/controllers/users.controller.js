@@ -1,4 +1,6 @@
 import * as matchController from './match.controller';
+import * as mailingController from './mailing.controller';
+import mailStrings from '../config/json/mail.strings';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
@@ -93,13 +95,13 @@ export function getProfileById(req, res, next) {
 }
 
 export function localSignIn(req, res, next) {
-  let cipher = crypto.createCipher('aes256', req.body.email);
-  cipher.update(req.body.password, 'ascii', 'hex');
-  let cryptedPassword = cipher.final('hex');
+  let cipher = crypto.createCipher('aes256', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let cryptoPassword = cipher.final('hex');
 
   let registrationData = {
     email: req.body.email,
-    password: cryptedPassword,
+    password: cryptoPassword,
     name: req.body.name,
     work: req.body.work,
     gender: req.body.gender,
@@ -138,6 +140,35 @@ export function localSignIn(req, res, next) {
     })
     .catch(err => {
       res.status(400).json(err);
+    });
+}
+
+export function requestSecretCode(req, res, next) {
+  let date = new Date();
+  let dateString = date.toISOString();
+  let cipher = crypto.createCipher('aes192', req.body.email);
+
+  let secretCode = cipher.update(dateString, 'utf-8', 'hex');
+  secretCode += cipher.final('hex');
+
+  // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
+  mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+    mailStrings.RESETPW_HTML, secretCode);
+
+  res.status(200).json({ secretCode: secretCode });
+}
+
+export function resetPassword(req, res, next) {
+  let cipher = crypto.createCipher('aes192', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let crytoPassword = cipher.final('hex');
+
+  User.update({ email: req.body.email }, { password: crytoPassword }, { upsert: true }).exec()
+    .then(updatedUser => {
+      res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
+    })
+    .catch(err => {
+      res.status(400).json({ err_point: userCallback.ERR_FAIL_RESETPW });
     });
 }
 
@@ -244,5 +275,4 @@ function crawlByAccessTokenFacebook(accessToken) {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
   });
-
 }
