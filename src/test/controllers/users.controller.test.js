@@ -250,11 +250,11 @@ describe('/job', function () {
   });
 });
 
-describe('/editOption', function () {
-  it('request /signup with session coockie.', done => {
+describe('/editJob', function () {
+  it('request /editJob with session coockie.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/editOption`,
+      uri: `${API_BASE_URL}/editJob`,
       form: signupData.data,
       jar: true,
       resolveWithFullResponse: true,
@@ -262,7 +262,51 @@ describe('/editOption', function () {
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
-        result.body.msg.should.equal(userCallback.SUCCESS_SIGNUP);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editHelp', function () {
+  it('request /editHelp with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editHelp`,
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editPersonality', function () {
+  it('request /editPersonality with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editPersonality`,
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
         done();
       })
       .catch(function (err) {

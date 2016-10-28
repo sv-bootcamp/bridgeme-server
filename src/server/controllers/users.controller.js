@@ -354,17 +354,53 @@ function updateProfile(req, profileUrl) {
   });
 }
 
-export function editOptionalProfile(req, res, next) {
+export function editJob(req, res, next) {
   if (req.session._id) {
     User.update({ _id: req.session._id }, {
       $set: {
         job: req.body.job,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editHelp(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
         help: req.body.help,
+      },
+    }).exec()
+      .then((data) => {
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function editPersonality(req, res, next) {
+  if (req.session._id) {
+    User.update({ _id: req.session._id }, {
+      $set: {
         personality: req.body.personality,
       },
     }).exec()
       .then((data) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_SIGNUP });
+        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
         console.log(err);
