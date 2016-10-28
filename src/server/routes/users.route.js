@@ -92,6 +92,30 @@ router.post('/editGeneral', user.editGeneralProfile);
  *                  "education_background" : "Bachelor's"
  *              }
  *         ],
+ *     }
+ * @apiDescription {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Sign up success."
+ *     }
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ *
+ * @apiParam {Array} job Information of user job.
+ *
+ */
+router.post('/editJob', user.editJob);
+
+/**
+ * @api {post} /users/editOption Request Edit optional information
+ * @apiName editOption
+ * @apiGroup User
+ *
+ *  * @apiParamExample {json} Parameter Sample
+ *     {
  *         "help" : [
  *              {
  *                  "select" : "Requirement",
@@ -106,6 +130,31 @@ router.post('/editGeneral', user.editGeneralProfile);
  *                  "index" : 2
  *              }
  *         ],
+ *     }
+ * @apiDescription {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Sign up success."
+ *     }
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ *
+ * @apiParam {Array} help Information of user help.
+ * @apiParam {Array} personality Information of user personality.
+ *
+ */
+router.post('/editHelp', user.editHelp);
+
+/**
+ * @api {post} /users/editOption Request Edit optional information
+ * @apiName editOption
+ * @apiGroup User
+ *
+ *  * @apiParamExample {json} Parameter Sample
+ *     {
  *         "personality" : [
  *              {
  *                  "option" : "Extroverts",
@@ -148,12 +197,10 @@ router.post('/editGeneral', user.editGeneralProfile);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  *
- * @apiParam {Array} job Information of user job.
- * @apiParam {Array} help Information of user help.
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/editOption', user.editOptionalProfile);
+router.post('/editPersonality', user.editPersonality);
 
 //GET method
 
