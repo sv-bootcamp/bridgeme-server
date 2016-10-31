@@ -211,6 +211,7 @@ export function getJobCategory(req, res, next) {
 }
 
 export function editGeneralProfile(req, res, next) {
+  console.log(req);
   if (req.session._id) {
     let file = null;
     let field = null;
