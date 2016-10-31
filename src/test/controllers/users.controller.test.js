@@ -1,5 +1,7 @@
 import '../../server/models/users.model';
+import jobData from '../../server/config/json/jobcategory';
 import rp from 'request-promise';
+import signupData from '../fixtures/signupData';
 import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
@@ -19,7 +21,7 @@ describe('Test User API', function () {
     it(': Sign up invalid Facebook user.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signin`,
         form: {
           access_token: 'THIS IS INVALID ACCESS TOKEN',
           platform_type: '1',
@@ -42,7 +44,7 @@ describe('Test User API', function () {
     it(': Sign up with Invalid platform type.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signin`,
         form: {
           access_token: 'THIS IS INVALID ACCESS TOKEN',
           platform_type: '123',
@@ -65,7 +67,7 @@ describe('Test User API', function () {
     it(': Sign up valid Facebook user A.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signin`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -89,7 +91,7 @@ describe('Test User API', function () {
     it(': Sign in valid Facebook user A.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signin`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -118,7 +120,7 @@ describe('Test User API', function () {
     it('request /all with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/all',
+        uri: `${API_BASE_URL}/all`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -129,7 +131,6 @@ describe('Test User API', function () {
           body[0]._id.should.equal(userData.USER_A_DATA._id);
           body[0].email.should.equal(userData.USER_A_DATA.email);
           body[0].name.should.equal(userData.USER_A_DATA.name);
-          body[0].gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -147,7 +148,7 @@ describe('Test User API', function () {
     it('request /me with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/me',
+        uri: `${API_BASE_URL}/me`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -158,7 +159,6 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -176,7 +176,7 @@ describe('Test User API', function () {
     it('request /mentorlist with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/mentorlist',
+        uri: `${API_BASE_URL}/mentorlist`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -202,7 +202,7 @@ describe('Test User API', function () {
     it('request /id/:id with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/id/' + userData.USER_A_DATA._id,
+        uri: `${API_BASE_URL}/id/${userData.USER_A_DATA._id}`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -213,7 +213,6 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
           body.relation.asMentee.should.equal(0);
           body.relation.asMentor.should.equal(0);
           done();
@@ -223,6 +222,101 @@ describe('Test User API', function () {
           done();
         });
     });
+  });
+});
+
+describe('/job', function () {
+  it('request /job without session coockie.', done => {
+    anauthorizedAccessTest(API_BASE_URL + '/job', done);
+  });
+
+  it('request /job with session coockie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/job`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        const body = result.body;
+        body.area.toString().should.equal(jobData.area.toString());
+        body.years.toString().should.equal(jobData.years.toString());
+        body.education_background.toString()
+          .should.equal(jobData.education_background.toString());
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editJob', function () {
+  it('request /editJob with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editJob`,
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editHelp', function () {
+  it('request /editHelp with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editHelp`,
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editPersonality', function () {
+  it('request /editPersonality with session coockie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editPersonality`,
+      form: signupData.data,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
   });
 });
 
