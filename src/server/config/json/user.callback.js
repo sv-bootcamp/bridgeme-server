@@ -1,4 +1,5 @@
 export default {
+  ERR_EXISTING_EMAIL: 'This email is already in use.',
   ERR_FAIL_AUTH: 'Authentication failed. Please sign in first.',
   ERR_FAIL_REGISTER: 'Failed to register',
   ERR_FAIL_RESETPW: 'Failed to reset the password',

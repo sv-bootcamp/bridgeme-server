@@ -11,6 +11,10 @@ import userData from '../fixtures/userData';
 const API_BASE_URL = 'http://localhost:8000/users';
 
 describe('Test User API', function () {
+  describe('/local_signin', function() {
+    it(': Sign up with local ')
+  });
+
   describe('/signin : FACEBOOK.', function () {
     it(': Sign up invalid Facebook user.', done => {
       rp({

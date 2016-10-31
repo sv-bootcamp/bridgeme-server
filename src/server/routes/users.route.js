@@ -10,11 +10,24 @@ const router = express.Router();
 //POST method
 
 /**
+ * @api {post} /users/local_signup Request Local Sign up
+ * @apiName local_signup
+ * @apiGroup User
+ *
+ * @apiDescription Local Sign up
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/local_signup', user.localSignUp);
+
+/**
  * @api {post} /users/local_signin Request Local Sign in
  * @apiName local_signin
  * @apiGroup User
  *
- * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
+ * @apiDescription Local Sign in
  *
  * @apiParam {String} email Email address that would used as ID
  * @apiParam {String} password Password that would used

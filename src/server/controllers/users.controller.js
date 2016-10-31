@@ -94,7 +94,7 @@ export function getProfileById(req, res, next) {
   }
 }
 
-export function localSignIn(req, res, next) {
+export function localSignUp(req, res, next) {
   let cipher = crypto.createCipher('aes256', req.body.password);
   cipher.update(req.body.email, 'ascii', 'hex');
   let cryptoPassword = cipher.final('hex');
@@ -113,28 +113,47 @@ export function localSignIn(req, res, next) {
 
   User.findOne({ email: registrationData.email }).exec()
     .then(existingUser => {
-      if (!existingUser) {
-        new User(registrationData).save()
-          .then(registeredUser => {
-            return storeSession(req, registeredUser);
-          })
-          .then(storedUser => {
-            res.status(201).json(storedUser);
-          })
-          .catch(err => {
-            res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
-          });
+      if(existingUser) {
+        throw new Error(userCallback.ERR_EXISTING_EMAIL);
       } else {
-        if (registrationData.password === existingUser.password) {
+        return User(registrationData).save();
+      }
+    })
+    .then(registeredUser => {
+      return storeSession(req, registeredUser);
+    })
+    .then(storedUser => {
+      if(storedUser) {
+        res.status(201).json(storedUser);
+      } else {
+        throw new Error(userCallback.ERR_FAIL_REGISTER);
+      }
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
+}
+
+export function localSignIn(req, res, next) {
+  let cipher = crypto.createCipher('aes256', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let cryptoPassword = cipher.final('hex');
+
+  User.findOne({ email: req.body.email }).exec()
+    .then(existingUser => {
+      if (!existingUser) {
+        return new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        if (cryptoPassword.password === existingUser.password) {
           storeSession(req, existingUser)
             .then((storedUser) => {
               res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
             })
             .catch(err => {
-              res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNIN });
+              return new Error(userCallback.ERR_FAIL_SIGNIN);
             });
         } else {
-          req.status(405).json({ err_point: userCallback.ERR_WRONG_PASSWORD });
+          return new Error(userCallback.ERR_WRONG_PASSWORD);
         }
       }
     })
