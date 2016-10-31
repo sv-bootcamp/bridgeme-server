@@ -1,8 +1,6 @@
 import express from 'express';
 import * as user from '../controllers/users.controller';
 
-const passport = require('passport');
-
 /*
  * Define the URL routing for http://yoda-domain.com/users/*
  */
