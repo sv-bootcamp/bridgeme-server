@@ -255,7 +255,7 @@ describe('/editJob', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editJob`,
-      form: signupData.data,
+      form: signupData.data.job,
       jar: true,
       resolveWithFullResponse: true,
       json: true,
@@ -277,7 +277,7 @@ describe('/editHelp', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editHelp`,
-      form: signupData.data,
+      form: signupData.data.help,
       jar: true,
       resolveWithFullResponse: true,
       json: true,
@@ -299,7 +299,7 @@ describe('/editPersonality', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editPersonality`,
-      form: signupData.data,
+      form: signupData.data.personality,
       jar: true,
       resolveWithFullResponse: true,
       json: true,
