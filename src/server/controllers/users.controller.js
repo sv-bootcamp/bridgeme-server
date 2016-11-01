@@ -211,44 +211,47 @@ export function getJobCategory(req, res, next) {
 
 export function editGeneralProfile(req, res, next) {
   if (req.session._id) {
-    User.findOne({ _id: req.session._id, email: { $ne: null } }).exec()
-      .then(userWithEmail => {
-        let editData = {
-          name: req.body.name,
-          languages: req.body.languages,
-          location: req.body.location,
-          about: req.body.about,
-          education: req.body.education,
-          work: req.body.work,
-        };
-        if (!userWithEmail) {
-          if (field.email === null) {
-            res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
-          } else {
-            validateEmail(field.email)
-              .then((isValid) => {
-                return User.update({ _id: req.session._id },
-                  { $set: { email: field.email }, editData }).exec();
-              });
-          }
+    User.findOne({ _id: req.session._id }).exec()
+      .then(user => {
+        if (user) {
+          return validateEmail(req.body.email);
         } else {
+          throw err;
+        }
+      })
+      .then((isValid) => {
+        if (isValid) {
+          let editData = {
+            name: req.body.name,
+            email: req.body.email,
+            languages: req.body.languages,
+            location: req.body.location,
+            about: req.body.about,
+            education: req.body.education,
+            work: req.body.work,
+          };
           return User.update({ _id: req.session._id }, { $set: editData }).exec();
+        } else {
+          throw new Error(userCallback.ERR_INVALID_MAIL);
         }
       })
       .then(updateData => {
         if (updateData) {
           return setKey();
         } else {
-          throw new err;
+          throw new Error(userCallback.ERR_MONGOOSE);
         }
       })
       .then(keyData => {
         if (keyData) {
           if (req.body.image == null) {
+            console.log(req.body.image);
             res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
           } else {
+            console.log(req.body.image);
             let bucketName = 'yodabucket';
-            let imageKey = `profile/${req.session._id}.png`;
+            let now = new Date();
+            let imageKey = `profile/${req.session._id}/${now.getTime()}/.png`;
             let encondedImage = new Buffer(req.body.image, 'base64');
 
             const S3 = new AWS.S3({ region: 'ap-northeast-2' });
@@ -264,14 +267,14 @@ export function editGeneralProfile(req, res, next) {
                   let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
                   return updateProfile(req, profileUrl);
                 } else {
-                  throw new err;
+                  throw new Error(userCallback.ERR_AWS);
                 }
               })
               .then((success) => {
                 if (success) {
                   res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
                 } else {
-                  throw err;
+                  throw new Error(userCallback.ERR_MONGOOSE);
                 }
               })
               .catch((err) => {
@@ -279,11 +282,11 @@ export function editGeneralProfile(req, res, next) {
               });
           }
         } else {
-          throw err;
+          throw new Error(userCallback.ERR_AWS_KEY);
         }
       })
       .catch(err => {
-        res.status(400).json({ err_msg: err_stack });
+        res.status(400).json(err);
       });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
@@ -297,7 +300,7 @@ function validateEmail(req) {
     if (filter.test(email)) {
       resolve(true);
     } else {
-      reject(false);
+      reject();
     }
   });
 }
@@ -311,7 +314,7 @@ function setKey() {
         resolve(true);
       })
       .catch((err) => {
-        reject(false);
+        reject();
       });
   });
 }
