@@ -1,4 +1,4 @@
-import '../../server/models/users.model';\
+import '../../server/models/users.model';
 import jobData from '../../server/config/json/jobcategory';
 import rp from 'request-promise';
 import signupData from '../fixtures/signupData';
