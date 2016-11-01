@@ -245,13 +245,11 @@ export function editGeneralProfile(req, res, next) {
       .then(keyData => {
         if (keyData) {
           if (req.body.image == null) {
-            console.log(req.body.image);
             res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
           } else {
-            console.log(req.body.image);
             let bucketName = 'yodabucket';
             let now = new Date();
-            let imageKey = `profile/${req.session._id}/${now.getTime()}/.png`;
+            let imageKey = `profile/${req.session._id}/${now.getTime()}.png`;
             let encondedImage = new Buffer(req.body.image, 'base64');
 
             const S3 = new AWS.S3({ region: 'ap-northeast-2' });
