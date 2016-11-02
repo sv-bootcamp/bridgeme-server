@@ -85,7 +85,7 @@ router.post('/reset_password', user.resetPassword);
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
- *        "name": "조사라",
+ *         "name": "조사라",
  *         "email": "joytutu29@naver.com",
  *         "languages": "Korean, English",
  *         "location": "",
@@ -109,7 +109,8 @@ router.post('/reset_password', user.resetPassword);
  *                      "name" : "숙명여자대학교 Sookmyung Women's University"
  *                  }
  *              }
- *         ]
+ *         ],
+ *         "image" : "iVBOAAzCAYAAADiTxxnHl0LT5jVteHlN+5q+JCKBJ"
  *     }
  * @apiDescription {json} Success
  *     HTTP/1.1 200 OK
@@ -129,13 +130,14 @@ router.post('/reset_password', user.resetPassword);
  * @apiParam {String} about One short sentence about User.
  * @apiParam {Array} work Information of user work history.
  * @apiParam {Array} education Information of user education history.
+ * @apiParam {String} image Information of user image.
  *
  */
 router.post('/editGeneral', user.editGeneralProfile);
 
 /**
- * @api {post} /users/editOption Request Edit optional information
- * @apiName editOption
+ * @api {post} /users/editJob Request Edit optional information
+ * @apiName editJob
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
@@ -166,8 +168,8 @@ router.post('/editGeneral', user.editGeneralProfile);
 router.post('/editJob', user.editJob);
 
 /**
- * @api {post} /users/editOption Request Edit optional information
- * @apiName editOption
+ * @api {post} /users/editHelp Request Edit optional information
+ * @apiName editHelp
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
@@ -205,8 +207,8 @@ router.post('/editJob', user.editJob);
 router.post('/editHelp', user.editHelp);
 
 /**
- * @api {post} /users/editOption Request Edit optional information
- * @apiName editOption
+ * @api {post} /users/editPersonality Request Edit optional information
+ * @apiName editPersonality
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample

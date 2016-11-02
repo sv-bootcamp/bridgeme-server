@@ -15,13 +15,3 @@ services:
 script: npm test
 notifications:
   slack: siliconvalleybootcamp:5CgIMYv9koEBi2HTy7dWBiHv
-deploy:
-    provider: s3
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_KEY
-    bucket: yodabucket
-    region: ap-northeast-2
-    skip_cleanup: true
-    local-dir: output
-    acl: public_read
-    detect_encoding: true
