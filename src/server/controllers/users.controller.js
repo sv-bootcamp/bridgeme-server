@@ -116,9 +116,16 @@ export function localSignUp(req, res, next) {
     profile_picture: req.body.profile_picture,
   };
 
-  User.findOne({ email: registrationData.email }).exec()
+  validateEmail(registrationData.email)
+    .then(result => {
+      if (result) {
+        return User.findOne({ email: registrationData.email }).exec();
+      } else {
+        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
+      }
+    })
     .then(existingUser => {
-      if(existingUser) {
+      if (existingUser) {
         throw new Error(userCallback.ERR_EXISTING_EMAIL);
       } else {
         return User(registrationData).save();
@@ -128,7 +135,7 @@ export function localSignUp(req, res, next) {
       return storeSession(req, registeredUser);
     })
     .then(storedUser => {
-      if(storedUser) {
+      if (storedUser) {
         res.status(201).json(storedUser);
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
@@ -152,7 +159,7 @@ export function localSignIn(req, res, next) {
         if (cryptoPassword.password === existingUser.password) {
           storeSession(req, existingUser)
             .then((storedUser) => {
-              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN, user: storedUser, });
             })
             .catch(err => {
               return new Error(userCallback.ERR_FAIL_SIGNIN);
@@ -171,7 +178,6 @@ export function requestSecretCode(req, res, next) {
   let date = new Date();
   let dateString = date.toISOString();
   let cipher = crypto.createCipher('aes192', req.body.email);
-
   let secretCode = cipher.update(dateString, 'utf-8', 'hex');
   secretCode += cipher.final('hex');
 

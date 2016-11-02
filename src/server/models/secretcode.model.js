@@ -5,9 +5,17 @@ import mongoose from 'mongoose';
  */
 
 const Schema = mongoose.Schema;
-let secretcodeSchema = new Schema({
+let secretCodeSchema = new Schema({
   email: String,
-  secretcode: String,
+  secretCode: String,
+  regDate: {
+    type: Date,
+    default: Date.now,
+  },
+  isValid: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 secretcodeSchema.set('toJSON', {
@@ -15,4 +23,4 @@ secretcodeSchema.set('toJSON', {
   virtuals: true,  // Set all virtuals show up in the console.log output.
 });
 
-export default mongoose.model('secretcode', secretcodeSchema);
+export default mongoose.model('secretCode', secretCodeSchema);

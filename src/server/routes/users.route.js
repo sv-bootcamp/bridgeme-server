@@ -23,8 +23,8 @@ const router = express.Router();
 router.post('/local_signup', user.localSignUp);
 
 /**
- * @api {post} /users/local_signin Request Local Sign in
- * @apiName local_signin
+ * @api {post} /users/local_signup Request Local Sign in
+ * @apiName local_signup
  * @apiGroup User
  *
  * @apiDescription Local Sign in
