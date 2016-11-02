@@ -1,6 +1,5 @@
 import * as matchController from './match.controller';
 import AWS from 'aws-sdk';
-import formidable from 'formidable';
 import fs from 'fs';
 import jobcategory from '../config/json/jobcategory';
 import mongoose from 'mongoose';
@@ -212,102 +211,81 @@ export function getJobCategory(req, res, next) {
 
 export function editGeneralProfile(req, res, next) {
   if (req.session._id) {
-    let file = null;
-    let field = null;
-    let editData = null;
-    let form = new formidable.IncomingForm();
-    form.encoding = 'utf-8';
-    new Promise((resolve, reject) => {
-      form.parse(req, function (err, fields, files) {
-        if (err) {
-          reject(false);
+    User.findOne({ _id: req.session._id }).exec()
+      .then(user => {
+        if (user) {
+          return validateEmail(req.body.email);
         } else {
-          file = files.image; // file when postman test.
-          field = JSON.parse(unescape(fields.info));
-          editData = {
-            name: field.name,
-            languages: field.languages,
-            location: field.location,
-            about: field.about,
-            education: field.education,
-            work: field.work,
+          throw err;
+        }
+      })
+      .then((isValid) => {
+        if (isValid) {
+          let editData = {
+            name: req.body.name,
+            email: req.body.email,
+            languages: req.body.languages,
+            location: req.body.location,
+            about: req.body.about,
+            education: req.body.education,
+            work: req.body.work,
           };
-          resolve(true);
-        }
-      });
-    })
-    .then(parsed => {
-      if (parsed) {
-        return User.findOne({ _id: req.session._id, email: { $ne: null } }).exec();
-      } else {
-        throw new err;
-      }
-    })
-    .then(userWithEmail => {
-      if (!userWithEmail) {
-        if (field.email === null) {
-          res.status(400).json({ err_point: userCallback.ERR_INVALID_UPDATE });
+          return User.update({ _id: req.session._id }, { $set: editData }).exec();
         } else {
-          validateEmail(field.email)
-            .then((isValid) => {
-              return User.update({ _id: req.session._id },
-                { $set: { email: field.email }, editData }).exec();
-            });
+          throw new Error(userCallback.ERR_INVALID_MAIL);
         }
-      } else {
-        return User.update({ _id: req.session._id }, { $set: editData }).exec();
-      }
-    })
-    .then(updateData => {
-      if (updateData) {
-        return setKey();
-      } else {
-        throw new err;
-      }
-    })
-    .then(data => {
-      if (data) {
-        if (file === undefined) {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+      })
+      .then(updateData => {
+        if (updateData) {
+          return setKey();
         } else {
-          let bucketName = 'yodabucket';
-          let imageKey = `profile/${req.session._id}.png`;
-          let readStream = fs.createReadStream(file.path);
+          throw new Error(userCallback.ERR_MONGOOSE);
+        }
+      })
+      .then(keyData => {
+        if (keyData) {
+          if (req.body.image == null) {
+            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+          } else {
+            let bucketName = 'yodabucket';
+            let now = new Date();
+            let imageKey = `profile/${req.session._id}/${now.getTime()}.png`;
+            let encondedImage = new Buffer(req.body.image, 'base64');
 
-          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-          let params = {
-            Bucket: bucketName,
-            Key: imageKey,
-            ACL: 'public-read',
-            Body: readStream,
-          };
-          S3.putObject(params).promise()
-            .then((data, err) => {
-              if (data) {
-                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-                return updateProfile(req, profileUrl);
-              } else {
-                throw new err;
-              }
-            })
-            .then((success) => {
-              if (success) {
-                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-              } else {
-                throw err;
-              }
-            })
-            .catch((err) => {
-              res.status(400).json({ err_msg: err_stack });
-            });
+            const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+            let params = {
+              Bucket: bucketName,
+              Key: imageKey,
+              ACL: 'public-read',
+              Body: encondedImage,
+            };
+            S3.putObject(params).promise()
+              .then((data, err) => {
+                if (data) {
+                  let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
+                  return updateProfile(req, profileUrl);
+                } else {
+                  throw new Error(userCallback.ERR_AWS);
+                }
+              })
+              .then((success) => {
+                if (success) {
+                  res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+                } else {
+                  throw new Error(userCallback.ERR_MONGOOSE);
+                }
+              })
+              .catch((err) => {
+                res.status(400).json({ err_msg: err_stack });
+              });
+          }
+        } else {
+          throw new Error(userCallback.ERR_AWS_KEY);
         }
-      } else {
-        throw err;
-      }
-    })
-    .catch(err => {
-      res.status(400).json({ err_msg: err_stack });
-    });
+      })
+      .catch(err => {
+        res.status(400).json(err);
+      });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
@@ -320,7 +298,7 @@ function validateEmail(req) {
     if (filter.test(email)) {
       resolve(true);
     } else {
-      reject(false);
+      reject();
     }
   });
 }
@@ -334,7 +312,7 @@ function setKey() {
         resolve(true);
       })
       .catch((err) => {
-        reject(false);
+        reject();
       });
   });
 }
