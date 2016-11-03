@@ -141,8 +141,8 @@ export function localSignUp(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json(err);
-    });
+        res.status(400).json(err.message);
+      });
 }
 
 export function localSignIn(req, res, next) {
@@ -153,23 +153,24 @@ export function localSignIn(req, res, next) {
   User.findOne({ email: req.body.email }).exec()
     .then(existingUser => {
       if (!existingUser) {
-        return new Error(userCallback.ERR_USER_NOT_FOUND);
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
-        if (cryptoPassword.password === existingUser.password) {
+        if (cryptoPassword === existingUser.password) {
           storeSession(req, existingUser)
             .then((storedUser) => {
-              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN, user: storedUser, });
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN, user: storedUser });
             })
             .catch(err => {
-              return new Error(userCallback.ERR_FAIL_SIGNIN);
+              throw new Error(userCallback.ERR_FAIL_SIGNIN);
             });
         } else {
-          return new Error(userCallback.ERR_WRONG_PASSWORD);
+          throw new Error(userCallback.ERR_WRONG_PASSWORD);
         }
       }
     })
-    .catch(err => {
-      res.status(400).json(err);
+    .catch(function (err) {
+      console.log('**' + err);
+      res.status(400).json(err.message);
     });
 }
 
@@ -403,7 +404,7 @@ function validateEmail(req) {
     if (filter.test(email)) {
       resolve(true);
     } else {
-      reject();
+      reject(new Error(userCallback.ERR_FAIL_REGISTER));
     }
   });
 }

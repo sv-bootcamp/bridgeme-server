@@ -14,88 +14,6 @@ const API_BASE_URL = 'http://localhost:8000/users';
 
 describe('Test User API', function () {
 
-  describe('/local_signup', function () {
-    it(': Sign up as local login with invalid email format.', done => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/local_signup`,
-        form: userData.USER_C_DATA,
-        jar: true,
-        resolveWithFullResponse: true,
-        json: true,
-      })
-        .then(result => {
-          should.fail('status code is not 400');
-          done();
-        })
-        .catch(err => {
-          err.statusCode.should.equal(400);
-          done();
-        });
-    });
-
-    it(': Sign up as local login.', done => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/local_signup`,
-        form: userData.USER_E_DATA,
-        jar: true,
-        resolveWithFullResponse: true,
-        json: true,
-      })
-        .then(result => {
-          result.statusCode.should.equal(201);
-          result.body.email.should.equal(userData.USER_E_DATA.email);
-          done();
-        })
-        .catch(err => {
-          should.fail();
-          done();
-        });
-    });
-  });
-
-/*  describe('/local_signin', function () {
-    it(': Sign in as local login with not existing account.',  done => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/local_signin`,
-        form: userData.USER_D_DATA,
-        jar: true,
-        resolveWithFullResponse: true,
-        json: true,
-      })
-        .then(result => {
-          should.fail('status code is not 400');
-          done();
-        })
-        .catch(err => {
-          err.statusCode.should.equal(400);
-          // err.response.body.err_point.should.equal(userCallback.ERR_USER_NOT_FOUND);
-          done();
-        });
-    });
-
-    it(': Sign in as local login with existing account.', done => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/local_signin`,
-        form: userData.USER_E_DATA,
-        jar: true,
-        resolveWithFullResponse: true,
-        json: true,
-      })
-        .then(result => {
-          result.statusCode.should.equal(200);
-          done();
-        })
-        .catch(err => {
-          should.fail();
-          done();
-        });
-    });
-  });*/
-
   describe('/signin : FACEBOOK.', function () {
     it(': Sign up invalid Facebook user.', done => {
       rp({
@@ -206,10 +124,10 @@ describe('Test User API', function () {
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
-          //let body = result.body;
-          //body[0]._id.should.equal(userData.USER_A_DATA._id);
-          //body[0].email.should.equal(userData.USER_A_DATA.email);
-          //body[0].name.should.equal(userData.USER_A_DATA.name);
+          let body = result.body;
+          body[0]._id.should.equal(userData.USER_A_DATA._id);
+          body[0].email.should.equal(userData.USER_A_DATA.email);
+          body[0].name.should.equal(userData.USER_A_DATA.name);
           done();
         })
         .catch(function (err) {
@@ -235,6 +153,7 @@ describe('Test User API', function () {
         .then(function (result) {
           result.statusCode.should.equal(200);
           let body = result.body;
+          console.log(body);
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
@@ -298,6 +217,89 @@ describe('Test User API', function () {
         })
         .catch(function (err) {
           should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/local_signup', function () {
+    it(': Sign up as local login with invalid email format.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signup`,
+        form: userData.USER_C_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          // console.log(err);
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign up as local login.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signup`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(201);
+          result.body.email.should.equal(userData.USER_E_DATA.email);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/local_signin', function () {
+    it(': Sign in as local login with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signin`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          console.log('@@' + err);
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign in as local login with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signin`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          // result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          // should.fail();
           done();
         });
     });
