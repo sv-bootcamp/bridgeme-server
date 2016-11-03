@@ -316,6 +316,68 @@ describe('/editPersonality', function () {
   });
 });
 
+describe('/requestSet/:flag', function () {
+  it('request /requestSet/true with session coockie.', done => {
+    let flag = 'true';
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/requestSet/${flag}`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+
+  it('request /requestSet/false with session coockie.', done => {
+    let flag = 'false';
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/requestSet/${flag}`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+
+  it('request /requestSet/:flag with invalid parameter.', done => {
+    let flag = 'INVALID_PARAMS';
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/requestSet/${flag}`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(400);
+        err.response.body.err_point.should.equal(userCallback.ERR_INVALID_PARAMS);
+        done();
+      });
+  });
+});
+
 function anauthorizedAccessTest(uri, done) {
   rp({
     method: 'GET',

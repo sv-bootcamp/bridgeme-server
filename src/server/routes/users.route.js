@@ -341,4 +341,23 @@ router.get('/mentorlist', user.getMentorList);
  */
 router.get('/job', user.getJobCategory);
 
+/**
+ * @api {get} /users/requestSet/:flag Request User info
+ * @apiName mentorRequestSetting
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *      HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Update success."
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ */
+router.get('/requestSet/:flag', user.mentorRequestSetting);
+
 export default router;

@@ -81,6 +81,7 @@ let userSchema = new Schema({
   job_position: String,
   about: String,
   languages: String,
+  requestGet: Boolean,
   reg_date: {
     type: Date,
     default: Date.now,

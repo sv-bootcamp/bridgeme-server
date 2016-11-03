@@ -39,7 +39,8 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ _id: { $ne: req.session._id } }).sort({ stamp_login: -1 }).exec()
+    User.find({ _id: { $ne: req.session._id }, requestGet: { $ne: false } })
+      .sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -342,7 +343,6 @@ export function editJob(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   } else {
@@ -361,7 +361,6 @@ export function editHelp(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   } else {
@@ -380,9 +379,30 @@ export function editPersonality(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function mentorRequestSetting(req, res, next) {
+  if (req.session._id) {
+    if (req.params.flag === 'true' || req.params.flag === 'false') {
+      User.update({ _id: req.session._id }, {
+        $set: {
+          requestGet: req.params.flag,
+        },
+      }).exec()
+        .then(update => {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+        })
+        .catch((err) => {
+          res.status(400).json(err);
+        });
+    } else {
+      res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
+    }
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
