@@ -1,10 +1,13 @@
 import * as matchController from './match.controller';
+import * as mailingController from './mailing.controller';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import jobcategory from '../config/json/jobcategory';
+import mailStrings from '../config/json/mail.strings';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
+import crypto from 'crypto';
 
 /*
  * Methods about user, register user and handle session
@@ -13,7 +16,7 @@ import userCallback from '../config/json/user.callback';
 const Key = mongoose.model('key');
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
-const platform = { facebook: '1', linkedin: '2' };
+const platform = { local: '0', facebook: '1', linkedin: '2' };
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -95,7 +98,124 @@ export function getProfileById(req, res, next) {
   }
 }
 
-export function signin(req, res, next) {
+export function localSignUp(req, res, next) {
+  let cipher = crypto.createCipher('aes256', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let cryptoPassword = cipher.final('hex');
+
+  let registrationData = {
+    email: req.body.email,
+    password: cryptoPassword,
+    platform_type: 0,
+  };
+
+  validateEmail(registrationData.email)
+    .then(result => {
+      if (result) {
+        return User.findOne({ email: registrationData.email }).exec();
+      } else {
+        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
+      }
+    })
+    .then(existingUser => {
+      if (existingUser) {
+        throw new Error(userCallback.ERR_EXISTING_EMAIL);
+      } else {
+        return User(registrationData).save();
+      }
+    })
+    .then(registeredUser => {
+      return storeSession(req, registeredUser);
+    })
+    .then(storedUser => {
+      if (storedUser) {
+        res.status(201).json(storedUser);
+      } else {
+        throw new Error(userCallback.ERR_FAIL_REGISTER);
+      }
+    })
+    .catch(err => {
+        res.status(400).json(err.message);
+      });
+}
+
+export function localSignIn(req, res, next) {
+  let cipher = crypto.createCipher('aes256', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let cryptoPassword = cipher.final('hex');
+
+  User.findOne({ email: req.body.email }).exec()
+    .then(existingUser => {
+      if (!existingUser) {
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        if (cryptoPassword === existingUser.password) {
+          storeSession(req, existingUser)
+            .then((storedUser) => {
+              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN, user: storedUser });
+            })
+            .catch(err => {
+              throw new Error(userCallback.ERR_FAIL_SIGNIN);
+            });
+        } else {
+          throw new Error(userCallback.ERR_WRONG_PASSWORD);
+        }
+      }
+    })
+    .catch(function (err) {
+      res.status(400).json(err.message);
+    });
+}
+
+export function requestSecretCode(req, res, next) {
+  let date = new Date();
+  let dateString = date.toISOString();
+  let cipher = crypto.createCipher('aes192', req.body.email);
+  let secretCode = cipher.update(dateString, 'utf-8', 'hex');
+  secretCode += cipher.final('hex');
+
+  User.findOne({ email: req.body.email }).exec()
+    .then(user => {
+      if (!user) {
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
+        mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+          mailStrings.RESETPW_HTML, secretCode);
+
+        res.status(200).json({ secretCode: secretCode });
+      }
+    })
+    .catch(err => {
+      res.status(400).json(err.message);
+    });
+}
+
+export function resetPassword(req, res, next) {
+  let cipher = crypto.createCipher('aes192', req.body.password);
+  cipher.update(req.body.email, 'ascii', 'hex');
+  let crytoPassword = cipher.final('hex');
+
+  User.findOne({ email: req.body.email }).exec()
+    .then(user => {
+      if (!user) {
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        User.update({ email: req.body.email }, { password: crytoPassword }, { upsert: true }).exec()
+          .then(updatedUser => {
+            res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
+          })
+          .catch(err => {
+            throw new Error(userCallback.ERR_FAIL_RESETPW);
+          });
+      }
+    })
+    .catch(err => {
+      res.status(400).json({ err_msg: err.message });
+    });
+}
+
+export function signIn(req, res, next) {
   if (req.body.platform_type === platform.facebook) {
     let registrationData;
     crawlByAccessTokenFacebook(req.body.access_token)
@@ -118,8 +238,8 @@ export function signin(req, res, next) {
       .then((existingUser) => {
         if (!existingUser) {
           new User(registrationData).save()
-            .then((registerdUser) => {
-              return storeSession(req, registerdUser);
+            .then((registeredUser) => {
+              return storeSession(req, registeredUser);
             })
             .then((storedUser)=> {
               res.status(201).json(storedUser);
@@ -198,7 +318,6 @@ function crawlByAccessTokenFacebook(accessToken) {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
   });
-
 }
 
 export function getJobCategory(req, res, next) {
@@ -298,7 +417,7 @@ function validateEmail(req) {
     if (filter.test(email)) {
       resolve(true);
     } else {
-      reject();
+      reject(new Error(userCallback.ERR_FAIL_REGISTER));
     }
   });
 }

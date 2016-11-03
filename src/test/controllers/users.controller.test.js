@@ -13,6 +13,7 @@ import userData from '../fixtures/userData';
 const API_BASE_URL = 'http://localhost:8000/users';
 
 describe('Test User API', function () {
+
   describe('/signin : FACEBOOK.', function () {
     it(': Sign up invalid Facebook user.', done => {
       rp({
@@ -215,6 +216,171 @@ describe('Test User API', function () {
         })
         .catch(function (err) {
           should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/local_signup', function () {
+    it(': Sign up as local login with invalid email format.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signup`,
+        form: userData.USER_C_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign up as local login.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signup`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(201);
+          result.body.email.should.equal(userData.USER_E_DATA.email);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/local_signin', function () {
+    it(': Sign in as local login with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signin`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign in as local login with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/local_signin`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/sercret_code', function () {
+    it(': Request a new secret code with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secret_code`,
+        form: {
+          email: userData.USER_D_DATA.email,
+        },
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Request a new secret code with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secret_code`,
+        form: {
+          email: userData.USER_E_DATA.email,
+        },
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/reset_password', () => {
+    it(': Reset password with not existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/reset_password`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail();
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Reset password with existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/reset_password`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
           done();
         });
     });

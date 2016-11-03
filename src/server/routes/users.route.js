@@ -10,6 +10,32 @@ const router = express.Router();
 //POST method
 
 /**
+ * @api {post} /users/local_signup Request Local Sign up
+ * @apiName local_signup
+ * @apiGroup User
+ *
+ * @apiDescription Local Sign up
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/local_signup', user.localSignUp);
+
+/**
+ * @api {post} /users/local_signup Request Local Sign in
+ * @apiName local_signup
+ * @apiGroup User
+ *
+ * @apiDescription Local Sign in
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/local_signin', user.localSignIn);
+
+/**
  * @api {post} /users/signin Request Sign in
  * @apiName signin
  * @apiGroup User
@@ -20,7 +46,37 @@ const router = express.Router();
  * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
  */
-router.post('/signIn', user.signin);
+router.post('/signin', user.signIn);
+
+/**
+ * @api {post} /users/reset_password Request a secret code for reset the password.
+ * @apiName reset_password
+ * @apiGroup User
+ *
+ * @apiDescription Random secret code would return. The same code would be sent to user by mail.
+ *
+ * @apiParam {String} email Email address of user to reset the password
+ *
+ */
+router.post('/secret_code', user.requestSecretCode);
+
+/**
+ * @api {post} /users/reset_password Request a secret code for reset the password.
+ * @apiName reset_password
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "The password had been changed successfully."
+ *     }
+ *
+ * @apiDescription Random secret code would return. The same code would be sent to user by mail.
+ *
+ * @apiParam {String} email Email address of user to reset the password
+ *
+ */
+router.post('/reset_password', user.resetPassword);
 
 /**
  * @api {post} /users/editGeneral Request Edit general information
