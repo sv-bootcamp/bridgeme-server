@@ -106,13 +106,7 @@ export function localSignUp(req, res, next) {
   let registrationData = {
     email: req.body.email,
     password: cryptoPassword,
-    name: req.body.name,
-    work: req.body.work,
-    gender: req.body.gender,
-    location: req.body.location,
-    education: req.body.education,
     platform_type: 0,
-    profile_picture: req.body.profile_picture,
   };
 
   validateEmail(registrationData.email)
@@ -180,11 +174,21 @@ export function requestSecretCode(req, res, next) {
   let secretCode = cipher.update(dateString, 'utf-8', 'hex');
   secretCode += cipher.final('hex');
 
-  // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
-  mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
-    mailStrings.RESETPW_HTML, secretCode);
+  User.findOne({ email: req.body.email }).exec()
+    .then(user => {
+      if(!user) {
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
+        mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+          mailStrings.RESETPW_HTML, secretCode);
 
-  res.status(200).json({ secretCode: secretCode });
+        res.status(200).json({ secretCode: secretCode });
+      }
+    })
+    .catch(err => {
+      res.status(400).json(err.message);
+    });
 }
 
 export function resetPassword(req, res, next) {

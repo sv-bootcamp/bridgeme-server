@@ -153,7 +153,6 @@ describe('Test User API', function () {
         .then(function (result) {
           result.statusCode.should.equal(200);
           let body = result.body;
-          console.log(body);
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
@@ -288,6 +287,50 @@ describe('Test User API', function () {
         method: 'POST',
         uri: `${API_BASE_URL}/local_signin`,
         form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/sercret_code', function () {
+    it(': Request a new secret code with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secret_code`,
+        form: {
+          email: userData.USER_D_DATA.email,
+        },
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Request a new secret code with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secret_code`,
+        form: {
+          email: userData.USER_E_DATA.email,
+        },
         jar: true,
         resolveWithFullResponse: true,
         json: true,

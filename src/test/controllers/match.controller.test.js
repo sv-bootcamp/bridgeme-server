@@ -74,11 +74,11 @@ describe('Test Match API', function () {
         timeout: 5000,
       })
         .then(function (result) {
-          //result.statusCode.should.equal(201);
+          result.statusCode.should.equal(201);
           done();
         })
         .catch(function (err) {
-          //should.fail(err);
+          // should.fail(err);
           done();
         });
     });
