@@ -237,7 +237,6 @@ describe('Test User API', function () {
           done();
         })
         .catch(err => {
-          // console.log(err);
           err.statusCode.should.equal(400);
           done();
         });
@@ -279,7 +278,6 @@ describe('Test User API', function () {
           done();
         })
         .catch(err => {
-          console.log('@@' + err);
           err.statusCode.should.equal(400);
           done();
         });
@@ -295,11 +293,11 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          // result.statusCode.should.equal(200);
+          result.statusCode.should.equal(200);
           done();
         })
         .catch(err => {
-          // should.fail();
+          should.fail();
           done();
         });
     });
