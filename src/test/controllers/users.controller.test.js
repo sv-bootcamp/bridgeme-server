@@ -180,8 +180,8 @@ describe('Test User API', function () {
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
-          //let body = result.body;
-          //body.length.should.equal(0);
+          let body = result.body;
+          body.length.should.equal(0);
           done();
         })
         .catch(function (err) {
@@ -210,8 +210,8 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          //body.relation.asMentee.should.equal(0);
-          //body.relation.asMentor.should.equal(0);
+          body.relation.asMentee.should.equal(0);
+          body.relation.asMentor.should.equal(0);
           done();
         })
         .catch(function (err) {
@@ -341,6 +341,46 @@ describe('Test User API', function () {
         })
         .catch(err => {
           should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/reset_password', () => {
+    it(': Reset password with not existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/reset_password`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail();
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Reset password with existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/reset_password`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
           done();
         });
     });

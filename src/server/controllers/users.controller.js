@@ -176,7 +176,7 @@ export function requestSecretCode(req, res, next) {
 
   User.findOne({ email: req.body.email }).exec()
     .then(user => {
-      if(!user) {
+      if (!user) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
         // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
@@ -196,12 +196,22 @@ export function resetPassword(req, res, next) {
   cipher.update(req.body.email, 'ascii', 'hex');
   let crytoPassword = cipher.final('hex');
 
-  User.update({ email: req.body.email }, { password: crytoPassword }, { upsert: true }).exec()
-    .then(updatedUser => {
-      res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
+  User.findOne({ email: req.body.email }).exec()
+    .then(user => {
+      if (!user) {
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      } else {
+        User.update({ email: req.body.email }, { password: crytoPassword }, { upsert: true }).exec()
+          .then(updatedUser => {
+            res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
+          })
+          .catch(err => {
+            throw new Error(userCallback.ERR_FAIL_RESETPW);
+          });
+      }
     })
     .catch(err => {
-      res.status(400).json({ err_point: userCallback.ERR_FAIL_RESETPW });
+      res.status(400).json({ err_msg: err.message });
     });
 }
 
