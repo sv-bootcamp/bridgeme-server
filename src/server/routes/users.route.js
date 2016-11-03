@@ -10,8 +10,8 @@ const router = express.Router();
 //POST method
 
 /**
- * @api {post} /users/local_signup Request Local Sign up
- * @apiName local_signup
+ * @api {post} /users/localSignUp Request Local Sign up
+ * @apiName localSignUp
  * @apiGroup User
  *
  * @apiDescription Local Sign up
@@ -20,11 +20,11 @@ const router = express.Router();
  * @apiParam {String} password Password that would used
  *
  */
-router.post('/local_signup', user.localSignUp);
+router.post('/localSignUp', user.localSignUp);
 
 /**
- * @api {post} /users/local_signup Request Local Sign in
- * @apiName local_signup
+ * @api {post} /users/localSignIn Request Local Sign in
+ * @apiName localSignIn
  * @apiGroup User
  *
  * @apiDescription Local Sign in
@@ -33,11 +33,11 @@ router.post('/local_signup', user.localSignUp);
  * @apiParam {String} password Password that would used
  *
  */
-router.post('/local_signin', user.localSignIn);
+router.post('/localSignIn', user.localSignIn);
 
 /**
- * @api {post} /users/signin Request Sign in
- * @apiName signin
+ * @api {post} /users/signIn Request Sign in
+ * @apiName signIn
  * @apiGroup User
  *
  * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
@@ -46,11 +46,11 @@ router.post('/local_signin', user.localSignIn);
  * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
  */
-router.post('/signin', user.signIn);
+router.post('/signIn', user.signIn);
 
 /**
- * @api {post} /users/reset_password Request a secret code for reset the password.
- * @apiName reset_password
+ * @api {post} /users/secretCode Request a secret code for reset the password.
+ * @apiName secretCode
  * @apiGroup User
  *
  * @apiDescription Random secret code would return. The same code would be sent to user by mail.
@@ -58,11 +58,11 @@ router.post('/signin', user.signIn);
  * @apiParam {String} email Email address of user to reset the password
  *
  */
-router.post('/secret_code', user.requestSecretCode);
+router.post('/secretCode', user.requestSecretCode);
 
 /**
- * @api {post} /users/reset_password Request a secret code for reset the password.
- * @apiName reset_password
+ * @api {post} /users/resetPassword Request a secret code for reset the password.
+ * @apiName resetPassword
  * @apiGroup User
  *
  * @apiSuccessExample {json} Success
@@ -76,7 +76,7 @@ router.post('/secret_code', user.requestSecretCode);
  * @apiParam {String} email Email address of user to reset the password
  *
  */
-router.post('/reset_password', user.resetPassword);
+router.post('/resetPassword', user.resetPassword);
 
 /**
  * @api {post} /users/editGeneral Request Edit general information
