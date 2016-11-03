@@ -10,8 +10,8 @@ const router = express.Router();
 //POST method
 
 /**
- * @api {post} /users/local_signup Request Local Sign up
- * @apiName local_signup
+ * @api {post} /users/localSignUp Request Local Sign up
+ * @apiName localSignUp
  * @apiGroup User
  *
  * @apiDescription Local Sign up
@@ -23,8 +23,8 @@ const router = express.Router();
 router.post('/localSignUp', user.localSignUp);
 
 /**
- * @api {post} /users/local_signup Request Local Sign in
- * @apiName local_signup
+ * @api {post} /users/localSignIn Request Local Sign in
+ * @apiName localSignIn
  * @apiGroup User
  *
  * @apiDescription Local Sign in
@@ -36,8 +36,8 @@ router.post('/localSignUp', user.localSignUp);
 router.post('/localSignIn', user.localSignIn);
 
 /**
- * @api {post} /users/signin Request Sign in
- * @apiName signin
+ * @api {post} /users/signIn Request Sign in
+ * @apiName signIn
  * @apiGroup User
  *
  * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
@@ -49,8 +49,8 @@ router.post('/localSignIn', user.localSignIn);
 router.post('/signIn', user.signIn);
 
 /**
- * @api {post} /users/secret_code Request a secret code for reset the password.
- * @apiName secret_code
+ * @api {post} /users/secretCode Request a secret code for reset the password.
+ * @apiName secretCode
  * @apiGroup User
  *
  * @apiDescription Random secret code would return. The same code would be sent to user by mail.
@@ -61,8 +61,8 @@ router.post('/signIn', user.signIn);
 router.post('/secretCode', user.requestSecretCode);
 
 /**
- * @api {post} /users/reset_password Request a secret code for reset the password.
- * @apiName reset_password
+ * @api {post} /users/resetPassword Request a secret code for reset the password.
+ * @apiName resetPassword
  * @apiGroup User
  *
  * @apiSuccessExample {json} Success
