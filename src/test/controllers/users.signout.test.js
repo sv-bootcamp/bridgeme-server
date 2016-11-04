@@ -5,7 +5,7 @@ describe('Test User API', function () {
   describe('/signOut', function () {
     it(': Sign out', done => {
       rp({
-        method: 'POST',
+        method: 'GET',
         uri: 'http://localhost:8000/users/signout',
         jar: true,
         resolveWithFullResponse: true,
@@ -17,7 +17,8 @@ describe('Test User API', function () {
           done();
         })
         .catch(function (err) {
-
+          should.fail();
+          done();
         });
     });
   });
