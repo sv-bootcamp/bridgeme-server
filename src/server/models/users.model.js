@@ -82,7 +82,7 @@ let userSchema = new Schema({
   job_position: String,
   about: String,
   languages: String,
-  requestGet: Boolean,
+  mentorMode: Boolean,
   reg_date: {
     type: Date,
     default: Date.now,
