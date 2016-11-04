@@ -71,9 +71,10 @@ router.post('/secretCode', user.requestSecretCode);
  *       "msg": "The password had been changed successfully."
  *     }
  *
- * @apiDescription Random secret code would return. The same code would be sent to user by mail.
+ * @apiDescription
  *
  * @apiParam {String} email Email address of user to reset the password
+ * @apiParam {String} password Password New password
  *
  */
 router.post('/resetPassword', user.resetPassword);

@@ -119,7 +119,7 @@ export function localSignUp(req, res, next) {
     })
     .then(existingUser => {
       if (existingUser) {
-        throw new Error(userCallback.ERR_EXISTING_EMAIL);
+        res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
         return User(registrationData).save();
       }
@@ -129,14 +129,14 @@ export function localSignUp(req, res, next) {
     })
     .then(storedUser => {
       if (storedUser) {
-        res.status(201).json(storedUser);
+        res.status(200).json(storedUser);
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
     })
-    .catch(err => {
-        res.status(400).json(err.message);
-      });
+    .catch(function (err) {
+      res.status(400).json({ err_point: err.message });
+    });
 }
 
 export function localSignIn(req, res, next) {
@@ -211,7 +211,7 @@ export function resetPassword(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json({ err_msg: err.message });
+      res.status(400).json({ err_point: err.message });
     });
 }
 
@@ -461,7 +461,6 @@ export function editJob(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   } else {
@@ -480,7 +479,6 @@ export function editHelp(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   } else {
@@ -499,7 +497,6 @@ export function editPersonality(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   } else {
