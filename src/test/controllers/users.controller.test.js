@@ -1,5 +1,7 @@
 import '../../server/models/users.model';
+import jobData from '../../server/config/json/jobcategory';
 import rp from 'request-promise';
+import signupData from '../fixtures/signupData';
 import should from 'should';
 import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
@@ -9,13 +11,15 @@ import userData from '../fixtures/userData';
  */
 
 const API_BASE_URL = 'http://localhost:8000/users';
+let mentorMode = true;
 
 describe('Test User API', function () {
-  describe('/signin : FACEBOOK.', function () {
+
+  describe('/signIn : FACEBOOK.', function () {
     it(': Sign up invalid Facebook user.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signIn`,
         form: {
           access_token: 'THIS IS INVALID ACCESS TOKEN',
           platform_type: '1',
@@ -38,7 +42,7 @@ describe('Test User API', function () {
     it(': Sign up with Invalid platform type.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signIn`,
         form: {
           access_token: 'THIS IS INVALID ACCESS TOKEN',
           platform_type: '123',
@@ -61,7 +65,7 @@ describe('Test User API', function () {
     it(': Sign up valid Facebook user A.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signIn`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -85,7 +89,7 @@ describe('Test User API', function () {
     it(': Sign in valid Facebook user A.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/signin',
+        uri: `${API_BASE_URL}/signIn`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -114,7 +118,7 @@ describe('Test User API', function () {
     it('request /all with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/all',
+        uri: `${API_BASE_URL}/all`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -125,7 +129,6 @@ describe('Test User API', function () {
           body[0]._id.should.equal(userData.USER_A_DATA._id);
           body[0].email.should.equal(userData.USER_A_DATA.email);
           body[0].name.should.equal(userData.USER_A_DATA.name);
-          body[0].gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -143,7 +146,7 @@ describe('Test User API', function () {
     it('request /me with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/me',
+        uri: `${API_BASE_URL}/me`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -154,7 +157,6 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
           done();
         })
         .catch(function (err) {
@@ -164,15 +166,15 @@ describe('Test User API', function () {
     });
   });
 
-  describe('/mentorlist', function () {
-    it('request /mentorlist without session coockie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/mentorlist', done);
+  describe('/mentorList', function () {
+    it('request /mentorList without session cookie.', done => {
+      anauthorizedAccessTest(API_BASE_URL + '/mentorList', done);
     });
 
-    it('request /mentorlist with session coockie.', done => {
+    it('request /mentorList with session coockie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/mentorlist',
+        uri: `${API_BASE_URL}/mentorList`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -191,14 +193,14 @@ describe('Test User API', function () {
   });
 
   describe('/id/:id', function () {
-    it('request /id/:id without session coockie.', done => {
+    it('request /id/:id without session cookie.', done => {
       anauthorizedAccessTest(API_BASE_URL + '/id/' + userData.USER_A_DATA._id, done);
     });
 
-    it('request /id/:id with session coockie.', done => {
+    it('request /id/:id with session cookie.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/id/' + userData.USER_A_DATA._id,
+        uri: `${API_BASE_URL}/id/${userData.USER_A_DATA._id}`,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -209,8 +211,8 @@ describe('Test User API', function () {
           body._id.should.equal(userData.USER_A_DATA._id);
           body.email.should.equal(userData.USER_A_DATA.email);
           body.name.should.equal(userData.USER_A_DATA.name);
-          body.gender.should.equal(userData.USER_A_DATA.gender);
-          body.status.should.equal(0);
+          body.relation.asMentee.should.equal(0);
+          body.relation.asMentor.should.equal(0);
           done();
         })
         .catch(function (err) {
@@ -218,6 +220,349 @@ describe('Test User API', function () {
           done();
         });
     });
+  });
+
+  describe('/localSignUp', function () {
+    it(': Sign up as local login with invalid email format.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignUp`,
+        form: userData.USER_C_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign up as local login.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignUp`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          result.body.email.should.equal(userData.USER_E_DATA.email);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+
+    it(': Sign up as local login with existing email.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignUp`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(201);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/localSignIn', function () {
+    it(': Sign in as local login with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignIn`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Sign in as local login with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignIn`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/secretCode', function () {
+    it(': Request a new secret code with not existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secretCode`,
+        form: {
+          email: userData.USER_D_DATA.email,
+        },
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail('status code should be 400');
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Request a new secret code with existing account.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/secretCode`,
+        form: {
+          email: userData.USER_E_DATA.email,
+        },
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('/resetPassword', () => {
+    it(': Reset password with not existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/resetPassword`,
+        form: userData.USER_D_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          should.fail();
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Reset password with existing user.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/resetPassword`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch(err => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+  });
+});
+
+describe('/job', function () {
+  it('request /job without session cookie.', done => {
+    anauthorizedAccessTest(API_BASE_URL + '/job', done);
+  });
+
+  it('request /job with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/job`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        const body = result.body;
+        body.area.toString().should.equal(jobData.area.toString());
+        body.years.toString().should.equal(jobData.years.toString());
+        body.education_background.toString()
+          .should.equal(jobData.education_background.toString());
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editJob', function () {
+  it('request /editJob with session cookie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editJob`,
+      form: signupData.data.job,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editHelp', function () {
+  it('request /editHelp with session cookie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editHelp`,
+      form: signupData.data.help,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/editPersonality', function () {
+  it('request /editPersonality with session cookie.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editPersonality`,
+      form: signupData.data.personality,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/setRequestStatus', function () {
+  it('request /setRequestStatus with invalid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/setRequestStatus`,
+      form: { mentorMode: null },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(400);
+        err.response.body.err_point.should.equal(userCallback.ERR_INVALID_PARAMS);
+        done();
+      });
+  });
+
+  it('request /setRequestStatus with valid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/setRequestStatus`,
+      form: { mentorMode: mentorMode },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        console.log(err);
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/getRequestStatus', function () {
+  it('request /getRequestStatus with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/getRequestStatus`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.result.should.equal(mentorMode);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
   });
 });
 

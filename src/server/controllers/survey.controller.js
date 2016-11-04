@@ -1,3 +1,5 @@
+import menteeSurvey from '../config/json/surveyA001-1';
+import mentorSurvey from '../config/json/surveyB001-1';
 import mongoose from 'mongoose';
 import surveyCallback from '../config/json/survey.callback';
 import userCallback from '../config/json/user.callback';
@@ -13,28 +15,19 @@ const User = mongoose.model('user');
 // Get request
 export function getRequest(req, res, next) {
   if (req.session._id) {
+    let surveyId;
     determineUser()
       .then((isSample) => {
         if (isSample) {
-          let surveyId;
           if (req.params.type == 'mentee') {
-            surveyId = 'A001-1';
+            res.status(200).json(menteeSurvey.data);
           } else if (req.params.type == 'mentor') {
-            surveyId = 'B001-1';
+            res.status(200).json(mentorSurvey.data);
           } else {
             throw new Error(surveyCallback.ERR_INVALID_PARAMS);
           }
-
-          return Survey.findOne({ survey_id: surveyId }).exec();
         } else {
           res.status(204).json();
-        }
-      })
-      .then((surveyItem) => {
-        if (surveyItem)
-          res.status(200).json(surveyItem);
-        else {
-          throw new Error(surveyCallback.ERR_SURVEY_NOT_FOUND);
         }
       })
       .catch((err) => {
@@ -45,7 +38,7 @@ export function getRequest(req, res, next) {
   }
 }
 
-function determineUser(isSampleCallback) {
+function determineUser() {
   // TODO: traffic management
   // In this version we send survey to all user.
   // after launch we can manage traffic by setting t.

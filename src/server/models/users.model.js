@@ -38,7 +38,23 @@ let educationSchema = new Schema({
   year: {
     name: String,
   },
+});
 
+const jobSchema = new Schema({
+  area: String,
+  role: String,
+  years: String,
+  education_background: String,
+});
+
+const helpSchema = new Schema({
+  select: String,
+  index: Number,
+});
+
+const personalitySchema = new Schema({
+  option: String,
+  score: Number,
 });
 
 let userSchema = new Schema({
@@ -47,12 +63,15 @@ let userSchema = new Schema({
   platform_id: String,
   //Which platform user is using.  1:Facebook 2: LinkedIn
   platform_type: Number,
+  password: String,
   name: String,
   education: [educationSchema],
   work: [workSchema],
+  job: [jobSchema],
+  help: [helpSchema],
+  personality: [personalitySchema],
   locale: String,
   age: Number,
-  gender: String,
   location: String,
   field: String,
   region: String,
@@ -61,6 +80,9 @@ let userSchema = new Schema({
   timezone: Number,
   profile_picture: String,
   job_position: String,
+  about: String,
+  languages: String,
+  mentorMode: Boolean,
   reg_date: {
     type: Date,
     default: Date.now,

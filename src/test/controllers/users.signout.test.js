@@ -17,7 +17,7 @@ describe('Test User API', function () {
           done();
         })
         .catch(function (err) {
-          
+
         });
     });
   });
