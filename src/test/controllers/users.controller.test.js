@@ -252,8 +252,27 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(201);
+          result.statusCode.should.equal(200);
           result.body.email.should.equal(userData.USER_E_DATA.email);
+          done();
+        })
+        .catch(err => {
+          should.fail();
+          done();
+        });
+    });
+
+    it(': Sign up as local login with existing email.', done => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/localSignUp`,
+        form: userData.USER_E_DATA,
+        jar: true,
+        resolveWithFullResponse: true,
+        json: true,
+      })
+        .then(result => {
+          result.statusCode.should.equal(201);
           done();
         })
         .catch(err => {

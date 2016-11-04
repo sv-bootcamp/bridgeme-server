@@ -17,6 +17,7 @@ export default {
   SUCCESS_RESET_PASSWORD: 'The password had been changed successfully.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
   SUCCESS_SIGNIN: 'Sign in success.',
+  SUCCESS_SIGNOUT: 'Sign out success.',
   SUCCESS_UPDATE: 'Update success.',
   SUCCESS_UPDATE_WITHOUT_IMAGE: 'Update success without image.',
 };

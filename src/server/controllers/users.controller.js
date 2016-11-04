@@ -120,7 +120,7 @@ export function localSignUp(req, res, next) {
     })
     .then(existingUser => {
       if (existingUser) {
-        throw new Error(userCallback.ERR_EXISTING_EMAIL);
+        res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
         return User(registrationData).save();
       }
@@ -130,14 +130,14 @@ export function localSignUp(req, res, next) {
     })
     .then(storedUser => {
       if (storedUser) {
-        res.status(201).json(storedUser);
+        res.status(200).json(storedUser);
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
     })
     .catch(err => {
-        res.status(400).json(err.message);
-      });
+      res.status(400).json({ err_point: err.message });
+    });
 }
 
 export function localSignIn(req, res, next) {
@@ -212,7 +212,7 @@ export function resetPassword(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json({ err_msg: err.message });
+      res.status(400).json({ err_point: err.message });
     });
 }
 
@@ -496,6 +496,46 @@ export function editPersonality(req, res, next) {
     }).exec()
       .then((data) => {
         res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function setMentoringRequestStatus(req, res, next) {
+  if (req.session._id) {
+    if (req.body.flag === 'true' || req.body.flag === 'false') {
+      User.update({ _id: req.session._id }, {
+        $set: {
+          mentorMode: req.body.flag,
+        },
+      }).exec()
+        .then(update => {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+        })
+        .catch((err) => {
+          res.status(400).json(err);
+        });
+    } else {
+      res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
+    }
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function getMentoringRequestStatus(req, res, next) {
+  if (req.session._id) {
+    User.findOne({ _id: req.session._id }).exec()
+      .then(user => {
+        if (user.mentorMode == null) {
+          res.status(200).json(true);
+        } else {
+          res.status(200).json({ result: user.mentorMode });
+        }
       })
       .catch((err) => {
         res.status(400).json(err);
