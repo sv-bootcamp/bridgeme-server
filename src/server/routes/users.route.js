@@ -261,6 +261,16 @@ router.post('/editHelp', user.editHelp);
  */
 router.post('/editPersonality', user.editPersonality);
 
+/**
+ * @api {post} /users/setRequestStatus Request User info
+ * @apiName setRequestStatus
+ * @apiGroup User
+ *
+ * @apiParam {Boolean} flag Flag for requestGet.
+ *
+ */
+router.post('/setRequestStatus', user.setMentoringRequestStatus);
+
 //GET method
 
 /**
@@ -399,7 +409,26 @@ router.get('/mentorlist', user.getMentorList);
 router.get('/job', user.getJobCategory);
 
 /**
- * @api {post} /users/signOut Request Sign out
+ * @api {get} /users/getRequestStatus Request User info
+ * @apiName getRequestStatus
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *      HTTP/1.1 200 OK
+ *     {
+ *       "result": true
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ */
+router.get('/getRequestStatus', user.getMentoringRequestStatus);
+
+/**
+ * @api {get} /users/signOut Request Sign out
  * @apiName signOut
  * @apiGroup User
  *

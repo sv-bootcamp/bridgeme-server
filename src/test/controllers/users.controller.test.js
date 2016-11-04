@@ -11,6 +11,7 @@ import userData from '../fixtures/userData';
  */
 
 const API_BASE_URL = 'http://localhost:8000/users';
+let flag = true;
 
 describe('Test User API', function () {
 
@@ -492,6 +493,70 @@ describe('/editPersonality', function () {
       .then(function (result) {
         result.statusCode.should.equal(200);
         result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/setRequestStatus', function () {
+  it('request /setRequestStatus with invalid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/setRequestStatus`,
+      form: { flag: null },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(400);
+        err.response.body.err_point.should.equal(userCallback.ERR_INVALID_PARAMS);
+        done();
+      });
+  });
+
+  it('request /setRequestStatus with valid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/setRequestStatus`,
+      form: { flag: flag },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        console.log(err);
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/getRequestStatus', function () {
+  it('request /getRequestStatus with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/getRequestStatus`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.result.should.equal(flag);
         done();
       })
       .catch(function (err) {
