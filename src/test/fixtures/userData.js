@@ -5,4 +5,16 @@ export default {
   'BhdgYuiDJNKdPhuSqR99VMfZCAdpHVEC6zrq1XZCY4DTmIDajqznDUiKZCUV6ujMxWGntJkZAKukZD',
   USER_A_DATA: undefined,
   USER_B_DATA: undefined,
+  USER_C_DATA: {
+    email: 'papermoon703@.com',
+    password: 'samplePWD*987',
+  },
+  USER_D_DATA: {
+    email: 'papermoon@gmail.com',
+    password: 'samplePWD*987',
+  },
+  USER_E_DATA: {
+    email: 'papermoon703@gmail.com',
+    password: 'samplePWD*987',
+  },
 };

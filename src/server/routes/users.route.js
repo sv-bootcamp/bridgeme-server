@@ -10,8 +10,34 @@ const router = express.Router();
 //POST method
 
 /**
- * @api {post} /users/signin Request Sign in
- * @apiName signin
+ * @api {post} /users/localSignUp Request Local Sign up
+ * @apiName localSignUp
+ * @apiGroup User
+ *
+ * @apiDescription Local Sign up
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/localSignUp', user.localSignUp);
+
+/**
+ * @api {post} /users/localSignIn Request Local Sign in
+ * @apiName localSignIn
+ * @apiGroup User
+ *
+ * @apiDescription Local Sign in
+ *
+ * @apiParam {String} email Email address that would used as ID
+ * @apiParam {String} password Password that would used
+ *
+ */
+router.post('/localSignIn', user.localSignIn);
+
+/**
+ * @api {post} /users/signIn Request Sign in
+ * @apiName signIn
  * @apiGroup User
  *
  * @apiDescription If you sign in first, server will register user automatically. After that, server will sign user in.
@@ -20,7 +46,37 @@ const router = express.Router();
  * @apiParam {Number} platform_type Platform that user used when join { Facebook: 1,  LinkedIn: 2 }.
  *
  */
-router.post('/signIn', user.signin);
+router.post('/signIn', user.signIn);
+
+/**
+ * @api {post} /users/secretCode Request a secret code for reset the password.
+ * @apiName secretCode
+ * @apiGroup User
+ *
+ * @apiDescription Random secret code would return. The same code would be sent to user by mail.
+ *
+ * @apiParam {String} email Email address of user to reset the password
+ *
+ */
+router.post('/secretCode', user.requestSecretCode);
+
+/**
+ * @api {post} /users/resetPassword Request a secret code for reset the password.
+ * @apiName resetPassword
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "The password had been changed successfully."
+ *     }
+ *
+ * @apiDescription Random secret code would return. The same code would be sent to user by mail.
+ *
+ * @apiParam {String} email Email address of user to reset the password
+ *
+ */
+router.post('/resetPassword', user.resetPassword);
 
 /**
  * @api {post} /users/editGeneral Request Edit general information
@@ -204,6 +260,16 @@ router.post('/editHelp', user.editHelp);
  */
 router.post('/editPersonality', user.editPersonality);
 
+/**
+ * @api {post} /users/setRequestStatus Request User info
+ * @apiName setRequestStatus
+ * @apiGroup User
+ *
+ * @apiParam {Boolean} flag Flag for requestGet.
+ *
+ */
+router.post('/setRequestStatus', user.setMentoringRequestStatus);
+
 //GET method
 
 /**
@@ -342,14 +408,14 @@ router.get('/mentorlist', user.getMentorList);
 router.get('/job', user.getJobCategory);
 
 /**
- * @api {get} /users/requestSet/:flag Request User info
- * @apiName mentorRequestSetting
+ * @api {get} /users/getRequestStatus Request User info
+ * @apiName getRequestStatus
  * @apiGroup User
  *
  * @apiSuccessExample {json} Success
  *      HTTP/1.1 200 OK
  *     {
- *       "msg": "Update success."
+ *       "result": true
  *     }
  *
  * @apiErrorExample {json}
@@ -358,6 +424,6 @@ router.get('/job', user.getJobCategory);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/requestSet/:flag', user.mentorRequestSetting);
+router.get('/getRequestStatus', user.getMentoringRequestStatus);
 
 export default router;
