@@ -42,7 +42,7 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ _id: { $ne: req.session._id }, requestGet: { $ne: false } })
+    User.find({ _id: { $ne: req.session._id }, mentorMode: { $ne: false } })
       .sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
@@ -510,7 +510,7 @@ export function setMentoringRequestStatus(req, res, next) {
     if (req.body.flag === 'true' || req.body.flag === 'false') {
       User.update({ _id: req.session._id }, {
         $set: {
-          requestGet: req.body.flag,
+          mentorMode: req.body.flag,
         },
       }).exec()
         .then(update => {
@@ -531,10 +531,10 @@ export function getMentoringRequestStatus(req, res, next) {
   if (req.session._id) {
     User.findOne({ _id: req.session._id }).exec()
       .then(user => {
-        if (user.requestGet == null) {
+        if (user.mentorMode == null) {
           res.status(200).json(true);
         } else {
-          res.status(200).json({ result: user.requestGet });
+          res.status(200).json({ result: user.mentorMode });
         }
       })
       .catch((err) => {
