@@ -7,6 +7,7 @@ export default {
   ERR_FAIL_RESETPW: 'Failed to reset the password',
   ERR_FAIL_SIGNIN: 'Failed to sign in.',
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access_token.',
+  ERR_INVALID_PARAMS: 'Invalid parameter.',
   ERR_INVALID_EMAIL_FORMAT: 'Invalid email format.',
   ERR_INVALID_PLATFORM: 'Platforom not supported.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
@@ -16,6 +17,7 @@ export default {
   SUCCESS_RESET_PASSWORD: 'The password had been changed successfully.',
   SUCCESS_REGISTER: 'Registration & Signin success.',
   SUCCESS_SIGNIN: 'Sign in success.',
+  SUCCESS_SIGNOUT: 'Sign out success.',
   SUCCESS_UPDATE: 'Update success.',
   SUCCESS_UPDATE_WITHOUT_IMAGE: 'Update success without image.',
 };
