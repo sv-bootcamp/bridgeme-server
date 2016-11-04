@@ -63,6 +63,7 @@ let userSchema = new Schema({
   platform_id: String,
   //Which platform user is using.  1:Facebook 2: LinkedIn
   platform_type: Number,
+  password: String,
   name: String,
   education: [educationSchema],
   work: [workSchema],
