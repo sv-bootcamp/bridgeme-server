@@ -427,4 +427,25 @@ router.get('/job', user.getJobCategory);
  */
 router.get('/getRequestStatus', user.getMentoringRequestStatus);
 
+/**
+ * @api {get} /users/signout Request Sign out
+ * @apiName signout
+ * @apiGroup User
+ *
+ * @apiDescription If you sign out, server will destroy user session.
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *        Sign out success.
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "err_point": "Failed to sign out."
+ *     }
+ */
+router.get('/signOut', user.signout);
+
 export default router;

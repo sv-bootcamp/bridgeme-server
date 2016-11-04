@@ -544,3 +544,17 @@ export function getMentoringRequestStatus(req, res, next) {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }
 }
+
+export function signout(req, res, next) {
+  if (req.session._id) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNOUT, err: err });
+      } else {
+        res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+      }
+    });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}

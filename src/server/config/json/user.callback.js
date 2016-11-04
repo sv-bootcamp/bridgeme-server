@@ -6,6 +6,7 @@ export default {
   ERR_FAIL_REGISTER: 'Failed to register',
   ERR_FAIL_RESETPW: 'Failed to reset the password',
   ERR_FAIL_SIGNIN: 'Failed to sign in.',
+  ERR_FAIL_SIGNOUT: 'Failed to sign out.',
   ERR_INVALID_ACCESS_TOKEN: 'Invalid access_token.',
   ERR_INVALID_PARAMS: 'Invalid parameter.',
   ERR_INVALID_EMAIL_FORMAT: 'Invalid email format.',
