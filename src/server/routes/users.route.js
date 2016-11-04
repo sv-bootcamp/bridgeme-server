@@ -341,4 +341,14 @@ router.get('/mentorlist', user.getMentorList);
  */
 router.get('/job', user.getJobCategory);
 
+/**
+ * @api {post} /users/signOut Request Sign out
+ * @apiName signOut
+ * @apiGroup User
+ *
+ * @apiDescription Server will destroy session.
+ *
+ */
+router.get('/signOut', user.signOut);
+
 export default router;
