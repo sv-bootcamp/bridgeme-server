@@ -11,7 +11,7 @@ import userData from '../fixtures/userData';
  */
 
 const API_BASE_URL = 'http://localhost:8000/users';
-let flag = true;
+let mentorMode = true;
 
 describe('Test User API', function () {
 
@@ -507,7 +507,7 @@ describe('/setRequestStatus', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/setRequestStatus`,
-      form: { flag: null },
+      form: { mentorMode: null },
       jar: true,
       resolveWithFullResponse: true,
       json: true,
@@ -527,7 +527,7 @@ describe('/setRequestStatus', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/setRequestStatus`,
-      form: { flag: flag },
+      form: { mentorMode: mentorMode },
       jar: true,
       resolveWithFullResponse: true,
       json: true,
@@ -556,7 +556,7 @@ describe('/getRequestStatus', function () {
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
-        result.body.result.should.equal(flag);
+        result.body.result.should.equal(mentorMode);
         done();
       })
       .catch(function (err) {

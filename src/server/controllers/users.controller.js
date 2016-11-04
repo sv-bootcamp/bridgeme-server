@@ -507,10 +507,10 @@ export function editPersonality(req, res, next) {
 
 export function setMentoringRequestStatus(req, res, next) {
   if (req.session._id) {
-    if (req.body.flag === 'true' || req.body.flag === 'false') {
+    if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
       User.update({ _id: req.session._id }, {
         $set: {
-          mentorMode: req.body.flag,
+          mentorMode: req.body.mentorMode,
         },
       }).exec()
         .then(update => {
