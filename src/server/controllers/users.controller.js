@@ -134,7 +134,7 @@ export function localSignUp(req, res, next) {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
     })
-    .catch(function (err) {
+    .catch(err => {
       res.status(400).json({ err_point: err.message });
     });
 }
