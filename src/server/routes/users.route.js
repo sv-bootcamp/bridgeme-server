@@ -426,3 +426,5 @@ router.get('/job', user.getJobCategory);
  *     }
  */
 router.get('/getRequestStatus', user.getMentoringRequestStatus);
+
+export default router;
