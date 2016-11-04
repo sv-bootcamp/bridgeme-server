@@ -6,7 +6,7 @@ describe('Test User API', function () {
     it(': Sign out', done => {
       rp({
         method: 'GET',
-        uri: 'http://localhost:8000/users/signout',
+        uri: 'http://localhost:8000/users/signOut',
         jar: true,
         resolveWithFullResponse: true,
         json: true,
