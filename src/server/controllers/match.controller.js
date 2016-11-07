@@ -35,7 +35,7 @@ export function requestMentoring(req, res, next) {
         if (mentor) {
           // TODO: Confirm method whether send mail or send in-app message.
           mailingController.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-            mailStrings.REQUEST_HTML, matchData.message);
+            mailStrings.REQUEST_HTML, matchData.message.contents);
           return match.save();
         } else {
           throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
