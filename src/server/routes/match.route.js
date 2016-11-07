@@ -12,16 +12,26 @@ const router = express.Router();
 /**
  * @api {post} /match/request Send request to mentor
  * @apiName requestMentoring
- * @apiDescription Mentee request mentoring to mentor via Email.
+ * @apiDescription Mentee request mentoring to mentor via message.
  * @apiGroup Match
  *
  * @apiParam {String} mentor_id ObjectId of mentor who want to get mentoring service.
- * @apiParam {Number} content Email contains this content.
+ * @apiParam String subjects Request contains this subjects.
+ * @apiParam String contents Request contains this contents.
+ *
+ * @apiParamExample {json} Parameter Sample
+ *     {
+ *         "mentor_id": "5818312039",
+ *         "message": {
+ *              "subjects" : "Get a new job",
+ *              "contents" : "Hi, I want your help!",
+ *         },
+ *     }
  *
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 201 OK
  *     {
- *       "msg": "SendMail - Success to Send an email."
+ *       "msg": "RequestMentoring - Request success."
  *     }
  * @apiErrorExample {json} Fail
  *     HTTP/1.1 400 Bad Request
@@ -81,6 +91,10 @@ router.post('/response', match.responseMentoring);
  *        "requested": [
  *          {
  *            "_id": "57d24596b0b2b32740fd28bf",
+ *            "message": {
+ *              "subjects": "Get a new job",
+ *              "contents": "hi"
+ *            },
  *            "status": 2,
  *            "request_date": "2016-09-09T05:16:06.432Z",
  *            "detail": [
