@@ -1,4 +1,4 @@
-import sendEmail from './mailing.controller';
+import * as mailingController from './mailing.controller';
 import userCallback from '../config/json/user.callback';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
@@ -34,7 +34,8 @@ export function requestMentoring(req, res, next) {
       .then(mentor => {
         if (mentor) {
           // TODO: Confirm method whether send mail or send in-app message.
-          // sendEmail(receiver, mailStrings.REQUEST_SUBJECT, mailStrings.REQUEST_HTML, matchData.message);
+          mailingController.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
+            mailStrings.REQUEST_HTML, matchData.message);
           return match.save();
         } else {
           throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
