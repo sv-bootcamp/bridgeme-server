@@ -266,11 +266,7 @@ router.post('/editPersonality', user.editPersonality);
  * @apiName setRequestStatus
  * @apiGroup User
  *
-<<<<<<< HEAD
- * @apiParam {Boolean} flag Flag for requestGet.
-=======
  * @apiParam {Boolean} mentorMode Flag for requestGet.
->>>>>>> a8a9ebecf51949835fd3b4603daf5440d8ae3955
  *
  */
 router.post('/setRequestStatus', user.setMentoringRequestStatus);
