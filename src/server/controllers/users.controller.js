@@ -545,11 +545,11 @@ export function getMentoringRequestStatus(req, res, next) {
   }
 }
 
-export function signOut(req, res, next) {
+export function signout(req, res, next) {
   if (req.session._id) {
-    req.session.destroy(err => {
+    req.session.destroy((err) => {
       if (err) {
-        res.status(400).json(err);
+        res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNOUT, err: err });
       } else {
         res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
       }
