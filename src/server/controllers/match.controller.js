@@ -33,14 +33,15 @@ export function requestMentoring(req, res, next) {
       })
       .then(mentor => {
         if (mentor) {
-          sendEmail(receiver, mailStrings.REQUEST_SUBJECT, mailStrings.REQUEST_HTML, matchData.content);
+          // TODO: Confirm method whether send mail or send in-app message.
+          // sendEmail(receiver, mailStrings.REQUEST_SUBJECT, mailStrings.REQUEST_HTML, matchData.message);
           return match.save();
         } else {
           throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
         }
       })
       .then(() => {
-        res.status(201).json({ msg: matchCallback.SUCCESS_SEND_MAIL });
+        res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
       })
       .catch((err) => {
         res.status(400).json({ err_point: err.message, err: err.stack });
@@ -128,6 +129,7 @@ function findMentorActivity(mentor_id) {
         detail: 1,
         request_date: 1,
         response_date: 1,
+        message: 1,
       },
     },
   ]).exec();
