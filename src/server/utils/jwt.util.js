@@ -3,11 +3,13 @@ import jwt from 'jsonwebtoken';
 
 const JWT_CREATE_OPTION = { algorithm: 'HS256', expiresIn: '60min' };
 let cert;
+const KEY_FILE = './jwt_key.pem';
+const KEY_FILE_TEST = './jwt_key_test.pem';
 
 if (process.env.NODE_ENV === 'test') {
-  cert = 'testkey';
+  cert = fs.readFileSync(KEY_FILE_TEST);
 } else {
-  cert = fs.readFileSync('./jwt_key.pem');
+  cert = fs.readFileSync(KEY_FILE_TEST);
 }
 
 export default {

@@ -9,6 +9,7 @@ import methodOverride from 'method-override';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
 import match from './routes/match.route';
+import jwtUtil from './utils/jwt.util'
 
 export default (cb) => {
   const app = express();
