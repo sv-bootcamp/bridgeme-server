@@ -1,10 +1,12 @@
 import express from 'express';
+import jwtUtil from '../utils/jwt.util';
 import * as survey from '../controllers/survey.controller';
 
 /*
  * Define the URL routing for http://yoda-domain.com/survey/*
  */
 
+const apiProtector = jwtUtil.apiProtector;
 const router = express.Router();
 
 //POST method
@@ -75,7 +77,7 @@ const router = express.Router();
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.post('/answer', survey.saveAnswer);
+router.post('/answer', apiProtector, survey.saveAnswer);
 
 //GET method
 
@@ -142,7 +144,7 @@ router.post('/answer', survey.saveAnswer);
  *       "err": {Detail Error Message}
  *     }
  */
-router.post('/create', survey.saveSurvey);
+router.post('/create', apiProtector, survey.saveSurvey);
 
 /**
  * @api {get} /survey/request Retrieve Survey
@@ -205,6 +207,6 @@ router.post('/create', survey.saveSurvey);
  *       "err_point": "Parameter /:type/ is not correct"
  *     }
  */
-router.get('/request/:type', survey.getRequest);
+router.get('/request/:type', apiProtector, survey.getRequest);
 
 export default router;

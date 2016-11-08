@@ -1,10 +1,12 @@
 import express from 'express';
+import jwtUtil from '../utils/jwt.util';
 import * as user from '../controllers/users.controller';
 
 /*
  * Define the URL routing for http://yoda-domain.com/users/*
  */
 
+const apiProtector = jwtUtil.apiProtector;
 const router = express.Router();
 
 //POST method
@@ -134,7 +136,7 @@ router.post('/resetPassword', user.resetPassword);
  * @apiParam {String} image Information of user image.
  *
  */
-router.post('/editGeneral', user.editGeneralProfile);
+router.post('/editGeneral', apiProtector, user.editGeneralProfile);
 
 /**
  * @api {post} /users/editJob Request Edit optional information
@@ -166,7 +168,7 @@ router.post('/editGeneral', user.editGeneralProfile);
  * @apiParam {Array} job Information of user job.
  *
  */
-router.post('/editJob', user.editJob);
+router.post('/editJob', apiProtector, user.editJob);
 
 /**
  * @api {post} /users/editHelp Request Edit optional information
@@ -205,7 +207,7 @@ router.post('/editJob', user.editJob);
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/editHelp', user.editHelp);
+router.post('/editHelp', apiProtector, user.editHelp);
 
 /**
  * @api {post} /users/editPersonality Request Edit optional information
@@ -259,7 +261,7 @@ router.post('/editHelp', user.editHelp);
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/editPersonality', user.editPersonality);
+router.post('/editPersonality', apiProtector, user.editPersonality);
 
 /**
  * @api {post} /users/setRequestStatus Request User info
@@ -269,7 +271,7 @@ router.post('/editPersonality', user.editPersonality);
  * @apiParam {Boolean} mentorMode Flag for requestGet.
  *
  */
-router.post('/setRequestStatus', user.setMentoringRequestStatus);
+router.post('/setRequestStatus', apiProtector, user.setMentoringRequestStatus);
 
 //GET method
 
@@ -298,7 +300,7 @@ router.post('/setRequestStatus', user.setMentoringRequestStatus);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/all', user.getAll);
+router.get('/all', apiProtector, user.getAll);
 
 /**
  * @api {get} /users/id/:id Request User info
@@ -326,7 +328,7 @@ router.get('/all', user.getAll);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/id/:_id', user.getProfileById);
+router.get('/id/:_id', apiProtector, user.getProfileById);
 
 /**
  * @api {get} /users/me Request My info
@@ -356,7 +358,7 @@ router.get('/id/:_id', user.getProfileById);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/me', user.getMyProfile);
+router.get('/me', apiProtector, user.getMyProfile);
 
 /**
  * @api {get} /users/mentorlist Request Mentor's list
@@ -384,7 +386,7 @@ router.get('/me', user.getMyProfile);
  *     }
  *
  */
-router.get('/mentorlist', user.getMentorList);
+router.get('/mentorlist', apiProtector, user.getMentorList);
 
 /**
  * @api {get} /users/job Request job category list
@@ -406,7 +408,7 @@ router.get('/mentorlist', user.getMentorList);
  *     }
  *
  */
-router.get('/job', user.getJobCategory);
+router.get('/job', apiProtector, user.getJobCategory);
 
 /**
  * @api {get} /users/getRequestStatus Request User info
@@ -425,7 +427,7 @@ router.get('/job', user.getJobCategory);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/getRequestStatus', user.getMentoringRequestStatus);
+router.get('/getRequestStatus', apiProtector, user.getMentoringRequestStatus);
 
 /**
  * @api {get} /users/signout Request Sign out
@@ -446,6 +448,10 @@ router.get('/getRequestStatus', user.getMentoringRequestStatus);
  *       "err_point": "Failed to sign out."
  *     }
  */
-router.get('/signOut', user.signout);
+//router.get('/signOut', apiProtector, user.signout);
+
+router.get('/updateAccessToken', apiProtector, user.updateAccessToken);
+
+router.get('/checkAccessToken', apiProtector, user.checkAccessToken);
 
 export default router;

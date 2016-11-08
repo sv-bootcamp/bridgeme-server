@@ -44,8 +44,8 @@ describe('Test Match API', function () {
         form: {
           mentor_id: 'invaliduserid',
           message: {
-            subjects: "Geting a job",
-            contents: "hi",
+            subjects: 'Geting a job',
+            contents: 'hi',
           },
         },
         jar: true,
@@ -72,8 +72,8 @@ describe('Test Match API', function () {
         form: {
           mentor_id: userData.USER_A_DATA._id,
           message: {
-            subjects: "Geting a job",
-            contents: "hi",
+            subjects: 'Geting a job',
+            contents: 'hi',
           },
         },
         jar: true,

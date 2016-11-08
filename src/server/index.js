@@ -10,6 +10,7 @@ import session from 'express-session';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
 import match from './routes/match.route';
+import test from './routes/test.route';
 
 const MongoStore = require('connect-mongostore')(session);
 
@@ -22,15 +23,6 @@ export default (cb) => {
   } else if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
-
-  app.use(session({
-    secret: 'yodasalt46787134refgr45refd',
-    store: new MongoStore({ db: db }),
-    resave: false,
-    saveUninitialized: false,
-    //session expire after 1Year.
-    cookie: { maxAge: 1000 * 3600 * 24 * 365 },
-  }));
 
   app.use(bodyParser.urlencoded({
     extended: true,

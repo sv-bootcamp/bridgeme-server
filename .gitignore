@@ -12,3 +12,7 @@ data/
 
 # scripts
 mongod
+
+# Private Key
+jwt_key.pem
+
