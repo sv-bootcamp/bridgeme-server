@@ -269,7 +269,7 @@ router.post('/editPersonality', user.editPersonality);
  * @apiParam {Boolean} mentorMode Flag for requestGet.
  *
  */
-router.post('/setRequestStatus', user.setMentoringRequestStatus);
+router.post('/editMentorMode', user.setMentoringRequestStatus);
 
 //GET method
 
@@ -425,7 +425,7 @@ router.get('/job', user.getJobCategory);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/getRequestStatus', user.getMentoringRequestStatus);
+router.get('/mentorMode', user.getMentoringRequestStatus);
 
 /**
  * @api {get} /users/signout Request Sign out

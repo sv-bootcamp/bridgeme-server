@@ -506,7 +506,7 @@ describe('/setRequestStatus', function () {
   it('request /setRequestStatus with invalid parameter.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/setRequestStatus`,
+      uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: null },
       jar: true,
       resolveWithFullResponse: true,
@@ -526,7 +526,7 @@ describe('/setRequestStatus', function () {
   it('request /setRequestStatus with valid parameter.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/setRequestStatus`,
+      uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: mentorMode },
       jar: true,
       resolveWithFullResponse: true,
@@ -549,7 +549,7 @@ describe('/getRequestStatus', function () {
   it('request /getRequestStatus with session cookie.', done => {
     rp({
       method: 'GET',
-      uri: `${API_BASE_URL}/getRequestStatus`,
+      uri: `${API_BASE_URL}/mentorMode`,
       jar: true,
       resolveWithFullResponse: true,
       json: true,
