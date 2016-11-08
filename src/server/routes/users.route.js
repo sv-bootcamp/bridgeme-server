@@ -134,7 +134,7 @@ router.post('/secretCode', user.requestSecretCode);
 
 /**
  * @api {post} /users/resetPassword Reset the password
- * @apiName6 resetPassword
+ * @apiName resetPassword
  * @apiGroup User
  *
  * @apiSuccessExample {json}
