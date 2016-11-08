@@ -43,10 +43,8 @@ describe('Test Match API', function () {
         uri: API_BASE_URL + '/match/request',
         form: {
           mentor_id: 'invaliduserid',
-          message: {
-            subjects: "Geting a job",
-            contents: "hi",
-          },
+          subjects: "Getting a job",
+          contents: "hi",
         },
         jar: true,
         resolveWithFullResponse: true,
@@ -71,10 +69,8 @@ describe('Test Match API', function () {
         uri: API_BASE_URL + '/match/request',
         form: {
           mentor_id: userData.USER_A_DATA._id,
-          message: {
-            subjects: "Geting a job",
-            contents: "hi",
-          },
+          subjects: "Getting a job",
+          contents: "hi",
         },
         jar: true,
         resolveWithFullResponse: true,
