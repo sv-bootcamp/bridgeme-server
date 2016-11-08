@@ -355,7 +355,7 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(200);
+          result.statusCode.should.equal(201);
           done();
         })
         .catch(err => {

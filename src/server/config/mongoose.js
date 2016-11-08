@@ -4,6 +4,7 @@ import '../models/key.model';
 import '../models/survey.model';
 import '../models/users.model';
 import '../models/match.model';
+import '../models/secretCode.model';
 
 const DATABASE_BASE_URL = 'mongodb://localhost:27017/';
 const DATABASE_ENV_URL = {

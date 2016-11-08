@@ -7,6 +7,7 @@ import mailStrings from '../config/json/mail.strings';
 import mongoose from 'mongoose';
 import request from 'request-promise';
 import userCallback from '../config/json/user.callback';
+import commonCallback from '../config/json/common.callback';
 import crypto from 'crypto';
 
 /*
@@ -16,6 +17,7 @@ import crypto from 'crypto';
 const Key = mongoose.model('key');
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
+const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
 
 // FB Graph API constant vars.
@@ -119,7 +121,7 @@ export function localSignUp(req, res, next) {
     })
     .then(existingUser => {
       if (existingUser) {
-        res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
+        throw new Error(userCallback.ERR_EXISTING_EMAIL);
       } else {
         return User(registrationData).save();
       }
@@ -135,7 +137,7 @@ export function localSignUp(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json({ err_point: err.message });
+      res.status(400).json({ err_msg: err.message });
     });
 }
 
@@ -163,32 +165,49 @@ export function localSignIn(req, res, next) {
       }
     })
     .catch(function (err) {
-      res.status(400).json(err.message);
+      res.status(400).json({ err_msg: err.message });
     });
 }
 
 export function requestSecretCode(req, res, next) {
-  let date = new Date();
-  let dateString = date.toISOString();
-  let cipher = crypto.createCipher('aes192', req.body.email);
-  let secretCode = cipher.update(dateString, 'utf-8', 'hex');
-  secretCode += cipher.final('hex');
+  if (req.body.email) {
+    User.findOne({ email: req.body.email }).exec()
+      .then(user => {
+        if (!user) {
+          throw new Error(userCallback.ERR_USER_NOT_FOUND);
+        } else {
+          SecretCode.findOne({ email: req.body.email, isValid: true }).exec()
+            .then(validSecretCode => {
+              if (validSecretCode) {
+                SecretCode.update({ _id: validSecretCode._id }, { $set: { isValid: false } }).exec()
+                  .catch(err => {
+                    throw new Error(userCallback.ERR_FAIL_SECRETCODE);
+                  });
+              }
 
-  User.findOne({ email: req.body.email }).exec()
-    .then(user => {
-      if (!user) {
-        throw new Error(userCallback.ERR_USER_NOT_FOUND);
-      } else {
-        // TODO: Save secret code to db and check validaion of it. Only the last one is valid.
-        mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
-          mailStrings.RESETPW_HTML, secretCode);
-
-        res.status(200).json({ secretCode: secretCode });
-      }
-    })
-    .catch(err => {
-      res.status(400).json(err.message);
-    });
+              let cipher = crypto.createCipher('aes192', req.body.email);
+              let secretCode = new SecretCode();
+              secretCode.email = req.body.email;
+              secretCode.secretCode
+                = cipher.update(new Date().toISOString(), 'utf-8', 'hex') + cipher.final('hex');
+              return secretCode.save();
+            })
+            .then(secretCode => {
+              mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+                mailStrings.RESETPW_HTML, secretCode.secretCode);
+              res.status(201).json({ secretCode: secretCode.secretCode });
+            })
+            .catch(err => {
+              throw new Error(userCallback.ERR_FAIL_SECRETCODE);
+            });
+        }
+      })
+      .catch(err => {
+        res.status(400).json({ err_msg: err.message });
+      });
+  } else {
+    res.status(400).json({ err_msg: commonCallback.ERR_WRONG_PARAMETER });
+  }
 }
 
 export function resetPassword(req, res, next) {
@@ -201,7 +220,17 @@ export function resetPassword(req, res, next) {
       if (!user) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
-        User.update({ email: req.body.email }, { password: crytoPassword }, { upsert: true }).exec()
+        SecretCode.findOne({ secretCode: req.body.secretCode }).exec()
+          .then(secretCode => {
+            if (secretCode.isValid) {
+              return User.update(
+                { email: req.body.email },
+                { password: crytoPassword },
+                { upsert: true }).exec();
+            } else {
+              throw new Error(userCallback.ERR_INVALID_SECRETCODE);
+            }
+          })
           .then(updatedUser => {
             res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
           })
@@ -211,7 +240,7 @@ export function resetPassword(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json({ err_point: err.message });
+      res.status(400).json({ err_msg: err.message });
     });
 }
 

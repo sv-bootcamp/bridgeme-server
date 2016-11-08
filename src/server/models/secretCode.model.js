@@ -18,7 +18,7 @@ let secretCodeSchema = new Schema({
   },
 });
 
-secretcodeSchema.set('toJSON', {
+secretCodeSchema.set('toJSON', {
   getters: true,  // Bring all elements include virtuals.
   virtuals: true,  // Set all virtuals show up in the console.log output.
 });

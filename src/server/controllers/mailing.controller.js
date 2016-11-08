@@ -5,7 +5,7 @@ import mailStrings from '../config/json/mail.strings';
  * Define mailing module
  */
 
-// Send mentoring request pushing Email to mentor(receiver)
+// Send mentoring request pushing Email to receiver
 export function sendEmail(receiver, subject, html, content) {
   if (process.env.NODE_ENV === 'test') {
     return;
