@@ -20,7 +20,8 @@ let matchSchema = new Schema({
     type: Number,
     default: 2,
   },
-
+  subjects: String,
+  contents: String,
 });
 
 export default mongoose.model('match', matchSchema);

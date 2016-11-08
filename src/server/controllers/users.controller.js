@@ -44,7 +44,8 @@ export function getAll(req, res, next) {
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   if (req.session._id) {
-    User.find({ _id: { $ne: req.session._id } }).sort({ stamp_login: -1 }).exec()
+    User.find({ _id: { $ne: req.session._id }, mentorMode: { $ne: false } })
+      .sort({ stamp_login: -1 }).exec()
       .then(mentorList => {
         res.status(200).json(mentorList);
       })
@@ -121,7 +122,7 @@ export function localSignUp(req, res, next) {
     })
     .then(existingUser => {
       if (existingUser) {
-        throw new Error(userCallback.ERR_EXISTING_EMAIL);
+        res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
         return User(registrationData).save();
       }
@@ -131,7 +132,7 @@ export function localSignUp(req, res, next) {
     })
     .then(storedUser => {
       if (storedUser) {
-        res.status(201).json(storedUser);
+        res.status(200).json(storedUser);
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
@@ -238,7 +239,7 @@ export function resetPassword(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json({ err_msg: err.message });
+      res.status(400).json({ err_point: err.message });
     });
 }
 
@@ -378,7 +379,7 @@ export function editGeneralProfile(req, res, next) {
           };
           return User.update({ _id: req.session._id }, { $set: editData }).exec();
         } else {
-          throw new Error(userCallback.ERR_INVALID_MAIL);
+          throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
         }
       })
       .then(updateData => {
@@ -526,6 +527,60 @@ export function editPersonality(req, res, next) {
       .catch((err) => {
         res.status(400).json(err);
       });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function setMentoringRequestStatus(req, res, next) {
+  if (req.session._id) {
+    if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
+      User.update({ _id: req.session._id }, {
+        $set: {
+          mentorMode: req.body.mentorMode,
+        },
+      }).exec()
+        .then(update => {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+        })
+        .catch((err) => {
+          res.status(400).json(err);
+        });
+    } else {
+      res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
+    }
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function getMentoringRequestStatus(req, res, next) {
+  if (req.session._id) {
+    User.findOne({ _id: req.session._id }).exec()
+      .then(user => {
+        if (user.mentorMode == null) {
+          res.status(200).json(true);
+        } else {
+          res.status(200).json({ result: user.mentorMode });
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  } else {
+    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+  }
+}
+
+export function signout(req, res, next) {
+  if (req.session._id) {
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNOUT, err: err });
+      } else {
+        res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+      }
+    });
   } else {
     res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
   }

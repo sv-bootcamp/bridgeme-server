@@ -37,7 +37,7 @@ const router = express.Router();
  *     {
  *       "err_msg": "This email is already in use."
  *     }
- *go
+ *
  * @apiParam {String} email Email address that would used as ID
  * @apiParam {String} password Password that would used
  *
@@ -63,7 +63,7 @@ router.post('/localSignUp', user.localSignUp);
  *         "__v": 0,
  *         "stamp_login": "2016-11-08T04:10:17.560Z",
  *         "reg_date": "2016-11-08T04:10:17.513Z",
- *         "personalit*      y": [],
+ *         "personality": [],
  *         "help": [],
  *         "job": [],
  *         "work": [],
@@ -222,7 +222,7 @@ router.post('/resetPassword', user.resetPassword);
 router.post('/editGeneral', user.editGeneralProfile);
 
 /**
- * @api {post} /users/editJob Request Edit optional information
+ * @api {post} /users/editJob Request Edit job information
  * @apiName editJob
  * @apiGroup User
  *
@@ -254,7 +254,7 @@ router.post('/editGeneral', user.editGeneralProfile);
 router.post('/editJob', user.editJob);
 
 /**
- * @api {post} /users/editHelp Request Edit optional information
+ * @api {post} /users/editHelp Request Edit help information
  * @apiName editHelp
  * @apiGroup User
  *
@@ -293,7 +293,7 @@ router.post('/editJob', user.editJob);
 router.post('/editHelp', user.editHelp);
 
 /**
- * @api {post} /users/editPersonality Request Edit optional information
+ * @api {post} /users/editPersonality Request Edit personality information
  * @apiName editPersonality
  * @apiGroup User
  *
@@ -345,6 +345,16 @@ router.post('/editHelp', user.editHelp);
  *
  */
 router.post('/editPersonality', user.editPersonality);
+
+/**
+ * @api {post} /users/setRequestStatus Request Edit mentorMode
+ * @apiName setRequestStatus
+ * @apiGroup User
+ *
+ * @apiParam {Boolean} mentorMode Flag for requestGet.
+ *
+ */
+router.post('/editMentorMode', user.setMentoringRequestStatus);
 
 //GET method
 
@@ -482,5 +492,45 @@ router.get('/mentorlist', user.getMentorList);
  *
  */
 router.get('/job', user.getJobCategory);
+
+/**
+ * @api {get} /users/getRequestStatus Request mentorMode
+ * @apiName getRequestStatus
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *      HTTP/1.1 200 OK
+ *     {
+ *       "result": true
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "Authentication failed. Please sign in first."
+ *     }
+ */
+router.get('/mentorMode', user.getMentoringRequestStatus);
+
+/**
+ * @api {get} /users/signout Request Sign out
+ * @apiName signout
+ * @apiGroup User
+ *
+ * @apiDescription If you sign out, server will destroy user session.
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *        Sign out success.
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "err_point": "Failed to sign out."
+ *     }
+ */
+router.get('/signOut', user.signout);
 
 export default router;

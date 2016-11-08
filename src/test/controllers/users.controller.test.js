@@ -11,6 +11,7 @@ import userData from '../fixtures/userData';
  */
 
 const API_BASE_URL = 'http://localhost:8000/users';
+let mentorMode = true;
 
 describe('Test User API', function () {
 
@@ -251,7 +252,7 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(201);
+          result.statusCode.should.equal(200);
           result.body.email.should.equal(userData.USER_E_DATA.email);
           done();
         })
@@ -271,11 +272,11 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          should.fail();
+          result.statusCode.should.equal(201);
           done();
         })
         .catch(err => {
-          err.statusCode.should.equal(400);
+          should.fail();
           done();
         });
     });
@@ -497,6 +498,70 @@ describe('/editPersonality', function () {
       .then(function (result) {
         result.statusCode.should.equal(200);
         result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/setRequestStatus', function () {
+  it('request /setRequestStatus with invalid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editMentorMode`,
+      form: { mentorMode: null },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(400);
+        err.response.body.err_point.should.equal(userCallback.ERR_INVALID_PARAMS);
+        done();
+      });
+  });
+
+  it('request /setRequestStatus with valid parameter.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editMentorMode`,
+      form: { mentorMode: mentorMode },
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE);
+        done();
+      })
+      .catch(function (err) {
+        console.log(err);
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/getRequestStatus', function () {
+  it('request /getRequestStatus with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/mentorMode`,
+      jar: true,
+      resolveWithFullResponse: true,
+      json: true,
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        result.body.result.should.equal(mentorMode);
         done();
       })
       .catch(function (err) {
