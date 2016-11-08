@@ -42,6 +42,8 @@ export default (cb) => {
   app.use('/survey', survey);
   app.use('/match', match);
 
+  app.use(express.static(__dirname + '/apidoc'));
+
   const server = app.listen(8000, cb ? cb : () => {
     /* eslint-disable no-console */
     console.log(`Listening on port 8000`);
