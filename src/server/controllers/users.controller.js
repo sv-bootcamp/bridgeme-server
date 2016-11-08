@@ -175,32 +175,30 @@ export function requestSecretCode(req, res, next) {
       .then(user => {
         if (!user) {
           throw new Error(userCallback.ERR_USER_NOT_FOUND);
-        } else {
-          SecretCode.findOne({ email: req.body.email, isValid: true }).exec()
-            .then(validSecretCode => {
-              if (validSecretCode) {
-                SecretCode.update({ _id: validSecretCode._id }, { $set: { isValid: false } }).exec()
-                  .catch(err => {
-                    throw new Error(userCallback.ERR_FAIL_SECRETCODE);
-                  });
-              }
-
-              let cipher = crypto.createCipher('aes192', req.body.email);
-              let secretCode = new SecretCode();
-              secretCode.email = req.body.email;
-              secretCode.secretCode
-                = cipher.update(new Date().toISOString(), 'utf-8', 'hex') + cipher.final('hex');
-              return secretCode.save();
-            })
-            .then(secretCode => {
-              mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
-                mailStrings.RESETPW_HTML, secretCode.secretCode);
-              res.status(201).json({ secretCode: secretCode.secretCode });
-            })
+        }
+        else {
+          return SecretCode.findOne({email: req.body.email, isValid: true}).exec();
+        }
+      })
+      .then(validSecretCode => {
+        if (validSecretCode) {
+          SecretCode.update({ _id: validSecretCode._id }, { $set: { isValid: false } }).exec()
             .catch(err => {
               throw new Error(userCallback.ERR_FAIL_SECRETCODE);
             });
         }
+
+        let cipher = crypto.createCipher('aes192', req.body.email);
+        let secretCode = new SecretCode();
+        secretCode.email = req.body.email;
+        secretCode.secretCode
+          = cipher.update(new Date().toISOString(), 'utf-8', 'hex') + cipher.final('hex');
+        return secretCode.save();
+      })
+      .then(secretCode => {
+        mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+          mailStrings.RESETPW_HTML, secretCode.secretCode);
+        res.status(201).json({ secretCode: secretCode.secretCode });
       })
       .catch(err => {
         res.status(400).json({ err_msg: err.message });

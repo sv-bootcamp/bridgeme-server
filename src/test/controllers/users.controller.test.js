@@ -371,11 +371,7 @@ describe('Test User API', function () {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/resetPassword`,
-        form: {
-          email: userData.USER_D_DATA.email,
-          password: userData.USER_D_DATA.password,
-          secretCode: userData.SECRET_CODE,
-        },
+        form: userData.USER_D_DATA,
         jar: true,
         resolveWithFullResponse: true,
         json: true,
