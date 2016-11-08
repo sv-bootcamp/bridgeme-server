@@ -355,7 +355,6 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          console.log(result.body);
           result.statusCode.should.equal(201);
           userData.SECRET_CODE = result.body.secretCode;
           done();
