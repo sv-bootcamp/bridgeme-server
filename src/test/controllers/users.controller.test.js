@@ -365,13 +365,11 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          console.log(result.body)
           result.statusCode.should.equal(201);
           userData.SECRET_CODE = result.body.secretCode;
           done();
         })
         .catch(err => {
-          console.log(err.body)
           should.fail();
           done();
         });
@@ -566,7 +564,6 @@ describe('/setRequestStatus', function () {
         done();
       })
       .catch(function (err) {
-        console.log(err);
         should.fail();
         done();
       });

@@ -87,7 +87,7 @@ describe('Test Match API', function () {
           done();
         })
         .catch(function (err) {
-          // should.fail(err);
+          should.fail(err);
           done();
         });
     });
