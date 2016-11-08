@@ -356,7 +356,8 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(200);
+          result.statusCode.should.equal(201);
+          userData.SECRET_CODE = result.body.secretCode;
           done();
         })
         .catch(err => {
@@ -390,7 +391,11 @@ describe('Test User API', function () {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/resetPassword`,
-        form: userData.USER_E_DATA,
+        form: {
+          email: userData.USER_E_DATA.email,
+          password: userData.USER_E_DATA.password,
+          secretCode: userData.SECRET_CODE,
+        },
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -400,7 +405,7 @@ describe('Test User API', function () {
           done();
         })
         .catch(err => {
-          err.statusCode.should.equal(400);
+          should.fail();
           done();
         });
     });
