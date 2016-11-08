@@ -429,6 +429,10 @@ router.get('/job', apiProtector, user.getJobCategory);
  */
 router.get('/getRequestStatus', apiProtector, user.getMentoringRequestStatus);
 
+router.get('/validateAccessToken', apiProtector, user.validateAccessToken);
+
+router.get('/updateAccessToken', user.updateAccessToken);
+
 /**
  * @api {get} /users/signout Request Sign out
  * @apiName signout
@@ -448,10 +452,6 @@ router.get('/getRequestStatus', apiProtector, user.getMentoringRequestStatus);
  *       "err_point": "Failed to sign out."
  *     }
  */
-//router.get('/signOut', apiProtector, user.signout);
-
-router.get('/updateAccessToken', apiProtector, user.updateAccessToken);
-
-router.get('/checkAccessToken', apiProtector, user.checkAccessToken);
+router.get('/signOut', apiProtector, user.signout);
 
 export default router;

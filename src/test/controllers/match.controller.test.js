@@ -22,13 +22,14 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
       })
         .then(function (result) {
           result.statusCode.should.equal(201);
-          userData.USER_B_DATA = result.body;
+
+          userData.USER_B_DATA = result.body.user;
+          userData.USER_B_DATA.access_token = result.body.access_token;
           done();
         })
         .catch(function (err) {
@@ -48,9 +49,11 @@ describe('Test Match API', function () {
             contents: 'hi',
           },
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_B_DATA.access_token,
+        },
       })
         .then(function (result) {
           should.fail();
@@ -63,7 +66,7 @@ describe('Test Match API', function () {
     });
 
     it('User B request mentoring to User A', function (done) {
-      //TODO issue :  this.timeiut() doesn't work with arrow function.
+      //TODO issue :  this.timeout() doesn't work with arrow function.
       //For wating to send mail.
       this.timeout(10000);
       rp({
@@ -76,10 +79,12 @@ describe('Test Match API', function () {
             contents: 'hi',
           },
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
         timeout: 5000,
+        headers: {
+          access_token: userData.USER_B_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(201);
@@ -95,9 +100,11 @@ describe('Test Match API', function () {
       rp({
         method: 'GET',
         uri: API_BASE_URL + '/match/activity',
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_B_DATA.access_token,
+        },
       })
         .then(function (result) {
           matchData = result.body;
@@ -124,13 +131,13 @@ describe('Test Match API', function () {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
-          userData.USER_A_DATA = result.body;
+          userData.USER_A_DATA = result.body.user;
+          userData.USER_A_DATA.access_token = result.body.access_token;
           done();
         })
         .catch(function (err) {
@@ -142,9 +149,11 @@ describe('Test Match API', function () {
       rp({
         method: 'GET',
         uri: API_BASE_URL + '/match/activity',
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           matchData = result.body;
@@ -168,9 +177,11 @@ describe('Test Match API', function () {
           match_id: matchData.requested[0]._id,
           option: 1,  //accept
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -193,13 +204,13 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
         },
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
-          userData.USER_B_DATA = result.body;
+          userData.USER_B_DATA = result.body.user;
+          userData.USER_B_DATA.access_token = result.body.access_token;
           done();
         })
         .catch(function (err) {
@@ -212,9 +223,11 @@ describe('Test Match API', function () {
       rp({
         method: 'GET',
         uri: API_BASE_URL + '/match/activity',
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_B_DATA.access_token,
+        },
       })
         .then(function (result) {
           matchData = result.body;

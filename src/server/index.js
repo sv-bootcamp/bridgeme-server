@@ -6,13 +6,9 @@ import express from 'express';
 import mongoose from './config/mongoose';
 import morgan from 'morgan';
 import methodOverride from 'method-override';
-import session from 'express-session';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
 import match from './routes/match.route';
-import test from './routes/test.route';
-
-const MongoStore = require('connect-mongostore')(session);
 
 export default (cb) => {
   const app = express();

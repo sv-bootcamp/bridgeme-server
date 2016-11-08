@@ -2,9 +2,10 @@ import mockAnswerData from '../fixtures/answerA001_1';
 import menteeData from '../fixtures/surveyA001_1';
 import mentorData from '../fixtures/surveyB001_1';
 import mongoose from 'mongoose';
+import rp from 'request-promise';
 import should from 'should';
 import surveyCallback from '../../server/config/json/survey.callback';
-import rp from 'request-promise';
+import userData from '../fixtures/userData';
 
 /*
  * Test for Survey API
@@ -23,6 +24,9 @@ describe('Test Survey API', function () {
         form: menteeData.surveyA001_1,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)
@@ -43,6 +47,9 @@ describe('Test Survey API', function () {
         form: mentorData.surveyB001_1,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)
@@ -62,13 +69,15 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        jar: true,
         uri: API_BASE_URL + '/request/mm',
         params: {
           type: 'mm',
         },
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)
@@ -86,13 +95,15 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        jar: true,
         uri: API_BASE_URL + '/request/mentee',
         params: {
           type: 'mentee',
         },
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)
@@ -110,13 +121,15 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        jar: true,
         uri: API_BASE_URL + '/request/mentor',
         params: {
           type: 'mentor',
         },
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)
@@ -135,11 +148,13 @@ describe('Test Survey API', function () {
     it(': Save answer.', function (done) {
       let options = {
         method: 'POST',
-        jar: true,
         uri: API_BASE_URL + '/answer',
         form: mockAnswerData.answerA001_1,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       };
 
       rp(options)

@@ -28,10 +28,7 @@
     "co": "^4.6.0",
     "compression": "^1.6.2",
     "config": "^1.21.0",
-    "connect-mongostore": "^0.1.4",
-    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "express-session": "^1.14.1",
     "gulp": "^3.9.1",
     "gulp-mocha": "^3.0.1",
     "jsonwebtoken": "^7.1.9",
@@ -42,7 +39,6 @@
     "path": "^0.12.7",
     "request": "^2.75.0",
     "request-promise": "^4.1.1",
-    "requestah": "^1.0.0",
     "serve-favicon": "^2.3.0",
     "should": "^11.1.0"
   },

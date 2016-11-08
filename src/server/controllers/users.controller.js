@@ -113,10 +113,10 @@ export function localSignUp(req, res, next) {
     .then(registeredUser => {
       return stampUser(registeredUser);
     })
-    .then(storedUser => {
-      if (storedUser) {
-        res.status(200).json({
-          user: storedUser,
+    .then(stampedUser => {
+      if (stampedUser) {
+        res.status(201).json({
+          user: stampedUser,
           access_token: jwtUtil.createAccessToken(stampedUser),
         });
       } else {
@@ -234,8 +234,12 @@ export function signIn(req, res, next) {
             .then((registeredUser) => {
               return stampUser(registeredUser);
             })
-            .then((storedUser)=> {
-              res.status(201).json(storedUser);
+            .then((stampedUser)=> {
+              res.status(201).json({
+                msg: userCallback.SUCCESS_SIGNIN,
+                user: stampedUser,
+                access_token: jwtUtil.createAccessToken(stampedUser),
+              });
             })
             .catch((err) => {
               res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
@@ -245,6 +249,7 @@ export function signIn(req, res, next) {
             .then((stampedUser)=> {
               res.status(200).json({
                 msg: userCallback.SUCCESS_SIGNIN,
+                user: stampedUser,
                 access_token: jwtUtil.createAccessToken(stampedUser),
               });
             })
@@ -266,10 +271,16 @@ export function signIn(req, res, next) {
 }
 
 export function updateAccessToken(req, res, next) {
-  res.status(200).json({ access_token: jwtUtil.updateAccessToken(req.user.access_token) });
+  jwtUtil.updateAccessToken(req.headers.access_token, (err, newAccessToken)=> {
+    if (!err) {
+      res.status(200).json({ access_token: newAccessToken });
+    }else {
+      res.status(400).json({ err_point: err.message });
+    }
+  });
 }
 
-export function checkAccessToken(req, res, next) {
+export function validateAccessToken(req, res, next) {
   res.status(200).json({ msg: userCallback.SUCCESS_CHECK_ACCESS_TOKEN });
 }
 
