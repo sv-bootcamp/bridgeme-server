@@ -34,7 +34,7 @@ export function requestMentoring(req, res, next) {
       if (mentor) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-          mailStrings.REQUEST_HTML, matchData.message.contents);
+          mailStrings.REQUEST_HTML, matchData.contents);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
@@ -122,7 +122,8 @@ function findMentorActivity(mentor_id) {
         detail: 1,
         request_date: 1,
         response_date: 1,
-        message: 1,
+        subjects: 1,
+        contents: 1,
       },
     },
   ]).exec();

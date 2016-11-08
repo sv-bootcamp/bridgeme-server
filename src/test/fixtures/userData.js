@@ -17,4 +17,5 @@ export default {
     email: 'papermoon703@gmail.com',
     password: 'samplePWD*987',
   },
+  SECRET_CODE: undefined,
 };

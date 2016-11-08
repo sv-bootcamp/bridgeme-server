@@ -24,10 +24,8 @@ const router = express.Router();
  * @apiParamExample {json} Parameter Sample
  *     {
  *         "mentor_id": "5818312039",
- *         "message": {
- *              "subjects" : "Get a new job",
- *              "contents" : "Hi, I want your help!",
- *         },
+ *         "subjects" : "Get a new job",
+ *         "contents" : "Hi, I want your help!",
  *     }
  *
  * @apiSuccessExample {json} Success

@@ -18,6 +18,28 @@ const router = express.Router();
  *
  * @apiDescription Local Sign up
  *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "__v": 0,
+ *       "email": "papermoon703@naver.com",
+ *       "password": "e4b6175c13a783b78327ea9150fb4206",
+ *       "platform_type": 0,
+ *       "_id": "58215029ca264380d4458fea",
+ *       "reg_date": "2016-11-08T04:10:17.513Z",
+ *       "personality": [],
+ *       "help": [],
+ *       "job": [],
+ *       "work": [],
+ *       "education": []
+ *     }
+ *
+ * @apiErrorExample {json} Bad Request
+ *     HTTP/1.1 400 Failure
+ *     {
+ *       "err_msg": "This email is already in use."
+ *     }
+ *
  * @apiParam {String} email Email address that would used as ID
  * @apiParam {String} password Password that would used
  *
@@ -30,6 +52,32 @@ router.post('/localSignUp', user.localSignUp);
  * @apiGroup User
  *
  * @apiDescription Local Sign in
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200
+ *     {
+ *       "msg": "Sign in success.",
+ *       "user": {
+ *         "_id": "58215029ca264380d4458fea",
+ *         "email": "papermoon703@naver.com",
+ *         "password": "e4b6175c13a783b78327ea9150fb4206",
+ *         "platform_type": 0,
+ *         "__v": 0,
+ *         "stamp_login": "2016-11-08T04:10:17.560Z",
+ *         "reg_date": "2016-11-08T04:10:17.513Z",
+ *         "personality": [],
+ *         "help": [],
+ *         "job": [],
+ *         "work": [],
+ *         "education": []
+ *       }
+ *     }
+ *
+ * @apiErrorExample {json} No matching user
+ *      HTTP/1.1 400
+ *      {
+ *        "err_msg": "No such account exists."
+ *      }
  *
  * @apiParam {String} email Email address that would used as ID
  * @apiParam {String} password Password that would used
@@ -51,9 +99,33 @@ router.post('/localSignIn', user.localSignIn);
 router.post('/signIn', user.signIn);
 
 /**
- * @api {post} /users/secretCode Request a secret code for reset the password.
- * @apiName secretCode
+ * @api {post} /users/secretCode Request a secret code
+ * @apiName requestSecretCode
  * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "secretCode": "7166ecafaa1f6e614cc507d94a0162d338f017ba920cdaeae817e81b0c1e98dd"
+ *     }
+ *
+ * @apiErrorExample {json} Bad Request
+ *     HTTP/1.1 400
+ *     {
+ *       "err_msg": "No such account exists."
+ *     }
+ *
+ * @apiErrorExample {json} Bad Request
+ *     HTTP/1.1 400
+ *     {
+ *       "err_msg": "The parameter is is wrong."
+ *     }
+ *
+ * @apiErrorExample {json} Secret Code Problem
+ *     HTTP/1.1 400 Fail
+ *     {
+ *       "err_msg": "Server can`t give any secret code. Sorry."
+ *     }
  *
  * @apiDescription Random secret code would return. The same code would be sent to user by mail.
  *
@@ -63,20 +135,33 @@ router.post('/signIn', user.signIn);
 router.post('/secretCode', user.requestSecretCode);
 
 /**
- * @api {post} /users/resetPassword Request a secret code for reset the password.
+ * @api {post} /users/resetPassword Reset the password
  * @apiName resetPassword
  * @apiGroup User
  *
- * @apiSuccessExample {json} Success
+ * @apiSuccessExample {json}
  *     HTTP/1.1 200 OK
  *     {
  *       "msg": "The password had been changed successfully."
  *     }
  *
- * @apiDescription
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400
+ *     {
+ *       "err_msg": "This secret code had expired.."
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400
+ *     {
+ *       "err_msg": "This secret code had expired.."
+ *     }
+ *
+ * @apiDescription If the secret code is valid, the password will be updated.
  *
  * @apiParam {String} email Email address of user to reset the password
  * @apiParam {String} password Password New password
+ * @apiParam {String} secretCode Secret code that user entered
  *
  */
 router.post('/resetPassword', user.resetPassword);
@@ -139,7 +224,7 @@ router.post('/resetPassword', user.resetPassword);
 router.post('/editGeneral', apiProtector, user.editGeneralProfile);
 
 /**
- * @api {post} /users/editJob Request Edit optional information
+ * @api {post} /users/editJob Request Edit job information
  * @apiName editJob
  * @apiGroup User
  *
@@ -171,7 +256,7 @@ router.post('/editGeneral', apiProtector, user.editGeneralProfile);
 router.post('/editJob', apiProtector, user.editJob);
 
 /**
- * @api {post} /users/editHelp Request Edit optional information
+ * @api {post} /users/editHelp Request Edit help information
  * @apiName editHelp
  * @apiGroup User
  *
@@ -210,7 +295,7 @@ router.post('/editJob', apiProtector, user.editJob);
 router.post('/editHelp', apiProtector, user.editHelp);
 
 /**
- * @api {post} /users/editPersonality Request Edit optional information
+ * @api {post} /users/editPersonality Request Edit personality information
  * @apiName editPersonality
  * @apiGroup User
  *
@@ -264,14 +349,14 @@ router.post('/editHelp', apiProtector, user.editHelp);
 router.post('/editPersonality', apiProtector, user.editPersonality);
 
 /**
- * @api {post} /users/setRequestStatus Request User info
+ * @api {post} /users/setRequestStatus Request Edit mentorMode
  * @apiName setRequestStatus
  * @apiGroup User
  *
  * @apiParam {Boolean} mentorMode Flag for requestGet.
  *
  */
-router.post('/setRequestStatus', apiProtector, user.setMentoringRequestStatus);
+router.post('/editMentorMode', apiProtector, user.setMentoringRequestStatus);
 
 //GET method
 
@@ -411,7 +496,7 @@ router.get('/mentorlist', apiProtector, user.getMentorList);
 router.get('/job', apiProtector, user.getJobCategory);
 
 /**
- * @api {get} /users/getRequestStatus Request User info
+ * @api {get} /users/getRequestStatus Request mentorMode
  * @apiName getRequestStatus
  * @apiGroup User
  *
@@ -427,7 +512,7 @@ router.get('/job', apiProtector, user.getJobCategory);
  *       "err_point": "Authentication failed. Please sign in first."
  *     }
  */
-router.get('/getRequestStatus', apiProtector, user.getMentoringRequestStatus);
+router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
 
 router.get('/validateAccessToken', apiProtector, user.validateAccessToken);
 

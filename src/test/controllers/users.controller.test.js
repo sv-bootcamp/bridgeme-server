@@ -365,10 +365,13 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(200);
+          console.log(result.body)
+          result.statusCode.should.equal(201);
+          userData.SECRET_CODE = result.body.secretCode;
           done();
         })
         .catch(err => {
+          console.log(err.body)
           should.fail();
           done();
         });
@@ -399,7 +402,11 @@ describe('Test User API', function () {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/resetPassword`,
-        form: userData.USER_E_DATA,
+        form: {
+          email: userData.USER_E_DATA.email,
+          password: userData.USER_E_DATA.password,
+          secretCode: userData.SECRET_CODE,
+        },
         jar: true,
         resolveWithFullResponse: true,
         json: true,
@@ -409,7 +416,7 @@ describe('Test User API', function () {
           done();
         })
         .catch(err => {
-          err.statusCode.should.equal(400);
+          should.fail();
           done();
         });
     });
@@ -523,7 +530,7 @@ describe('/setRequestStatus', function () {
   it('request /setRequestStatus with invalid parameter.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/setRequestStatus`,
+      uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: null },
       resolveWithFullResponse: true,
       json: true,
@@ -545,7 +552,7 @@ describe('/setRequestStatus', function () {
   it('request /setRequestStatus with valid parameter.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/setRequestStatus`,
+      uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: mentorMode },
       resolveWithFullResponse: true,
       json: true,
@@ -567,10 +574,10 @@ describe('/setRequestStatus', function () {
 });
 
 describe('/getRequestStatus', function () {
-  it('request /getRequestStatus with session cookie.', done => {
+  it('request /mentorMode with session cookie.', done => {
     rp({
       method: 'GET',
-      uri: `${API_BASE_URL}/getRequestStatus`,
+      uri: `${API_BASE_URL}/mentorMode`,
       resolveWithFullResponse: true,
       json: true,
       headers: {
