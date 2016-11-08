@@ -71,7 +71,7 @@ router.post('/secretCode', user.requestSecretCode);
  *       "msg": "The password had been changed successfully."
  *     }
  *
- * @apiDescription
+ * @apiDescription Success
  *
  * @apiParam {String} email Email address of user to reset the password
  * @apiParam {String} password Password New password
