@@ -137,7 +137,7 @@ router.post('/resetPassword', user.resetPassword);
 router.post('/editGeneral', user.editGeneralProfile);
 
 /**
- * @api {post} /users/editJob Request Edit optional information
+ * @api {post} /users/editJob Request Edit job information
  * @apiName editJob
  * @apiGroup User
  *
@@ -169,7 +169,7 @@ router.post('/editGeneral', user.editGeneralProfile);
 router.post('/editJob', user.editJob);
 
 /**
- * @api {post} /users/editHelp Request Edit optional information
+ * @api {post} /users/editHelp Request Edit help information
  * @apiName editHelp
  * @apiGroup User
  *
@@ -208,7 +208,7 @@ router.post('/editJob', user.editJob);
 router.post('/editHelp', user.editHelp);
 
 /**
- * @api {post} /users/editPersonality Request Edit optional information
+ * @api {post} /users/editPersonality Request Edit personality information
  * @apiName editPersonality
  * @apiGroup User
  *
@@ -262,7 +262,7 @@ router.post('/editHelp', user.editHelp);
 router.post('/editPersonality', user.editPersonality);
 
 /**
- * @api {post} /users/setRequestStatus Request User info
+ * @api {post} /users/setRequestStatus Request Edit mentorMode
  * @apiName setRequestStatus
  * @apiGroup User
  *
@@ -409,7 +409,7 @@ router.get('/mentorlist', user.getMentorList);
 router.get('/job', user.getJobCategory);
 
 /**
- * @api {get} /users/getRequestStatus Request User info
+ * @api {get} /users/getRequestStatus Request mentorMode
  * @apiName getRequestStatus
  * @apiGroup User
  *
