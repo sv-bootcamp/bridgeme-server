@@ -131,7 +131,7 @@ export function localSignUp(req, res, next) {
     })
     .then(storedUser => {
       if (storedUser) {
-        res.status(200).json(storedUser);
+        res.status(201).json(storedUser);
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }

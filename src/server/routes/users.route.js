@@ -37,7 +37,7 @@ const router = express.Router();
  *     {
  *       "err_msg": "This email is already in use."
  *     }
- *
+ *go
  * @apiParam {String} email Email address that would used as ID
  * @apiParam {String} password Password that would used
  *

@@ -251,7 +251,7 @@ describe('Test User API', function () {
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(200);
+          result.statusCode.should.equal(201);
           result.body.email.should.equal(userData.USER_E_DATA.email);
           done();
         })
