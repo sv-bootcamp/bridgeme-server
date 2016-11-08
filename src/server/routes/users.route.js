@@ -147,7 +147,6 @@ router.post('/secretCode', user.requestSecretCode);
  *     HTTP/1.1 400
  *     {
  *       "err_msg": "This secret code had expired.."
- *       "err_msg": "This secret code had expired.."
  *     }
  *
  * @apiErrorExample {json}
@@ -157,7 +156,6 @@ router.post('/secretCode', user.requestSecretCode);
  *     }
  *
  * @apiDescription If the secret code is valid, the password will be updated.
->>>>>>> 1916cd1c1fa24787f9519ceb85d71192cbe72ee1
  *
  * @apiParam {String} email Email address of user to reset the password
  * @apiParam {String} password Password New password
