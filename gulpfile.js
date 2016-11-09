@@ -1,5 +1,6 @@
 const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
+const env = require('gulp-env');
 const gulp = require('gulp');
 const install = require('gulp-install');
 const istanbul = require('gulp-istanbul');
@@ -23,7 +24,11 @@ gulp.task('build', () => {
 });
 
 gulp.task('build:server', () => {
+  const envs = env.set({
+    NODE_ENV: 'development'
+  });
   return gulp.src('./src/server/**/*.js')
+    .pipe(envs)
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['es2015'],
@@ -33,7 +38,11 @@ gulp.task('build:server', () => {
 });
 
 gulp.task('build:test', () => {
+    const envs = env.set({
+      NODE_ENV: 'test'
+    });
   return gulp.src('./src/**/*.js')
+    .pipe(envs)
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['es2015'],
@@ -59,12 +68,16 @@ gulp.task('pre-test',['build:test'], function () {
 });
 
 gulp.task('test', ['pre-test'], function () {
+  const envs = env.set({
+    NODE_ENV: 'test'
+  });
   return gulp.src([
     'dist-test/test/utils.js',
     'dist-test/test/controllers/users.controller.test.js',
     'dist-test/test/controllers/survey.controller.test.js',
     'dist-test/test/controllers/match.controller.test.js',
     'dist-test/test/controllers/users.signout.test.js',])
+    .pipe(envs)
     .pipe(mocha())
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({ thresholds: { global: 40 } }))
