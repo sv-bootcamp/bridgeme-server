@@ -74,7 +74,7 @@ const router = express.Router();
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.post('/answer', apiProtector, survey.saveAnswer);

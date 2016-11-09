@@ -300,7 +300,7 @@ export function updateAccessToken(req, res, next) {
     if (!err) {
       res.status(200).json({ access_token: newAccessToken });
     }else {
-      res.status(400).json({ err_point: err.message });
+      res.status(401).json({ err_point: err.message });
     }
   });
 }

@@ -41,7 +41,7 @@ const router = express.Router();
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.post('/request', apiProtector, match.requestMentoring);
@@ -68,7 +68,7 @@ router.post('/request', apiProtector, match.requestMentoring);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.post('/response', apiProtector, match.responseMentoring);
@@ -122,7 +122,7 @@ router.post('/response', apiProtector, match.responseMentoring);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.get('/activity', apiProtector, match.getMyActivity);

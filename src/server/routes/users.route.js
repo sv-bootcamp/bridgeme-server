@@ -208,7 +208,7 @@ router.post('/resetPassword', user.resetPassword);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  * @apiParam {String} name Name of User.
@@ -247,7 +247,7 @@ router.post('/editGeneral', apiProtector, user.editGeneralProfile);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  * @apiParam {Array} job Information of user job.
@@ -285,7 +285,7 @@ router.post('/editJob', apiProtector, user.editJob);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  * @apiParam {Array} help Information of user help.
@@ -340,7 +340,7 @@ router.post('/editHelp', apiProtector, user.editHelp);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  * @apiParam {Array} personality Information of user personality.
@@ -382,7 +382,7 @@ router.post('/editMentorMode', apiProtector, user.setMentoringRequestStatus);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.get('/all', apiProtector, user.getAll);
@@ -410,7 +410,7 @@ router.get('/all', apiProtector, user.getAll);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.get('/id/:_id', apiProtector, user.getProfileById);
@@ -440,7 +440,7 @@ router.get('/id/:_id', apiProtector, user.getProfileById);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
 router.get('/me', apiProtector, user.getMyProfile);
@@ -467,7 +467,7 @@ router.get('/me', apiProtector, user.getMyProfile);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  */
@@ -489,7 +489,7 @@ router.get('/mentorlist', apiProtector, user.getMentorList);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  *
  */
@@ -509,14 +509,53 @@ router.get('/job', apiProtector, user.getJobCategory);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
+ *
  */
 router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
 
-router.get('/validateAccessToken', apiProtector, user.validateAccessToken);
+/**
+ * @api {get} /users/accessToken Token: Check
+ * @apiName checkAccessToken
+ * @apiGroup User
+ *
+ * @apiDescription Check token is validate or not.
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "msg": "Valid access_token."
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "invalid token"
+ *     }
+ */
+router.post('/accessToken', apiProtector, user.validateAccessToken);
 
-router.get('/updateAccessToken', user.updateAccessToken);
+/**
+ * @api {put} /users/accessToken Token: Update
+ * @apiName updateAccessToken
+ * @apiGroup User
+ *
+ * @apiDescription Update access token if previous token is expired .
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "access_token": " {access_token}
+ *      }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": "invalid token"
+ *     }
+ */
+router.put('/accessToken', user.updateAccessToken);
 
 /**
  * @api {get} /users/signout Request Sign out

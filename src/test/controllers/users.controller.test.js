@@ -593,6 +593,86 @@ describe('/getRequestStatus', function () {
   });
 });
 
+describe('/accessToken', function () {
+  it('request /accessToken to check validation of access token.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+  it('request /accessToken to check validation of access token.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: `${userData.USER_A_DATA.access_token}abcd`,
+      },
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(401);
+        done();
+      });
+  });
+
+  it('request /accessToken to update access token.', done => {
+    rp({
+      method: 'PUT',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+  it('request /accessToken to update access token.', done => {
+    rp({
+      method: 'PUT',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: `${userData.USER_A_DATA.access_token}abcd`,
+      },
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(401);
+        done();
+      });
+  });
+});
+
 function unauthorizedAccessTest(uri, done) {
   rp({
     method: 'GET',
