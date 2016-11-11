@@ -11,10 +11,11 @@ describe('Test User API', function () {
         json: true,
       })
         .then(function (result) {
-          result.statusCode.should(200);
+          result.statusCode.should.equal(200);
           done();
         })
         .catch(function (err) {
+          should.fail();
           done();
         });
     });
