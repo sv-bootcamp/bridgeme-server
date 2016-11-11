@@ -144,7 +144,7 @@ router.post('/answer', apiProtector, survey.saveAnswer);
  *       "err": {Detail Error Message}
  *     }
  */
-router.post('/create', apiProtector, survey.saveSurvey);
+router.post('/create', survey.saveSurvey);
 
 /**
  * @api {get} /survey/request Retrieve Survey

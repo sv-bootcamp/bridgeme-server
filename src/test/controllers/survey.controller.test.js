@@ -24,9 +24,6 @@ describe('Test Survey API', function () {
         form: menteeData.surveyA001_1,
         resolveWithFullResponse: true,
         json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
       };
 
       rp(options)
