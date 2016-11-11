@@ -201,7 +201,7 @@ export function requestSecretCode(req, res, next) {
 }
 
 export function resetPassword(req, res, next) {
-  let cipher = crypto.createCipher('aes192', req.body.password);
+  let cipher = crypto.createCipher('aes256', req.body.password);
   cipher.update(req.body.email, 'ascii', 'hex');
   let crytoPassword = cipher.final('hex');
 
