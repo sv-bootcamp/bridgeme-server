@@ -1,5 +1,5 @@
 import rp from 'request-promise';
-import userCallback from '../../server/config/json/user.callback';
+import userData from '../fixtures/userData';
 
 describe('Test User API', function () {
   describe('/signOut', function () {
@@ -9,6 +9,9 @@ describe('Test User API', function () {
         uri: 'http://localhost:8000/users/signOut',
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_B_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
