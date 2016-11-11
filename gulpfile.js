@@ -10,7 +10,7 @@ const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', () => {
-  runSequence(['build:server', 'build:test', 'jscs'], 'server:start');
+  runSequence(['build:server', 'build:test', 'jscs','apidoc'], 'server:start');
 });
 
 gulp.task('install', () => {
@@ -82,7 +82,7 @@ gulp.task('jscs', () => {
 gulp.task('apidoc', (done) => {
   apidoc({
     src: "src",
-    dest: "apidoc/"
+    dest: "dist-server/apidoc/"
   }, done);
 });
 
