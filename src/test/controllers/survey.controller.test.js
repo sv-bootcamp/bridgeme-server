@@ -20,7 +20,7 @@ describe('Test Survey API', function () {
     it(': Save mentee survey.', function (done) {
       let options = {
         method: 'POST',
-        uri: API_BASE_URL + '/create',
+        uri: `${API_BASE_URL}/create`,
         form: menteeData.surveyA001_1,
         resolveWithFullResponse: true,
         json: true,
@@ -40,7 +40,7 @@ describe('Test Survey API', function () {
     it(': Save mentor survey.', function (done) {
       let options = {
         method: 'POST',
-        uri: API_BASE_URL + '/create',
+        uri: `${API_BASE_URL}/create`,
         form: mentorData.surveyB001_1,
         resolveWithFullResponse: true,
         json: true,
@@ -66,7 +66,7 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        uri: API_BASE_URL + '/request/mm',
+        uri: `${API_BASE_URL}/request/mm`,
         params: {
           type: 'mm',
         },
@@ -92,7 +92,7 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        uri: API_BASE_URL + '/request/mentee',
+        uri: `${API_BASE_URL}/request/mentee`,
         params: {
           type: 'mentee',
         },
@@ -118,7 +118,7 @@ describe('Test Survey API', function () {
       this.timeout(4000);
       let options = {
         method: 'GET',
-        uri: API_BASE_URL + '/request/mentor',
+        uri: `${API_BASE_URL}/request/mentor`,
         params: {
           type: 'mentor',
         },
@@ -145,7 +145,7 @@ describe('Test Survey API', function () {
     it(': Save answer.', function (done) {
       let options = {
         method: 'POST',
-        uri: API_BASE_URL + '/answer',
+        uri: `${API_BASE_URL}/answer`,
         form: mockAnswerData.answerA001_1,
         resolveWithFullResponse: true,
         json: true,

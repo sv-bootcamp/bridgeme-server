@@ -17,7 +17,7 @@ describe('Test Match API', function () {
     it('Sign up with valid Facebook user B.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/users/signin',
+        uri: `${API_BASE_URL}/users/signin`,
         form: {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -41,7 +41,7 @@ describe('Test Match API', function () {
     it('request mentoring to Invalid User.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/match/request',
+        uri: `${API_BASE_URL}/match/request`,
         form: {
           mentor_id: 'invaliduserid',
           subjects: 'Getting a job',
@@ -69,7 +69,7 @@ describe('Test Match API', function () {
       this.timeout(10000);
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/match/request',
+        uri: `${API_BASE_URL}/match/request`,
         form: {
           mentor_id: userData.USER_A_DATA._id,
           subjects: 'Getting a job',
@@ -95,7 +95,7 @@ describe('Test Match API', function () {
     it('User B Retrieve activity page.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/match/activity',
+        uri: `${API_BASE_URL}/match/activity`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -122,7 +122,7 @@ describe('Test Match API', function () {
     it('Sign up with User A.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/users/signin',
+        uri: `${API_BASE_URL}/users/signin`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -144,7 +144,7 @@ describe('Test Match API', function () {
     it('User A Retrieve activity page.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/match/activity',
+        uri: `${API_BASE_URL}/match/activity`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -168,7 +168,7 @@ describe('Test Match API', function () {
     it('User A accept request from User B.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/match/response',
+        uri: `${API_BASE_URL}/match/response`,
         form: {
           match_id: matchData.requested[0]._id,
           option: 1,  //accept
@@ -195,7 +195,7 @@ describe('Test Match API', function () {
     it('Sign up with User B.', done => {
       rp({
         method: 'POST',
-        uri: API_BASE_URL + '/users/signin',
+        uri: `${API_BASE_URL}/users/signIn`,
         form: {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -218,7 +218,7 @@ describe('Test Match API', function () {
     it('User B Retrieve activity page.', done => {
       rp({
         method: 'GET',
-        uri: API_BASE_URL + '/match/activity',
+        uri: `${API_BASE_URL}/match/activity`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -243,13 +243,13 @@ describe('Test Match API', function () {
 
   describe('AnauthorizedAccess to API', () => {
     it('request /activity without session coockie.', done => {
-      anauthorizedAccessTest('GET', API_BASE_URL + '/match/activity', done);
+      anauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
     });
     it('request /request without session coockie.', done => {
-      anauthorizedAccessTest('POST', API_BASE_URL + '/match/request', done);
+      anauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
     });
     it('request /response without session coockie.', done => {
-      anauthorizedAccessTest('POST', API_BASE_URL + '/match/response', done);
+      anauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
     });
   });
 });
