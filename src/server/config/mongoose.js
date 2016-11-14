@@ -8,8 +8,8 @@ import '../models/secretCode.model';
 
 const DATABASE_BASE_URL = 'mongodb://localhost:27017/';
 const DATABASE_ENV_URL = {
-  development: 'yoda',
-  test: 'yoda-test',
+  development: 'BridgeMe',
+  test: 'BridgeMeTest',
 };
 
 export default function () {
