@@ -12,9 +12,11 @@ const Match = mongoose.model('match');
 const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 
-export const ACCEPTED = 1;
-export const PENDING = 2;
-export const REJECTED = 0;
+export const MATCH_STATUS = {
+  ACCEPTED: 1,
+  PENDING: 2,
+  REJECTED: 0,
+};
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
@@ -51,14 +53,14 @@ export function requestMentoring(req, res, next) {
 export function getMyActivity(req, res, next) {
   let activityData = {};
 
-  findMenteeActivityByStatus(req.user._id, PENDING)
+  findMenteeActivityByStatus(req.user._id, MATCH_STATUS.PENDING)
     .then(pendingDoc => {
       activityData['pending'] = pendingDoc;
-      return findMenteeActivityByStatus(req.user._id, ACCEPTED);
+      return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.ACCEPTED);
     })
     .then(acceptedDoc => {
       activityData['accepted'] = acceptedDoc;
-      return findMenteeActivityByStatus(req.user._id, REJECTED);
+      return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.REJECTED);
     })
     .then(rejectedDoc => {
       activityData['rejected'] = rejectedDoc;
@@ -131,7 +133,7 @@ function findMentorActivity(mentor_id) {
 
 export function responseMentoring(req, res, next) {
   ///todo: Validiate  match_id & option params (Luke Lee)
-  if (Number(req.body.option) === REJECTED) {
+  if (Number(req.body.option) === MATCH_STATUS.REJECTED) {
     Match.remove({ _id: req.body.match_id }, (err) => {
       if (err) {
         res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
