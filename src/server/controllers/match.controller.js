@@ -24,12 +24,11 @@ export function requestMentoring(req, res, next) {
   matchData.mentee_id = req.user._id;
   let match = new Match(matchData);
 
-  Match.findOne({mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id}).exec()
+  Match.findOne({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }).exec()
     .then(match => {
       if (!match) {
-        return User.findOne({_id: matchData.mentor_id}).exec();
-      }
-      else {
+        return User.findOne({ _id: matchData.mentor_id }).exec();
+      } else {
         throw new Error(matchCallback.ERR_MATCH_ALREADY_EXIST);
       }
     })
@@ -39,16 +38,15 @@ export function requestMentoring(req, res, next) {
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
           mailStrings.REQUEST_HTML, matchData.contents);
         return match.save();
-      }
-      else {
+      } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
     .then(() => {
-      res.status(201).json({msg: matchCallback.SUCCESS_REQUEST});
+      res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
-      res.status(400).json({err_point: err.message, err: err.stack});
+      res.status(400).json({ err_point: err.message, err: err.stack });
     });
 }
 
@@ -73,7 +71,7 @@ export function getMyActivity(req, res, next) {
       res.status(200).json(activityData);
     })
     .catch(err => {
-      res.status(400).json({err_point: err.message, err: err.stack});
+      res.status(400).json({ err_point: err.message, err: err.stack });
     });
 }
 
@@ -109,7 +107,7 @@ function findMentorActivity(mentor_id) {
     {
       $match: {
         mentor_id: ObjectId(mentor_id),
-        status: {$ne: 0},
+        status: { $ne: 0 },
       },
     },
     {
@@ -136,22 +134,19 @@ function findMentorActivity(mentor_id) {
 export function responseMentoring(req, res, next) {
   ///todo: Validiate  match_id & option params (Luke Lee)
   if (Number(req.body.option) === MATCH_STATUS.REJECTED) {
-    Match.remove({_id: req.body.match_id}, (err) => {
+    Match.remove({ _id: req.body.match_id }, (err) => {
       if (err) {
-        res.status(400).json({err_point: matchCallback.ERR_MONGOOSE, err: err});
-      }
-      else {
-        res.status(200).json({msg: matchCallback.SUCCESS_RESPONSE});
+        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
+      } else {
+        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       }
     });
-  }
-  else {
-    Match.update({_id: req.body.match_id}, {status: req.body.option, response_date: Date.now()}, (err) => {
+  } else {
+    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
       if (err) {
-        res.status(400).json({err_point: matchCallback.ERR_MONGOOSE, err: err});
-      }
-      else {
-        res.status(200).json({msg: matchCallback.SUCCESS_RESPONSE});
+        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
+      } else {
+        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       }
     });
   }
