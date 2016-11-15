@@ -14,28 +14,24 @@ const User = mongoose.model('user');
 
 // Get request
 export function getRequest(req, res, next) {
-  if (req.session._id) {
-    let surveyId;
-    determineUser()
-      .then((isSample) => {
-        if (isSample) {
-          if (req.params.type == 'mentee') {
-            res.status(200).json(menteeSurvey.data);
-          } else if (req.params.type == 'mentor') {
-            res.status(200).json(mentorSurvey.data);
-          } else {
-            throw new Error(surveyCallback.ERR_INVALID_PARAMS);
-          }
+  let surveyId;
+  determineUser()
+    .then((isSample) => {
+      if (isSample) {
+        if (req.params.type == 'mentee') {
+          res.status(200).json(menteeSurvey.data);
+        } else if (req.params.type == 'mentor') {
+          res.status(200).json(mentorSurvey.data);
         } else {
-          res.status(204).json();
+          throw new Error(surveyCallback.ERR_INVALID_PARAMS);
         }
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+      } else {
+        res.status(204).json();
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: err.message, err_msg: err.stack });
+    });
 }
 
 function determineUser() {
@@ -55,33 +51,29 @@ function determineUser() {
 
 // Get answer
 export function saveAnswer(req, res, next) {
-  if (req.session._id) {
-    let answer = new Answer();
-    answer.survey_id = req.body.survey_id;
-    answer.questions = req.body.questions;
+  let answer = new Answer();
+  answer.survey_id = req.body.survey_id;
+  answer.questions = req.body.questions;
 
-    User.findOne({ _id: req.session._id }).exec()
-      .then((userItem) => {
-        if (userItem) {
-          answer.user_id = userItem._id;
-          return answer.save();
-        } else {
-          return new Error(surveyCallback.ERR_USER_NOT_FOUND);
-        }
-      })
-      .then((answerItem) => {
-        if (answerItem) {
-          res.status(200).json({ survey_id: answerItem.survey_id });
-        } else {
-          return new Error(surveyCallback.ERR_SAVE_ANSWER);
-        }
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: err.message, err_msg: err.stack });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.findOne({ _id: req.user._id }).exec()
+    .then((userItem) => {
+      if (userItem) {
+        answer.user_id = userItem._id;
+        return answer.save();
+      } else {
+        return new Error(surveyCallback.ERR_USER_NOT_FOUND);
+      }
+    })
+    .then((answerItem) => {
+      if (answerItem) {
+        res.status(200).json({ survey_id: answerItem.survey_id });
+      } else {
+        return new Error(surveyCallback.ERR_SAVE_ANSWER);
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: err.message, err_msg: err.stack });
+    });
 }
 
 // Save question

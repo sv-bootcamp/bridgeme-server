@@ -1,10 +1,12 @@
 import express from 'express';
+import jwtUtil from '../utils/jwt.util';
 import * as match from '../controllers/match.controller';
 
 /*
  * Define the URL routing for http://yoda-domain.com/match/*
  */
 
+const apiProtector = jwtUtil.apiProtector;
 const router = express.Router();
 
 //POST method
@@ -39,10 +41,10 @@ const router = express.Router();
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
-router.post('/request', match.requestMentoring);
+router.post('/request', apiProtector, match.requestMentoring);
 
 /**
  * @api {post} /match/response Send response to mentee
@@ -66,10 +68,10 @@ router.post('/request', match.requestMentoring);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
-router.post('/response', match.responseMentoring);
+router.post('/response', apiProtector, match.responseMentoring);
 
 //GET method
 
@@ -120,9 +122,9 @@ router.post('/response', match.responseMentoring);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
-router.get('/activity', match.getMyActivity);
+router.get('/activity', apiProtector, match.getMyActivity);
 
 export default router;

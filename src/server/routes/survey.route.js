@@ -1,10 +1,12 @@
 import express from 'express';
+import jwtUtil from '../utils/jwt.util';
 import * as survey from '../controllers/survey.controller';
 
 /*
  * Define the URL routing for http://yoda-domain.com/survey/*
  */
 
+const apiProtector = jwtUtil.apiProtector;
 const router = express.Router();
 
 //POST method
@@ -72,10 +74,10 @@ const router = express.Router();
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": "Authentication failed. Please sign in first."
+ *       "err_point": {err_msg}
  *     }
  */
-router.post('/answer', survey.saveAnswer);
+router.post('/answer', apiProtector, survey.saveAnswer);
 
 //GET method
 
@@ -205,6 +207,6 @@ router.post('/create', survey.saveSurvey);
  *       "err_point": "Parameter /:type/ is not correct"
  *     }
  */
-router.get('/request/:type', survey.getRequest);
+router.get('/request/:type', apiProtector, survey.getRequest);
 
 export default router;

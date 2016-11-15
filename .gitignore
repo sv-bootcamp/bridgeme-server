@@ -12,3 +12,6 @@ data/
 
 # scripts
 mongod
+
+# Private Key
+*.pem

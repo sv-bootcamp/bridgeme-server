@@ -76,7 +76,8 @@ describe('Test User API', function () {
       })
         .then(function (result) {
           result.statusCode.should.equal(201);
-          userData.USER_A_DATA = result.body;
+          userData.USER_A_DATA = result.body.user;
+          userData.USER_A_DATA.access_token = result.body.access_token;
           done();
         })
         .catch(function (err) {
@@ -111,17 +112,19 @@ describe('Test User API', function () {
   });
 
   describe('/all', function () {
-    it('request /all without session coockie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/all', done);
+    it('request /all without access_token.', done => {
+      unauthorizedAccessTest(`${API_BASE_URL}/all`, done);
     });
 
-    it('request /all with session coockie.', done => {
+    it('request /all with access_token.', done => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/all`,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -139,17 +142,19 @@ describe('Test User API', function () {
   });
 
   describe('/me', function () {
-    it('request /me without session coockie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/me', done);
+    it('request /me without access_token.', done => {
+      unauthorizedAccessTest(API_BASE_URL + '/me', done);
     });
 
-    it('request /me with session coockie.', done => {
+    it('request /me with access_token.', done => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/me`,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -167,17 +172,19 @@ describe('Test User API', function () {
   });
 
   describe('/mentorList', function () {
-    it('request /mentorList without session cookie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/mentorList', done);
+    it('request /mentorList without access_token.', done => {
+      unauthorizedAccessTest(API_BASE_URL + '/mentorList', done);
     });
 
-    it('request /mentorList with session coockie.', done => {
+    it('request /mentorList with access_token.', done => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/mentorList`,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -193,17 +200,19 @@ describe('Test User API', function () {
   });
 
   describe('/id/:id', function () {
-    it('request /id/:id without session cookie.', done => {
-      anauthorizedAccessTest(API_BASE_URL + '/id/' + userData.USER_A_DATA._id, done);
+    it('request /id/:id without access_token.', done => {
+      unauthorizedAccessTest(`${API_BASE_URL}/id/${userData.USER_A_DATA._id}`, done);
     });
 
-    it('request /id/:id with session cookie.', done => {
+    it('request /id/:id with access_token.', done => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/id/${userData.USER_A_DATA._id}`,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(function (result) {
           result.statusCode.should.equal(200);
@@ -228,7 +237,6 @@ describe('Test User API', function () {
         method: 'POST',
         uri: `${API_BASE_URL}/localSignUp`,
         form: userData.USER_C_DATA,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
       })
@@ -247,13 +255,12 @@ describe('Test User API', function () {
         method: 'POST',
         uri: `${API_BASE_URL}/localSignUp`,
         form: userData.USER_E_DATA,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
       })
         .then(result => {
-          result.statusCode.should.equal(200);
-          result.body.email.should.equal(userData.USER_E_DATA.email);
+          result.statusCode.should.equal(201);
+          result.body.user.email.should.equal(userData.USER_E_DATA.email);
           done();
         })
         .catch(err => {
@@ -267,9 +274,11 @@ describe('Test User API', function () {
         method: 'POST',
         uri: `${API_BASE_URL}/localSignUp`,
         form: userData.USER_E_DATA,
-        jar: true,
         resolveWithFullResponse: true,
         json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
       })
         .then(result => {
           result.statusCode.should.equal(201);
@@ -414,16 +423,18 @@ describe('Test User API', function () {
 
 describe('/job', function () {
   it('request /job without session cookie.', done => {
-    anauthorizedAccessTest(API_BASE_URL + '/job', done);
+    unauthorizedAccessTest(`${API_BASE_URL}/job`, done);
   });
 
   it('request /job with session cookie.', done => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/job`,
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -447,9 +458,11 @@ describe('/editJob', function () {
       method: 'POST',
       uri: `${API_BASE_URL}/editJob`,
       form: signupData.data.job,
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -469,9 +482,11 @@ describe('/editHelp', function () {
       method: 'POST',
       uri: `${API_BASE_URL}/editHelp`,
       form: signupData.data.help,
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -491,9 +506,11 @@ describe('/editPersonality', function () {
       method: 'POST',
       uri: `${API_BASE_URL}/editPersonality`,
       form: signupData.data.personality,
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -513,9 +530,11 @@ describe('/setRequestStatus', function () {
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: null },
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         should.fail();
@@ -533,9 +552,11 @@ describe('/setRequestStatus', function () {
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
       form: { mentorMode: mentorMode },
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -543,7 +564,6 @@ describe('/setRequestStatus', function () {
         done();
       })
       .catch(function (err) {
-        console.log(err);
         should.fail();
         done();
       });
@@ -551,13 +571,15 @@ describe('/setRequestStatus', function () {
 });
 
 describe('/getRequestStatus', function () {
-  it('request /getRequestStatus with session cookie.', done => {
+  it('request /mentorMode with session cookie.', done => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/mentorMode`,
-      jar: true,
       resolveWithFullResponse: true,
       json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
     })
       .then(function (result) {
         result.statusCode.should.equal(200);
@@ -571,7 +593,87 @@ describe('/getRequestStatus', function () {
   });
 });
 
-function anauthorizedAccessTest(uri, done) {
+describe('/accessToken', function () {
+  it('request /accessToken to check validation of access token.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+  it('request /accessToken to check validation of access token.', done => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: `${userData.USER_A_DATA.access_token}abcd`,
+      },
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(401);
+        done();
+      });
+  });
+
+  it('request /accessToken to update access token.', done => {
+    rp({
+      method: 'PUT',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+  it('request /accessToken to update access token.', done => {
+    rp({
+      method: 'PUT',
+      uri: `${API_BASE_URL}/accessToken`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: `${userData.USER_A_DATA.access_token}abcd`,
+      },
+    })
+      .then(function (result) {
+        should.fail();
+        done();
+      })
+      .catch(function (err) {
+        err.statusCode.should.equal(401);
+        done();
+      });
+  });
+});
+
+function unauthorizedAccessTest(uri, done) {
   rp({
     method: 'GET',
     uri: uri,

@@ -1,8 +1,9 @@
 import * as matchController from './match.controller';
-import * as mailingController from './mailing.controller';
+import * as mailingUtil from '../utils/mailing.util';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import jobcategory from '../config/json/jobcategory';
+import jwtUtil from '../utils/jwt.util';
 import mailStrings from '../config/json/mail.strings';
 import mongoose from 'mongoose';
 import request from 'request-promise';
@@ -28,77 +29,61 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,locatio
 
 // Return all users.
 export function getAll(req, res, next) {
-  if (req.session._id) {
-    User.find({}).exec()
-      .then(getAll => {
-        res.status(200).json(getAll);
-      })
-      .catch((err)=> {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.find({}).exec()
+    .then(getAll => {
+      res.status(200).json(getAll);
+    })
+    .catch((err)=> {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
 }
 
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
-  if (req.session._id) {
-    User.find({ _id: { $ne: req.session._id }, mentorMode: { $ne: false } })
-      .sort({ stamp_login: -1 }).exec()
-      .then(mentorList => {
-        res.status(200).json(mentorList);
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.find({ _id: { $ne: req.user._id }, mentorMode: { $ne: false } })
+    .sort({ stamp_login: -1 }).exec()
+    .then(mentorList => {
+      res.status(200).json(mentorList);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
 }
 
 // Return my profile.
 export function getMyProfile(req, res, next) {
-  if (req.session._id) {
-    User.findOne({ _id: req.session._id }).exec()
-      .then(myProfile => {
-        res.status(200).json(myProfile);
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.findOne({ _id: req.user._id }).exec()
+    .then(myProfile => {
+      res.status(200).json(myProfile);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
 }
 
 // Return profile by _id.
 export function getProfileById(req, res, next) {
-  if (req.session._id) {
-    let userProfile = {};
+  let userProfile = {};
 
-    User.findOne({ _id: req.params._id }).exec()
-      .then(profile => {
-        userProfile = JSON.parse(JSON.stringify(profile));
-        return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.session._id }).exec();
-      })
-      .then(matchAsMentee => {
-        userProfile.relation = {};
-        userProfile.relation.asMentee =
-          matchAsMentee ? matchAsMentee.status : matchController.REJECTED;
-        return Match.findOne({ mentor_id: req.session._id, mentee_id: userProfile._id }).exec();
-      })
-      .then(matchAsMentor => {
-        userProfile.relation.asMentor =
-          matchAsMentor ? matchAsMentor.status : matchController.REJECTED;
-        res.status(200).json(userProfile);
-      })
-      .catch((err) => {
-        res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.findOne({ _id: req.params._id }).exec()
+    .then(profile => {
+      userProfile = JSON.parse(JSON.stringify(profile));
+      return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.user._id }).exec();
+    })
+    .then(matchAsMentee => {
+      userProfile.relation = {};
+      userProfile.relation.asMentee =
+        matchAsMentee ? matchAsMentee.status : matchController.MATCH_STATUS.REJECTED;
+      return Match.findOne({ mentor_id: req.user._id, mentee_id: userProfile._id }).exec();
+    })
+    .then(matchAsMentor => {
+      userProfile.relation.asMentor =
+        matchAsMentor ? matchAsMentor.status : matchController.MATCH_STATUS.REJECTED;
+      res.status(200).json(userProfile);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
 }
 
 export function localSignUp(req, res, next) {
@@ -128,11 +113,14 @@ export function localSignUp(req, res, next) {
       }
     })
     .then(registeredUser => {
-      return storeSession(req, registeredUser);
+      return stampUser(registeredUser);
     })
-    .then(storedUser => {
-      if (storedUser) {
-        res.status(200).json(storedUser);
+    .then(stampedUser => {
+      if (stampedUser) {
+        res.status(201).json({
+          user: stampedUser,
+          access_token: jwtUtil.createAccessToken(stampedUser),
+        });
       } else {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
@@ -153,9 +141,13 @@ export function localSignIn(req, res, next) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
         if (cryptoPassword === existingUser.password) {
-          storeSession(req, existingUser)
-            .then((storedUser) => {
-              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN, user: storedUser });
+          stampUser(existingUser)
+            .then((stampedUser) => {
+              res.status(200).json({
+                msg: userCallback.SUCCESS_SIGNIN,
+                user: stampedUser,
+                access_token: jwtUtil.createAccessToken(stampedUser),
+              });
             })
             .catch(err => {
               throw new Error(userCallback.ERR_FAIL_SIGNIN);
@@ -196,7 +188,7 @@ export function requestSecretCode(req, res, next) {
         return secretCode.save();
       })
       .then(secretCode => {
-        mailingController.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
+        mailingUtil.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
           mailStrings.RESETPW_HTML, secretCode.secretCode);
         res.status(201).json({ secretCode: secretCode.secretCode });
       })
@@ -266,18 +258,26 @@ export function signIn(req, res, next) {
         if (!existingUser) {
           new User(registrationData).save()
             .then((registeredUser) => {
-              return storeSession(req, registeredUser);
+              return stampUser(registeredUser);
             })
-            .then((storedUser)=> {
-              res.status(201).json(storedUser);
+            .then((stampedUser)=> {
+              res.status(201).json({
+                msg: userCallback.SUCCESS_SIGNIN,
+                user: stampedUser,
+                access_token: jwtUtil.createAccessToken(stampedUser),
+              });
             })
             .catch((err) => {
               res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
             });
         } else {
-          storeSession(req, existingUser)
-            .then((storedUser)=> {
-              res.status(200).json({ msg: userCallback.SUCCESS_SIGNIN });
+          stampUser(existingUser)
+            .then((stampedUser)=> {
+              res.status(200).json({
+                msg: userCallback.SUCCESS_SIGNIN,
+                user: stampedUser,
+                access_token: jwtUtil.createAccessToken(stampedUser),
+              });
             })
             .catch((err) => {
               res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNIN });
@@ -295,10 +295,21 @@ export function signIn(req, res, next) {
   }
 }
 
-function storeSession(req, user) {
-  req.session.access_token = req.body.access_token;
-  req.session.email = user.email;
-  req.session._id = user._id.toString();
+export function updateAccessToken(req, res, next) {
+  jwtUtil.updateAccessToken(req.headers.access_token, (err, newAccessToken)=> {
+    if (!err) {
+      res.status(200).json({ access_token: newAccessToken });
+    }else {
+      res.status(401).json({ err_point: err.message });
+    }
+  });
+}
+
+export function validateAccessToken(req, res, next) {
+  res.status(200).json({ msg: userCallback.SUCCESS_CHECK_ACCESS_TOKEN });
+}
+
+function stampUser(user) {
   return new Promise((resolve, reject) => {
     User.update({ _id: user._id }, { stamp_login: Date.now() }).exec()
       .then((data) => {
@@ -348,93 +359,85 @@ function crawlByAccessTokenFacebook(accessToken) {
 }
 
 export function getJobCategory(req, res, next) {
-  if (req.session._id) {
-    res.status(200).json(jobcategory);
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  res.status(200).json(jobcategory);
 }
 
 export function editGeneralProfile(req, res, next) {
-  if (req.session._id) {
-    User.findOne({ _id: req.session._id }).exec()
-      .then(user => {
-        if (user) {
-          return validateEmail(req.body.email);
+  User.findOne({ _id: req.user._id }).exec()
+    .then(user => {
+      if (user) {
+        return validateEmail(req.body.email);
+      } else {
+        throw err;
+      }
+    })
+    .then((isValid) => {
+      if (isValid) {
+        let editData = {
+          name: req.body.name,
+          email: req.body.email,
+          languages: req.body.languages,
+          location: req.body.location,
+          about: req.body.about,
+          education: req.body.education,
+          work: req.body.work,
+        };
+        return User.update({ _id: req.user._id }, { $set: editData }).exec();
+      } else {
+        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
+      }
+    })
+    .then(updateData => {
+      if (updateData) {
+        return setKey();
+      } else {
+        throw new Error(userCallback.ERR_MONGOOSE);
+      }
+    })
+    .then(keyData => {
+      if (keyData) {
+        if (req.body.image == null) {
+          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
         } else {
-          throw err;
-        }
-      })
-      .then((isValid) => {
-        if (isValid) {
-          let editData = {
-            name: req.body.name,
-            email: req.body.email,
-            languages: req.body.languages,
-            location: req.body.location,
-            about: req.body.about,
-            education: req.body.education,
-            work: req.body.work,
-          };
-          return User.update({ _id: req.session._id }, { $set: editData }).exec();
-        } else {
-          throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
-        }
-      })
-      .then(updateData => {
-        if (updateData) {
-          return setKey();
-        } else {
-          throw new Error(userCallback.ERR_MONGOOSE);
-        }
-      })
-      .then(keyData => {
-        if (keyData) {
-          if (req.body.image == null) {
-            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
-          } else {
-            let bucketName = 'yodabucket';
-            let now = new Date();
-            let imageKey = `profile/${req.session._id}/${now.getTime()}.png`;
-            let encondedImage = new Buffer(req.body.image, 'base64');
+          let bucketName = 'yodabucket';
+          let now = new Date();
+          let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
+          let encondedImage = new Buffer(req.body.image, 'base64');
 
-            const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-            let params = {
-              Bucket: bucketName,
-              Key: imageKey,
-              ACL: 'public-read',
-              Body: encondedImage,
-            };
-            S3.putObject(params).promise()
-              .then((data, err) => {
-                if (data) {
-                  let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-                  return updateProfile(req, profileUrl);
-                } else {
-                  throw new Error(userCallback.ERR_AWS);
-                }
-              })
-              .then((success) => {
-                if (success) {
-                  res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-                } else {
-                  throw new Error(userCallback.ERR_MONGOOSE);
-                }
-              })
-              .catch((err) => {
-                res.status(400).json({ err_msg: err_stack });
-              });
-          }
-        } else {
-          throw new Error(userCallback.ERR_AWS_KEY);
+          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+          let params = {
+            Bucket: bucketName,
+            Key: imageKey,
+            ACL: 'public-read',
+            Body: encondedImage,
+          };
+          S3.putObject(params).promise()
+            .then((data, err) => {
+              if (data) {
+                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
+                return updateProfile(req, profileUrl);
+              } else {
+                throw new Error(userCallback.ERR_AWS);
+              }
+            })
+            .then((success) => {
+              if (success) {
+                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+              } else {
+                throw new Error(userCallback.ERR_MONGOOSE);
+              }
+            })
+            .catch((err) => {
+              res.status(400).json({ err_msg: err_stack });
+            });
         }
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+      } else {
+        throw new Error(userCallback.ERR_AWS_KEY);
+      }
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
 }
 
 function validateEmail(req) {
@@ -465,7 +468,7 @@ function setKey() {
 
 function updateProfile(req, profileUrl) {
   return new Promise((resolve, reject) => {
-    User.update({ _id: req.session._id }, {
+    User.update({ _id: req.user._id }, {
       $set: { profile_picture: profileUrl },
     }).exec()
       .then((data) => {
@@ -478,109 +481,79 @@ function updateProfile(req, profileUrl) {
 }
 
 export function editJob(req, res, next) {
-  if (req.session._id) {
-    User.update({ _id: req.session._id }, {
-      $set: {
-        job: req.body.job,
-      },
-    }).exec()
-      .then((data) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.update({ _id: req.user._id }, {
+    $set: {
+      job: req.body.job,
+    },
+  }).exec()
+    .then((data) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }
 
 export function editHelp(req, res, next) {
-  if (req.session._id) {
-    User.update({ _id: req.session._id }, {
-      $set: {
-        help: req.body.help,
-      },
-    }).exec()
-      .then((data) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.update({ _id: req.user._id }, {
+    $set: {
+      help: req.body.help,
+    },
+  }).exec()
+    .then((data) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }
 
 export function editPersonality(req, res, next) {
-  if (req.session._id) {
-    User.update({ _id: req.session._id }, {
+  User.update({ _id: req.user._id }, {
+    $set: {
+      personality: req.body.personality,
+    },
+  }).exec()
+    .then((data) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+export function setMentoringRequestStatus(req, res, next) {
+  if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
+    User.update({ _id: req.user._id }, {
       $set: {
-        personality: req.body.personality,
+        mentorMode: req.body.mentorMode,
       },
     }).exec()
-      .then((data) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
+      .then(update => {
+        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
       })
       .catch((err) => {
         res.status(400).json(err);
       });
   } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
-}
-
-export function setMentoringRequestStatus(req, res, next) {
-  if (req.session._id) {
-    if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
-      User.update({ _id: req.session._id }, {
-        $set: {
-          mentorMode: req.body.mentorMode,
-        },
-      }).exec()
-        .then(update => {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-        })
-        .catch((err) => {
-          res.status(400).json(err);
-        });
-    } else {
-      res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
-    }
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
+    res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
   }
 }
 
 export function getMentoringRequestStatus(req, res, next) {
-  if (req.session._id) {
-    User.findOne({ _id: req.session._id }).exec()
-      .then(user => {
-        if (user.mentorMode == null) {
-          res.status(200).json(true);
-        } else {
-          res.status(200).json({ result: user.mentorMode });
-        }
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  User.findOne({ _id: req.user._id }).exec()
+    .then(user => {
+      if (user.mentorMode == null) {
+        res.status(200).json(true);
+      } else {
+        res.status(200).json({ result: user.mentorMode });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }
 
 export function signout(req, res, next) {
-  if (req.session._id) {
-    req.session.destroy((err) => {
-      if (err) {
-        res.status(400).json({ err_point: userCallback.ERR_FAIL_SIGNOUT, err: err });
-      } else {
-        res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
-      }
-    });
-  } else {
-    res.status(401).json({ err_point: userCallback.ERR_FAIL_AUTH });
-  }
+  res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
 }
