@@ -73,12 +73,12 @@ export function getProfileById(req, res, next) {
     .then(matchAsMentee => {
       userProfile.relation = {};
       userProfile.relation.asMentee =
-        matchAsMentee ? matchAsMentee.status : matchController.REJECTED;
+        matchAsMentee ? matchAsMentee.status : matchController.MATCH_STATUS.REJECTED;
       return Match.findOne({ mentor_id: req.user._id, mentee_id: userProfile._id }).exec();
     })
     .then(matchAsMentor => {
       userProfile.relation.asMentor =
-        matchAsMentor ? matchAsMentor.status : matchController.REJECTED;
+        matchAsMentor ? matchAsMentor.status : matchController.MATCH_STATUS.REJECTED;
       res.status(200).json(userProfile);
     })
     .catch((err) => {
