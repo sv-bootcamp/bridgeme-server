@@ -1,7 +1,6 @@
 import * as matchController from './match.controller';
 import * as mailingUtil from '../utils/mailing.util';
 import AWS from 'aws-sdk';
-import fs from 'fs';
 import jobcategory from '../config/json/jobcategory';
 import jwtUtil from '../utils/jwt.util';
 import mailStrings from '../config/json/mail.strings';
