@@ -30,12 +30,13 @@ export default {
       bodyParam: ''
     }
   },
+
   sendPush(userId, extraData, notificationType, bodyParam = '') {
     if (NOTIFICATION_TYPE[notificationType]) {
       User.findOne({_id: userId}).exec()
         .then(userProfile => {
           const message = {
-            to: userProfile.pushToken,
+            to: `/topics/${userId}`,
             content_available: true,
             notification: {
               title: notificationType.title,
@@ -57,8 +58,8 @@ export default {
 
         });
     }
-
   },
+
   generateBody(notificationType, bodyParam){
     if (notificationType) {
       return `${bodyParam}${notificationType.bodyParam}`;
