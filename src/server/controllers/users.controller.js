@@ -180,7 +180,7 @@ export function requestSecretCode(req, res, next) {
             });
         }
 
-        let cipher = crypto.createCipher('aes192', req.body.email);
+        let cipher = crypto.createCipher('aes256', req.body.email);
         let secretCode = new SecretCode();
         secretCode.email = req.body.email;
         secretCode.secretCode
