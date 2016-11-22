@@ -11,59 +11,55 @@ const NOTIFICATION_CONFIG = {
   vibrate: 700,
 };
 
-export default {
-  NOTIFICATION_TYPE: {
-    NEW_REQUEST: {
-      title: 'New Request',
-      bodyParam: ' has requested a connection to you.'
-    },
-    NEW_CONNECTION: {
-      title: 'New Connection',
-      bodyParam: ' and you are connected now.'
-    },
-    NEW_MESSAGE: {
-      title: 'New Message',
-      bodyParam: 'You’ve got new message.'
-    },
-    DEFAULT: {
-      title: 'EMPTY Message',
-      bodyParam: ''
-    }
+const NOTIFICATION_TYPE = [
+  {
+    title: 'New Request',
+    bodyParam: ' has requested a connection to you.',
   },
+  {
+    title: 'New Connection',
+    bodyParam: ' and you are connected now.',
+  },
+  {
+    title: 'New Message',
+    bodyParam: 'You’ve got new message.',
+  },
+  {
+    title: 'EMPTY Message',
+    bodyParam: '',
+  }
+];
 
-  sendPush(userId, extraData, notificationType, bodyParam = '') {
-    if (NOTIFICATION_TYPE[notificationType]) {
-      User.findOne({_id: userId}).exec()
-        .then(userProfile => {
-          const message = {
-            to: `/topics/${userId}`,
-            content_available: true,
-            notification: {
-              title: notificationType.title,
-              body: generateBody(notificationType, bodyParam),
-              sound: NOTIFICATION_CONFIG.sound,
-              vibrate: NOTIFICATION_CONFIG.vibrate,
-            },
-            data: extraData,
-          };
-          fcm.send(message)
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (err) {
-              console.error(err);
-            })
+export function sendPush(senderId, receiverId, extraData, notificationType, bodyParam = '') {
+  User.findOne({ _id: receiverId }).exec()
+    .then(receiverProfile => {
+      const message = {
+        to: receiverProfile.deviceToken,
+        content_available: true,
+        notification: {
+          title: NOTIFICATION_TYPE[notificationType].title,
+          body: generateBody(notificationType, bodyParam),
+          sound: NOTIFICATION_CONFIG.sound,
+          vibrate: NOTIFICATION_CONFIG.vibrate,
+        },
+        extraData: extraData,
+        badge: true,
+      };
+      fcm.send(message)
+        .then(function (response) {
+          return true;
         })
-        .catch((err) => {
-
+        .catch(function (err) {
+          return false;
         });
-    }
-  },
-
-  generateBody(notificationType, bodyParam){
-    if (notificationType) {
-      return `${bodyParam}${notificationType.bodyParam}`;
-    }
-  },
+    })
+    .catch((err) => {
+      
+    });
 };
 
+function generateBody(notificationType, bodyParam) {
+  if (notificationType) {
+    return `${bodyParam}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
+  }
+};
