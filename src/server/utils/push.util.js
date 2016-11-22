@@ -54,7 +54,7 @@ export function sendPush(senderId, receiverId, extraData, notificationType, body
         });
     })
     .catch((err) => {
-      
+      return false;
     });
 };
 

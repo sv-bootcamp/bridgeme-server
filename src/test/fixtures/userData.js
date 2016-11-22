@@ -8,14 +8,17 @@ export default {
   USER_C_DATA: {
     email: 'papermoon703@.com',
     password: 'samplePWD*987',
+    deviceToken: 'eryQC22d9r8:APA91bGAXjgcGb_KqLl9FLEg7xubG0PfHIzw1-Cqnh--pk3d8wgABrH4qKp__CGjRMtFoYgWX6o85juBY8le5lPndxVeMOAchn4Fut_6CtWDAREFPSUjd7DYazxhCck4Ay6ScbKhQR5x',
   },
   USER_D_DATA: {
     email: 'papermoon@gmail.com',
     password: 'samplePWD*987',
+    deviceToken: 'eryQC22d9r8:APA91bGAXjgcGb_KqLl9FLEg7xubG0PfHIzw1-Cqnh--pk3d8wgABrH4qKp__CGjRMtFoYgWX6o85juBY8le5lPndxVeMOAchn4Fut_6CtWDAREFPSUjd7DYazxhCck4Ay6ScbKhQR5x',
   },
   USER_E_DATA: {
     email: 'papermoon703@gmail.com',
     password: 'samplePWD*987',
+    deviceToken: 'eryQC22d9r8:APA91bGAXjgcGb_KqLl9FLEg7xubG0PfHIzw1-Cqnh--pk3d8wgABrH4qKp__CGjRMtFoYgWX6o85juBY8le5lPndxVeMOAchn4Fut_6CtWDAREFPSUjd7DYazxhCck4Ay6ScbKhQR5x',
   },
   SECRET_CODE: undefined,
 };
