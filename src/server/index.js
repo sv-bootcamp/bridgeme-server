@@ -30,7 +30,7 @@ export default (cb) => {
 
   app.use(express.static(__dirname + '/apidoc'));
 
-  const server = app.listen(process.env.NODE_ENV === 'test' ? 8000 : 8000, cb ? cb : () => {
+  const server = app.listen(process.env.NODE_ENV === 'test' ? 8000 : 80, cb ? cb : () => {
     /* eslint-disable no-console */
     console.log(`Listening on port 8000`);
     /* eslint-enable */

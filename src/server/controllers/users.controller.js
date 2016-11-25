@@ -112,7 +112,7 @@ export function localSignUp(req, res, next) {
         return User(registrationData).save();
       }
     })
-    .then((registeredUser) => {
+    .then(registeredUser => {
       return stampUser(registeredUser);
     })
     .then(stampedUser => {
@@ -185,7 +185,7 @@ export function requestSecretCode(req, res, next) {
             });
         }
 
-        let cipher = crypto.createCipher('aes192', req.body.email);
+        let cipher = crypto.createCipher('aes256', req.body.email);
         let secretCode = new SecretCode();
         secretCode.email = req.body.email;
         secretCode.secretCode
@@ -264,7 +264,6 @@ export function signIn(req, res, next) {
           registrationData.deviceToken = req.body.deviceToken;
           new User(registrationData).save()
             .then((registeredUser) => {
-              console.log(req.body.deviceToken);
               return stampUser(registeredUser);
             })
             .then((stampedUser) => {
