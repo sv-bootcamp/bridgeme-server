@@ -38,17 +38,14 @@ export function requestMentoring(req, res, next) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
           mailStrings.REQUEST_HTML, matchData.contents);
+        pushUtil.sendPush(req.user._id, mentor._id, '', 0, req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then((mentor) => {
-      if (pushUtil.sendPush(req.user._id, mentor._id, '', 0, req.user.name)) {
-        res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
-      } else {
-        throw err;
-      }
+    .then(match => {
+      res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
       res.status(400).json({ err_point: err.message, err: err.stack });
@@ -147,16 +144,16 @@ export function responseMentoring(req, res, next) {
       }
     });
   } else {
-    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec()
+    Match.findOne({ _id: req.body.match_id }).exec()
+      .then(match => {
+        pushUtil.sendPush(req.user._id, match.mentee_id, '', 1, req.user.name);
+        return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
+      })
       .then((match) => {
-        return User.findOne({_id: match.mentor_id}).exec()
+        return User.findOne({ _id: match.mentor_id }).exec();
       })
       .then((mentor) => {
-        if (pushUtil.sendPush(mentor._id, req.user._id, '', 0, mentor.name)) {
-          res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
-        } else {
-          throw err;
-        }
+        res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
       })
       .catch((err) => {
         res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });

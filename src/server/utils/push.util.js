@@ -27,14 +27,15 @@ const NOTIFICATION_TYPE = [
   {
     title: 'EMPTY Message',
     bodyParam: '',
-  }
+  },
 ];
 
 export function sendPush(senderId, receiverId, extraData, notificationType, bodyParam = '') {
   User.findOne({ _id: receiverId }).exec()
     .then(receiverProfile => {
       const message = {
-        to: receiverProfile.deviceToken,
+        //to: receiverProfile.deviceToken[0],
+        to: 'cRqmMTj61pM:APA91bGu0Na-9JYgdWn828x3DsH5LcK2ZIlJ75rPV1deGWRudMbGiS64fAE72Kh4m8pCMhTPUXinShac9youFfTcrz_pOQ4tEXyPvVI4uZ6W3jaOf4y1W7oJVmH9BPcewphId-K2shqQ',
         content_available: true,
         notification: {
           title: NOTIFICATION_TYPE[notificationType].title,
@@ -47,19 +48,17 @@ export function sendPush(senderId, receiverId, extraData, notificationType, body
       };
       fcm.send(message)
         .then(function (response) {
-          return true;
+          console.log(response);
         })
         .catch(function (err) {
-          return false;
+          console.log(err);
         });
     })
     .catch((err) => {
-      return false;
+      console.log(err);
     });
 };
 
 function generateBody(notificationType, bodyParam) {
-  if (notificationType) {
-    return `${bodyParam}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
-  }
+  return `${bodyParam}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
 };
