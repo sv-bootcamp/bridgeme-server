@@ -73,6 +73,8 @@ router.post('/request', apiProtector, match.requestMentoring);
  */
 router.post('/response', apiProtector, match.responseMentoring);
 
+router.post('/push', apiProtector, match.sendPush);
+
 //GET method
 
 /**

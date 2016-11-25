@@ -34,8 +34,7 @@ export function sendPush(senderId, receiverId, extraData, notificationType, body
   User.findOne({ _id: receiverId }).exec()
     .then(receiverProfile => {
       const message = {
-        //to: receiverProfile.deviceToken[0],
-        to: 'cRqmMTj61pM:APA91bGu0Na-9JYgdWn828x3DsH5LcK2ZIlJ75rPV1deGWRudMbGiS64fAE72Kh4m8pCMhTPUXinShac9youFfTcrz_pOQ4tEXyPvVI4uZ6W3jaOf4y1W7oJVmH9BPcewphId-K2shqQ',
+        to: receiverProfile.deviceToken[0],
         content_available: true,
         notification: {
           title: NOTIFICATION_TYPE[notificationType].title,

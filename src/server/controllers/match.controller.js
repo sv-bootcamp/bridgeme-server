@@ -160,3 +160,9 @@ export function responseMentoring(req, res, next) {
       });
   }
 }
+
+export function sendPush(req, res, next) {
+  console.log(req.body.senderId);
+  pushUtil.sendPush(req.user._id, req.body.senderId, '', 2, req.user.name, req.body.message);
+  res.status(200).json();
+}
