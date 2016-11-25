@@ -32,7 +32,7 @@ export default (cb) => {
 
   const server = app.listen(process.env.NODE_ENV === 'test' ? 8000 : 80, cb ? cb : () => {
     /* eslint-disable no-console */
-    console.log(`Listening on port 8000`);
+    console.log(`Listening on port ${process.env.NODE_ENV}`);
     /* eslint-enable */
   });
 

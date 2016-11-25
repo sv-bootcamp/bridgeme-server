@@ -28,9 +28,9 @@ const router = express.Router();
  *       "_id": "58215029ca264380d4458fea",
  *       "reg_date": "2016-11-08T04:10:17.513Z",
  *       "personality": [],
- *       "help": [],
- *       "job": [],
- *       "work": [],
+ *       "expertise": [],
+ *       "career": [],
+ *       "experience": [],
  *       "education": []
  *     }
  *
@@ -66,9 +66,9 @@ router.post('/localSignUp', user.localSignUp);
  *         "stamp_login": "2016-11-08T04:10:17.560Z",
  *         "reg_date": "2016-11-08T04:10:17.513Z",
  *         "personality": [],
- *         "help": [],
- *         "job": [],
- *         "work": [],
+ *         "expertise": [],
+ *         "career": [],
+ *         "experience": [],
  *         "education": []
  *       }
  *     }
@@ -178,7 +178,7 @@ router.post('/resetPassword', user.resetPassword);
  *         "languages": "Korean, English",
  *         "location": "",
  *         "about": "Hi, I am Sarah",
- *         "work" : [],
+ *         "experience" : [],
  *         "education" : [
  *              {
  *                  "type" : "High School",
@@ -216,7 +216,7 @@ router.post('/resetPassword', user.resetPassword);
  * @apiParam {String} languages Information of user languages.
  * @apiParam {String} location Information of user location.
  * @apiParam {String} about One short sentence about User.
- * @apiParam {Array} work Information of user work history.
+ * @apiParam {Array} experience Information of user work history.
  * @apiParam {Array} education Information of user education history.
  * @apiParam {String} image Information of user image.
  *
@@ -224,13 +224,13 @@ router.post('/resetPassword', user.resetPassword);
 router.post('/editGeneral', apiProtector, user.editGeneralProfile);
 
 /**
- * @api {post} /users/editJob Request Edit job information
+ * @api {post} /users/editJob Request Edit career information
  * @apiName editJob
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
- *         "job" : [
+ *         "career" : [
  *              {
  *                  "area" : "Design",
  *                  "role" : "Visual / UI",
@@ -250,19 +250,19 @@ router.post('/editGeneral', apiProtector, user.editGeneralProfile);
  *       "err_point": {err_msg}
  *     }
  *
- * @apiParam {Array} job Information of user job.
+ * @apiParam {Array} career Information of user career.
  *
  */
-router.post('/editJob', apiProtector, user.editJob);
+router.post('/editJob', apiProtector, user.editCareer);
 
 /**
- * @api {post} /users/editHelp Request Edit help information
+ * @api {post} /users/editHelp Request Edit expertise information
  * @apiName editHelp
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
- *         "help" : [
+ *         "expertise" : [
  *              {
  *                  "select" : "Requirement",
  *                  "index" : 0
@@ -288,11 +288,11 @@ router.post('/editJob', apiProtector, user.editJob);
  *       "err_point": {err_msg}
  *     }
  *
- * @apiParam {Array} help Information of user help.
+ * @apiParam {Array} expertise Information of user expertise.
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/editHelp', apiProtector, user.editHelp);
+router.post('/editHelp', apiProtector, user.editExpertise);
 
 /**
  * @api {post} /users/editPersonality Request Edit personality information
@@ -474,16 +474,16 @@ router.get('/me', apiProtector, user.getMyProfile);
 router.get('/mentorlist', apiProtector, user.getMentorList);
 
 /**
- * @api {get} /users/job Request job category list
- * @apiName getJobCategory
+ * @api {get} /users/career Request user career information
+ * @apiName getCareerInfo
  * @apiGroup User
  *
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 200 OK
  *     [
  *      {
- *        Job category Info
- *      },....
+ *        career
+ *      }
  *     ]
  *
  * @apiErrorExample {json}
@@ -493,7 +493,51 @@ router.get('/mentorlist', apiProtector, user.getMentorList);
  *     }
  *
  */
-router.get('/job', apiProtector, user.getJobCategory);
+router.get('/career', apiProtector, user.getCareerInfo);
+
+/**
+ * @api {get} /users/expertise Request user expertise information
+ * @apiName getExpertiseInfo
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        expertise
+ *      }
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.get('/expertise', apiProtector, user.getExpertiseInfo);
+
+/**
+ * @api {get} /users/personality Request user personality information
+ * @apiName getPersonalityInfo
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        personality
+ *      }
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.get('/personality', apiProtector, user.getPersonalityInfo);
 
 /**
  * @api {get} /users/getRequestStatus Request mentorMode

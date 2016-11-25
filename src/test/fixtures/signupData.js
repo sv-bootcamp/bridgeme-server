@@ -1,6 +1,6 @@
 export default {
-  data: {
-    job: [
+  career_data: {
+    career: [
       {
         area: 'Design',
         role: 'Visual / UI',
@@ -8,7 +8,9 @@ export default {
         education_background: "Bachelor's",
       },
     ],
-    help: [
+  },
+  expertise_data: {
+    expertise: [
       {
         select: 'Requirement',
       },
@@ -19,6 +21,8 @@ export default {
         select: 'Portfolio',
       },
     ],
+  },
+  personality_data: {
     personality: [
       {
         option: 'Extroverts',

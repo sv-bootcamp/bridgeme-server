@@ -1,5 +1,4 @@
 import '../../server/models/users.model';
-import jobData from '../../server/config/json/jobcategory';
 import rp from 'request-promise';
 import signupData from '../fixtures/signupData';
 import should from 'should';
@@ -421,43 +420,12 @@ describe('Test User API', function () {
   });
 });
 
-describe('/job', function () {
-  it('request /job without session cookie.', done => {
-    unauthorizedAccessTest(`${API_BASE_URL}/job`, done);
-  });
-
-  it('request /job with session cookie.', done => {
-    rp({
-      method: 'GET',
-      uri: `${API_BASE_URL}/job`,
-      resolveWithFullResponse: true,
-      json: true,
-      headers: {
-        access_token: userData.USER_A_DATA.access_token,
-      },
-    })
-      .then(function (result) {
-        result.statusCode.should.equal(200);
-        const body = result.body;
-        body.area.toString().should.equal(jobData.area.toString());
-        body.years.toString().should.equal(jobData.years.toString());
-        body.education_background.toString()
-          .should.equal(jobData.education_background.toString());
-        done();
-      })
-      .catch(function (err) {
-        should.fail();
-        done();
-      });
-  });
-});
-
 describe('/editJob', function () {
   it('request /editJob with session cookie.', done => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editJob`,
-      form: signupData.data.job,
+      form: signupData.career_data,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -481,7 +449,7 @@ describe('/editHelp', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editHelp`,
-      form: signupData.data.help,
+      form: signupData.expertise_data,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -505,7 +473,7 @@ describe('/editPersonality', function () {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editPersonality`,
-      form: signupData.data.personality,
+      form: signupData.personality_data,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -515,6 +483,85 @@ describe('/editPersonality', function () {
       .then(function (result) {
         result.statusCode.should.equal(200);
         result.body.msg.should.equal(userCallback.SUCCESS_EDIT);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/career', function () {
+  it('request /career with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/career`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        const body = result.body[0];
+        const data = signupData.career_data.career[0];
+        body.area.should.equal(data.area);
+        body.role.should.equal(data.role);
+        body.years.should.equal(data.years);
+        body.education_background.should.equal(data.education_background);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/expertise', function () {
+  it('request /expertise with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/expertise`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        const body = result.body;
+        const data = signupData.expertise_data.expertise;
+        body[0].select.should.equal(data[0].select);
+        done();
+      })
+      .catch(function (err) {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/personality', function () {
+  it('request /personality with session cookie.', done => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/personality`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then(function (result) {
+        result.statusCode.should.equal(200);
+        const body = result.body;
+        const data = signupData.personality_data.personality;
+        body[0].option.should.equal(data[0].option);
+        body[0].score.should.equal(data[0].score);
         done();
       })
       .catch(function (err) {

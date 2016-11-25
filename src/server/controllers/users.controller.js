@@ -1,8 +1,6 @@
 import * as matchController from './match.controller';
 import * as mailingUtil from '../utils/mailing.util';
 import AWS from 'aws-sdk';
-import fs from 'fs';
-import jobcategory from '../config/json/jobcategory';
 import jwtUtil from '../utils/jwt.util';
 import mailStrings from '../config/json/mail.strings';
 import mongoose from 'mongoose';
@@ -245,7 +243,7 @@ export function signIn(req, res, next) {
           languages: facebookResult.languages,
           location: facebookResult.location ? facebookResult.location.name : undefined,
           education: facebookResult.education,
-          work: facebookResult.work,
+          experience: facebookResult.work,
           platform_id: facebookResult.id,
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
@@ -358,10 +356,6 @@ function crawlByAccessTokenFacebook(accessToken) {
   });
 }
 
-export function getJobCategory(req, res, next) {
-  res.status(200).json(jobcategory);
-}
-
 export function editGeneralProfile(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then(user => {
@@ -380,7 +374,7 @@ export function editGeneralProfile(req, res, next) {
           location: req.body.location,
           about: req.body.about,
           education: req.body.education,
-          work: req.body.work,
+          experience: req.body.experience,
         };
         return User.update({ _id: req.user._id }, { $set: editData }).exec();
       } else {
@@ -480,10 +474,10 @@ function updateProfile(req, profileUrl) {
   });
 }
 
-export function editJob(req, res, next) {
+export function editCareer(req, res, next) {
   User.update({ _id: req.user._id }, {
     $set: {
-      job: req.body.job,
+      career: req.body.career,
     },
   }).exec()
     .then((data) => {
@@ -494,10 +488,10 @@ export function editJob(req, res, next) {
     });
 }
 
-export function editHelp(req, res, next) {
+export function editExpertise(req, res, next) {
   User.update({ _id: req.user._id }, {
     $set: {
-      help: req.body.help,
+      expertise: req.body.expertise,
     },
   }).exec()
     .then((data) => {
@@ -519,6 +513,36 @@ export function editPersonality(req, res, next) {
     })
     .catch((err) => {
       res.status(400).json(err);
+    });
+}
+
+export function getCareerInfo(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then(user => {
+      res.status(200).json(user.career);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
+}
+
+export function getExpertiseInfo(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then(user => {
+      res.status(200).json(user.expertise);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
+}
+
+export function getPersonalityInfo(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then(user => {
+      res.status(200).json(user.personality);
+    })
+    .catch((err) => {
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
 

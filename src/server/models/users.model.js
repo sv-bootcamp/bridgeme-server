@@ -5,20 +5,6 @@ import mongoose from 'mongoose';
  */
 const Schema = mongoose.Schema;
 
-const workSchema = new Schema({
-  employer: {
-    name: String,
-  },
-  location: {
-    name: String,
-  },
-  position: {
-    name: String,
-  },
-  start_date: String,
-  end_date: String,
-});
-
 let concentrationSchema = new Schema({
   name: String,
 });
@@ -40,14 +26,28 @@ let educationSchema = new Schema({
   },
 });
 
-const jobSchema = new Schema({
+const experienceSchema = new Schema({
+  employer: {
+    name: String,
+  },
+  location: {
+    name: String,
+  },
+  position: {
+    name: String,
+  },
+  start_date: String,
+  end_date: String,
+});
+
+const careerSchema = new Schema({
   area: String,
   role: String,
   years: String,
   education_background: String,
 });
 
-const helpSchema = new Schema({
+const expertiseSchema = new Schema({
   select: String,
   index: Number,
 });
@@ -66,9 +66,9 @@ let userSchema = new Schema({
   password: String,
   name: String,
   education: [educationSchema],
-  work: [workSchema],
-  job: [jobSchema],
-  help: [helpSchema],
+  experience: [experienceSchema],
+  career: [careerSchema],
+  expertise: [expertiseSchema],
   personality: [personalitySchema],
   locale: String,
   age: Number,
