@@ -224,8 +224,8 @@ router.post('/resetPassword', user.resetPassword);
 router.post('/editGeneral', apiProtector, user.editGeneralProfile);
 
 /**
- * @api {post} /users/editJob Request Edit career information
- * @apiName editJob
+ * @api {post} /users/editCareer Request Edit career information
+ * @apiName editCareer
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
@@ -253,11 +253,11 @@ router.post('/editGeneral', apiProtector, user.editGeneralProfile);
  * @apiParam {Array} career Information of user career.
  *
  */
-router.post('/editJob', apiProtector, user.editCareer);
+router.post('/editCareer', apiProtector, user.editCareer);
 
 /**
- * @api {post} /users/editHelp Request Edit expertise information
- * @apiName editHelp
+ * @api {post} /users/editExpertise Request Edit expertise information
+ * @apiName editExpertise
  * @apiGroup User
  *
  *  * @apiParamExample {json} Parameter Sample
@@ -292,7 +292,7 @@ router.post('/editJob', apiProtector, user.editCareer);
  * @apiParam {Array} personality Information of user personality.
  *
  */
-router.post('/editHelp', apiProtector, user.editExpertise);
+router.post('/editExpertise', apiProtector, user.editExpertise);
 
 /**
  * @api {post} /users/editPersonality Request Edit personality information
@@ -482,7 +482,11 @@ router.get('/mentorlist', apiProtector, user.getMentorList);
  *     HTTP/1.1 200 OK
  *     [
  *      {
- *        career
+ *        "_id": "58379820f1f616fbdcce97e9",
+ *        "education_background": "Bachelor's",
+ *        "years": "0-1 years",
+ *        "role": "Backend Engineer",
+ *        "area": "Software Engineering"
  *      }
  *     ]
  *
@@ -504,7 +508,19 @@ router.get('/career', apiProtector, user.getCareerInfo);
  *     HTTP/1.1 200 OK
  *     [
  *      {
- *        expertise
+ *        "_id": "58379822f1f616fbdcce97ec",
+ *        "index": 0,
+ *        "select": "Study abroad"
+ *      },
+ *      {
+ *        "_id": "58379822f1f616fbdcce97eb",
+ *        "index": 2,
+ *        "select": "Portfolio & Resume"
+ *      },
+ *      {
+ *        "_id": "58379822f1f616fbdcce97ec",
+ *        "index": 4,
+ *        "select": "Career change"
  *      }
  *     ]
  *
@@ -526,7 +542,22 @@ router.get('/expertise', apiProtector, user.getExpertiseInfo);
  *     HTTP/1.1 200 OK
  *     [
  *      {
- *        personality
+ *        "_id": "58379827f1f616fbdcce97fa",
+ *        "score": 0,
+ *        "option": "Extroverts"
+ *      },
+ *      {
+ *        "_id": "58379827f1f616fbdcce97fa",
+ *        "score": 1,
+ *        "option": "Intuitive"
+ *      },
+ *      {
+ *        "_id": "58379827f1f616fbdcce97fa",
+ *        "score": 0,
+ *        "option": "Feelers"
+ *      },
+ *      {
+ *        ...
  *      }
  *     ]
  *

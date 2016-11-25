@@ -67,6 +67,7 @@ let userSchema = new Schema({
   name: String,
   education: [educationSchema],
   experience: [experienceSchema],
+  work: [experienceSchema],
   career: [careerSchema],
   expertise: [expertiseSchema],
   personality: [personalitySchema],

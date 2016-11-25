@@ -420,11 +420,11 @@ describe('Test User API', function () {
   });
 });
 
-describe('/editJob', function () {
-  it('request /editJob with session cookie.', done => {
+describe('/editCareer', function () {
+  it('request /editCareer with session cookie.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/editJob`,
+      uri: `${API_BASE_URL}/editCareer`,
       form: signupData.career_data,
       resolveWithFullResponse: true,
       json: true,
@@ -444,11 +444,11 @@ describe('/editJob', function () {
   });
 });
 
-describe('/editHelp', function () {
-  it('request /editHelp with session cookie.', done => {
+describe('/editExpertise', function () {
+  it('request /editExpertise with session cookie.', done => {
     rp({
       method: 'POST',
-      uri: `${API_BASE_URL}/editHelp`,
+      uri: `${API_BASE_URL}/editExpertise`,
       form: signupData.expertise_data,
       resolveWithFullResponse: true,
       json: true,
