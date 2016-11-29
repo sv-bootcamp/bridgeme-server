@@ -7,6 +7,7 @@ import methodOverride from 'method-override';
 import users from './routes/users.route';
 import survey from './routes/survey.route';
 import match from './routes/match.route';
+import chat from './routes/chat.route';
 
 export default (cb) => {
   const app = express();
@@ -27,6 +28,7 @@ export default (cb) => {
   app.use('/users', users);
   app.use('/survey', survey);
   app.use('/match', match);
+  app.use('/chat', chat);
 
   app.use(express.static(__dirname + '/apidoc'));
 
