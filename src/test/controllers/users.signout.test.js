@@ -5,9 +5,12 @@ describe('Test User API', function () {
   describe('/signOut', function () {
     it(': Sign out', done => {
       rp({
-        method: 'GET',
+        method: 'POST',
         uri: 'http://localhost:8000/users/signOut',
         resolveWithFullResponse: true,
+        form: {
+          deviceToken: 'a',
+        },
         json: true,
         headers: {
           access_token: userData.USER_B_DATA.access_token,

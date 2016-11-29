@@ -21,6 +21,7 @@ describe('Test Match API', function () {
         form: {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
+          deviceToken: 'a',
         },
         resolveWithFullResponse: true,
         json: true,
