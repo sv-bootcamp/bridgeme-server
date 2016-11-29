@@ -334,7 +334,7 @@ function stampDeviceToken(token, user) {
   return new Promise((resolve, reject) => {
     User.findOne({ _id: user._id }).exec()
       .then((user) => {
-        if (user.deviceToken.includes(token)) {
+        if (user.deviceToken.includes(token) || token === null) {
           resolve(user);
         } else {
           user.deviceToken.push(token);

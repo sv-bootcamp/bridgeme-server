@@ -30,34 +30,41 @@ const NOTIFICATION_TYPE = [
   },
 ];
 
-export function sendPush(senderId, receiverId, extraData, notificationType, bodyParam = '') {
+export function sendPush(senderId, receiverId, notificationType, senderName, message) {
+  let msg = message;
   User.findOne({ _id: receiverId }).exec()
     .then(receiverProfile => {
-      const message = {
-        to: receiverProfile.deviceToken[0],
-        content_available: true,
-        notification: {
-          title: NOTIFICATION_TYPE[notificationType].title,
-          body: generateBody(notificationType, bodyParam),
-          sound: NOTIFICATION_CONFIG.sound,
-          vibrate: NOTIFICATION_CONFIG.vibrate,
-        },
-        extraData: extraData,
-        badge: true,
-      };
-      fcm.send(message)
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      receiverProfile.deviceToken.forEach(function (token) {
+        console.log(token);
+        const message = {
+          to: token,
+          content_available: true,
+          notification: {
+            title: NOTIFICATION_TYPE[notificationType].title,
+            body: generateBody(notificationType, senderName, msg),
+            sound: NOTIFICATION_CONFIG.sound,
+            vibrate: NOTIFICATION_CONFIG.vibrate,
+          },
+          badge: true,
+        };
+        fcm.send(message)
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      });
     })
     .catch((err) => {
       console.log(err);
     });
 };
 
-function generateBody(notificationType, bodyParam) {
-  return `${bodyParam}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
+function generateBody(notificationType, senderName, message) {
+  if (notificationType == 2) {
+    return `${senderName} : ${message}`;
+  } else {
+    return `${senderName}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
+  }
 };
