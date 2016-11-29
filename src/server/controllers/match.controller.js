@@ -38,7 +38,7 @@ export function requestMentoring(req, res, next) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
           mailStrings.REQUEST_HTML, matchData.contents);
-        pushUtil.sendPush(req.user._id, mentor._id, 0, req.user.name);
+        pushUtil.sendPush(req.user._id, mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
@@ -146,7 +146,7 @@ export function responseMentoring(req, res, next) {
   } else {
     Match.findOne({ _id: req.body.match_id }).exec()
       .then(match => {
-        pushUtil.sendPush(req.user._id, match.mentee_id, 1, req.user.name);
+        pushUtil.sendPush(req.user._id, match.mentee_id, 'CONNECTION', req.user.name);
         return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
       })
       .then((match) => {
@@ -159,10 +159,4 @@ export function responseMentoring(req, res, next) {
         res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
       });
   }
-}
-
-export function sendPush(req, res, next) {
-  console.log(req.body);
-  pushUtil.sendPush(req.user._id, req.body.senderId, 2, req.user.name, req.body.message);
-  res.status(200).json();
 }
