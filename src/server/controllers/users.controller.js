@@ -608,5 +608,16 @@ export function getMentoringRequestStatus(req, res, next) {
 }
 
 export function signout(req, res, next) {
-  res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      const index = user.deviceToken.indexOf(req.body.deviceToken);
+      user.deviceToken.splice(index, 1);
+      user.save();
+    })
+    .then(() => {
+      res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }

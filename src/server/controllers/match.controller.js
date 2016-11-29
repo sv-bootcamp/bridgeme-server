@@ -44,7 +44,7 @@ export function requestMentoring(req, res, next) {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then(match => {
+    .then((match) => {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
@@ -145,7 +145,7 @@ export function responseMentoring(req, res, next) {
     });
   } else {
     Match.findOne({ _id: req.body.match_id }).exec()
-      .then(match => {
+      .then((match) => {
         pushUtil.sendPush(req.user._id, match.mentee_id, 'CONNECTION', req.user.name);
         return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
       })
