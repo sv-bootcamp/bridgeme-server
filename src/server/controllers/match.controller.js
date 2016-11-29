@@ -1,4 +1,5 @@
 import * as mailingUtil from '../utils/mailing.util';
+import * as pushUtil from '../utils/push.util';
 import userCallback from '../config/json/user.callback';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
@@ -37,12 +38,13 @@ export function requestMentoring(req, res, next) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
           mailStrings.REQUEST_HTML, matchData.contents);
+        pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then(() => {
+    .then((match) => {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
@@ -142,12 +144,19 @@ export function responseMentoring(req, res, next) {
       }
     });
   } else {
-    Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }, (err) => {
-      if (err) {
-        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
-      } else {
+    Match.findOne({ _id: req.body.match_id }).exec()
+      .then((match) => {
+        pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
+        return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
+      })
+      .then((match) => {
+        return User.findOne({ _id: match.mentor_id }).exec();
+      })
+      .then((mentor) => {
         res.status(200).json({ msg: matchCallback.SUCCESS_RESPONSE });
-      }
-    });
+      })
+      .catch((err) => {
+        res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
+      });
   }
 }

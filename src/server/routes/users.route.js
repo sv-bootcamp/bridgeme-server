@@ -99,6 +99,29 @@ router.post('/localSignIn', user.localSignIn);
 router.post('/signIn', user.signIn);
 
 /**
+ * @api {post} /users/signout Request Sign out
+ * @apiName signout
+ * @apiGroup User
+ *
+ * @apiDescription If you sign out, server will destroy user session.
+ *
+ * @apiParam {String} deviceToken deviceToken from fcm.
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *        Sign out success.
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "err_point": "Failed to sign out."
+ *     }
+ */
+router.post('/signOut', apiProtector, user.signout);
+
+/**
  * @api {post} /users/secretCode Request a secret code
  * @apiName requestSecretCode
  * @apiGroup User
@@ -631,26 +654,5 @@ router.post('/accessToken', apiProtector, user.validateAccessToken);
  *     }
  */
 router.put('/accessToken', user.updateAccessToken);
-
-/**
- * @api {get} /users/signout Request Sign out
- * @apiName signout
- * @apiGroup User
- *
- * @apiDescription If you sign out, server will destroy user session.
- *
- * @apiSuccessExample {json} Success
- *     HTTP/1.1 200 OK
- *     {
- *        Sign out success.
- *     }
- *
- * @apiErrorExample {json}
- *     HTTP/1.1 400 Bad Request
- *     {
- *       "err_point": "Failed to sign out."
- *     }
- */
-router.get('/signOut', apiProtector, user.signout);
 
 export default router;

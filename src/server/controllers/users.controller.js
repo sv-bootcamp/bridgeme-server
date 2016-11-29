@@ -107,6 +107,7 @@ export function localSignUp(req, res, next) {
       if (existingUser) {
         res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
+        registrationData.deviceToken = req.body.deviceToken;
         return User(registrationData).save();
       }
     })
@@ -139,21 +140,25 @@ export function localSignIn(req, res, next) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
         if (cryptoPassword === existingUser.password) {
-          stampUser(existingUser)
-            .then((stampedUser) => {
-              res.status(200).json({
-                msg: userCallback.SUCCESS_SIGNIN,
-                user: stampedUser,
-                access_token: jwtUtil.createAccessToken(stampedUser),
-              });
-            })
-            .catch(err => {
-              throw new Error(userCallback.ERR_FAIL_SIGNIN);
-            });
+          return stampDeviceToken(req.body.deviceToken, existingUser);
         } else {
           throw new Error(userCallback.ERR_WRONG_PASSWORD);
         }
       }
+    })
+    .then((user) => {
+      if (user) {
+        return stampUser(user);
+      } else {
+        throw new Error(userCallback.ERR_FAIL_SIGNIN);
+      }
+    })
+    .then((stampedUser) => {
+      res.status(200).json({
+        msg: userCallback.SUCCESS_SIGNIN,
+        user: stampedUser,
+        access_token: jwtUtil.createAccessToken(stampedUser),
+      });
     })
     .catch(function (err) {
       res.status(400).json({ err_msg: err.message });
@@ -254,11 +259,12 @@ export function signIn(req, res, next) {
       })
       .then((existingUser) => {
         if (!existingUser) {
+          registrationData.deviceToken = req.body.deviceToken;
           new User(registrationData).save()
             .then((registeredUser) => {
               return stampUser(registeredUser);
             })
-            .then((stampedUser)=> {
+            .then((stampedUser) => {
               res.status(201).json({
                 msg: userCallback.SUCCESS_SIGNIN,
                 user: stampedUser,
@@ -269,8 +275,9 @@ export function signIn(req, res, next) {
               res.status(400).json({ err_point: userCallback.ERR_FAIL_REGISTER });
             });
         } else {
-          stampUser(existingUser)
-            .then((stampedUser)=> {
+          stampDeviceToken(req.body.deviceToken, existingUser)
+            .then(user => stampUser(user))
+            .then((stampedUser) => {
               res.status(200).json({
                 msg: userCallback.SUCCESS_SIGNIN,
                 user: stampedUser,
@@ -315,6 +322,26 @@ function stampUser(user) {
       })
       .catch((err) => {
         reject();
+      });
+  });
+}
+
+function stampDeviceToken(token, user) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: user._id }).exec()
+      .then((user) => {
+        if (user.deviceToken.includes(token) || token === null) {
+          resolve(user);
+        } else {
+          user.deviceToken.push(token);
+          User.update({ _id: user._id }, { deviceToken: user.deviceToken }).exec();
+        }
+      })
+      .then((data) => {
+        resolve(user);
+      })
+      .catch((err) => {
+        reject(false);
       });
   });
 }
@@ -579,5 +606,16 @@ export function getMentoringRequestStatus(req, res, next) {
 }
 
 export function signout(req, res, next) {
-  res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      const index = user.deviceToken.indexOf(req.body.deviceToken);
+      user.deviceToken.splice(index, 1);
+      user.save();
+    })
+    .then(() => {
+      res.status(200).json({ msg: userCallback.SUCCESS_SIGNOUT });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 }
