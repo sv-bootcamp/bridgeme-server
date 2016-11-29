@@ -177,7 +177,6 @@ export function requestSecretCode(req, res, next) {
       })
       .then(validSecretCode => {
         if (validSecretCode) {
-          console.log(validSecretCode);
           SecretCode.update({ _id: validSecretCode._id }, { $set: { isValid: false } }).exec()
             .catch(err => {
               throw new Error(userCallback.ERR_FAIL_SECRETCODE);

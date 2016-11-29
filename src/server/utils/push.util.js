@@ -31,7 +31,7 @@ export function sendPush(senderId, receiverId, notificationType, senderName, mes
   let msg = message;
   User.findOne({ _id: receiverId }).exec()
     .then(receiverProfile => {
-      receiverProfile.deviceToken.forEach(function (token) {
+      receiverProfile.deviceToken.forEach(token => {
         const message = {
           to: token,
           content_available: true,
