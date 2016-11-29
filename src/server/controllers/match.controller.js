@@ -38,13 +38,13 @@ export function requestMentoring(req, res, next) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
           mailStrings.REQUEST_HTML, matchData.contents);
-        pushUtil.sendPush(req.user._id, mentor._id, 'REQUEST', req.user.name);
+        pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then(match => {
+    .then((match) => {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
@@ -145,8 +145,8 @@ export function responseMentoring(req, res, next) {
     });
   } else {
     Match.findOne({ _id: req.body.match_id }).exec()
-      .then(match => {
-        pushUtil.sendPush(req.user._id, match.mentee_id, 'CONNECTION', req.user.name);
+      .then((match) => {
+        pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
         return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
       })
       .then((match) => {

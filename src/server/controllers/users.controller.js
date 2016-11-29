@@ -276,10 +276,8 @@ export function signIn(req, res, next) {
             });
         } else {
           stampDeviceToken(req.body.deviceToken, existingUser)
-            .then((user) => {
-              return stampUser(user);
-            })
-            .then((stampedUser)=> {
+            .then(user => stampUser(user))
+            .then((stampedUser) => {
               res.status(200).json({
                 msg: userCallback.SUCCESS_SIGNIN,
                 user: stampedUser,

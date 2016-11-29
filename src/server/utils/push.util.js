@@ -1,10 +1,7 @@
 import FCM from 'fcm-push';
 import mongoose from 'mongoose';
 
-const serverKey = 'AAAATC_Jnfw:APA91bE6u80DCTiBgZdI8Fkuc6RHzblvKfWw4gTmFc1aT7Ud1eyGtaSplg8wa6UwOO4' +
-  'CxHa5Hf0orYoh9c8DKxiKrH5DB5QToCiPbwOPwP-eZgLbdvN3s4FH8an4Q0fBk7itK8tEcIQI6dIYnct_j1O2ExGEN9FChg';
-const fcm = new FCM(serverKey);
-
+const Key = mongoose.model('key');
 const User = mongoose.model('user');
 
 const NOTIFICATION_CONFIG = {
@@ -27,10 +24,15 @@ const NOTIFICATION_TYPE = {
   },
 };
 
-export function sendPush(senderId, receiverId, notificationType, senderName, message) {
+export function sendPush(receiverId, notificationType, senderName, message) {
+  let serverKey = '';
   let msg = message;
-  User.findOne({ _id: receiverId }).exec()
-    .then(receiverProfile => {
+  Key.findOne({ index: 1 }).exec()
+    .then((key) => {
+      serverKey = key.secretAccessKey;
+      return User.findOne({ _id: receiverId }).exec();
+    })
+    .then((receiverProfile) => {
       receiverProfile.deviceToken.forEach(token => {
         const message = {
           to: token,
@@ -43,6 +45,7 @@ export function sendPush(senderId, receiverId, notificationType, senderName, mes
           },
           badge: true,
         };
+        const fcm = new FCM(serverKey);
         fcm.send(message)
           .then(function (response) {
             console.log(response);
