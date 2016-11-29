@@ -12,11 +12,11 @@ const NOTIFICATION_CONFIG = {
 const NOTIFICATION_TYPE = {
   REQUEST: {
     title: 'New Request',
-    bodyParam: ' has requested a connection to you.',
+    bodyParam: 'has requested a connection to you.',
   },
   CONNECTION: {
     title: 'New Connection',
-    bodyParam: ' and you are connected now.',
+    bodyParam: 'and you are connected now.',
   },
   MESSAGE: {
     title: 'New Message',
@@ -24,9 +24,8 @@ const NOTIFICATION_TYPE = {
   },
 };
 
-export function sendPush(receiverId, notificationType, senderName, message) {
+export function sendPush(receiverId, notificationType, bodyParam) {
   let serverKey = '';
-  let msg = message;
   Key.findOne({ index: 1 }).exec()
     .then((key) => {
       serverKey = key.secretAccessKey;
@@ -39,7 +38,7 @@ export function sendPush(receiverId, notificationType, senderName, message) {
           content_available: true,
           notification: {
             title: NOTIFICATION_TYPE[notificationType].title,
-            body: generateBody(notificationType, senderName, msg),
+            body: generateBody(notificationType, bodyParam),
             sound: NOTIFICATION_CONFIG.sound,
             vibrate: NOTIFICATION_CONFIG.vibrate,
           },
@@ -60,10 +59,10 @@ export function sendPush(receiverId, notificationType, senderName, message) {
     });
 };
 
-function generateBody(notificationType, senderName, message) {
+function generateBody(notificationType, bodyParam) {
   if (notificationType === 'MESSAGE') {
-    return `${senderName} : ${message}`;
+    return `${bodyParam}`;
   } else {
-    return `${senderName}${NOTIFICATION_TYPE[notificationType].bodyParam}`;
+    return `${bodyParam} ${NOTIFICATION_TYPE[notificationType].bodyParam}`;
   }
 };
