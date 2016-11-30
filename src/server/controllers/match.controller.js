@@ -9,8 +9,9 @@ import mongoose from 'mongoose';
  * Methods about mentoring request, accept or reject
  */
 
-const Match = mongoose.model('match');
 const ObjectId = mongoose.Types.ObjectId;
+
+const Match = mongoose.model('match');
 const User = mongoose.model('user');
 
 export const MATCH_STATUS = {

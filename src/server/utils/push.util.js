@@ -1,8 +1,8 @@
 import FCM from 'fcm-push';
 import mongoose from 'mongoose';
 
-const Key = mongoose.model('key');
 const User = mongoose.model('user');
+const Key = mongoose.model('key');
 
 const NOTIFICATION_CONFIG = {
   sound: 'default',
@@ -25,11 +25,11 @@ const NOTIFICATION_TYPE = {
 };
 
 export function sendPush(receiverId, notificationType, bodyParam) {
-  let serverKey = '';
-  Key.findOne({ index: 1 }).exec()
-    .then((key) => {
-      serverKey = key.secretAccessKey;
-      return User.findOne({ _id: receiverId }).exec();
+  let fcmToken = '';
+  Key.findOne({ name: 'fcmToken' }).exec()
+    .then((fcmTokenObject) => {
+      fcmToken = fcmTokenObject.key;
+      return User.findOne({_id: receiverId}).exec();
     })
     .then((receiverProfile) => {
       receiverProfile.deviceToken.forEach(token => {
@@ -44,19 +44,20 @@ export function sendPush(receiverId, notificationType, bodyParam) {
           },
           priority: 'high',
         };
-        const fcm = new FCM(serverKey);
+        const fcm = new FCM(fcmToken);
         fcm.send(message);
       });
     })
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
 function generateBody(notificationType, bodyParam) {
   if (notificationType === 'MESSAGE') {
     return `${bodyParam}`;
-  } else {
+  }
+  else {
     return `${bodyParam} ${NOTIFICATION_TYPE[notificationType].bodyParam}`;
   }
-};
+}

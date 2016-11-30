@@ -1,15 +1,12 @@
 import express from 'express';
-import * as pushUtil from '../utils/push.util';
+import * as chat from '../controllers/chat.controller';
 
 const router = express.Router();
 
-router.post('/callback', (req, res, next) => {
-  pushUtil.sendPush(
-    req.body.recipient.id,
-    'MESSAGE',
-    `${req.body.sender.name} : ${req.body.message}`
-  );
-  res.end();
-});
+//get message object from Sendbird server and send push notificaiton.
+router.post('/callback', chat.callback);
+
+//get Sendbird appKey for access in client.
+router.get('/appkey', chat.getAppKey);
 
 export default router;
