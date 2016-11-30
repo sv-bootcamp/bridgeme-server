@@ -35,14 +35,14 @@ export function sendPush(receiverId, notificationType, bodyParam) {
       receiverProfile.deviceToken.forEach(token => {
         const message = {
           to: token,
-          content_available: true,
           notification: {
             title: NOTIFICATION_TYPE[notificationType].title,
+            content_available: true,
             body: generateBody(notificationType, bodyParam),
             sound: NOTIFICATION_CONFIG.sound,
             vibrate: NOTIFICATION_CONFIG.vibrate,
           },
-          badge: true,
+          priority: 'high',
         };
         const fcm = new FCM(serverKey);
         fcm.send(message);
