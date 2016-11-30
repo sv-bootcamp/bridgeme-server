@@ -1,13 +1,14 @@
-import bodyParser from 'body-parser';
-import compress from 'compression';
 import express from 'express';
 import mongoose from './config/mongoose';
-import morgan from 'morgan';
-import methodOverride from 'method-override';
-import users from './routes/users.route';
-import survey from './routes/survey.route';
-import match from './routes/match.route';
+
+import bodyParser from 'body-parser';
 import chat from './routes/chat.route';
+import compress from 'compression';
+import match from './routes/match.route';
+import methodOverride from 'method-override';
+import morgan from 'morgan';
+import survey from './routes/survey.route';
+import users from './routes/users.route';
 
 export default (cb) => {
   const app = express();
