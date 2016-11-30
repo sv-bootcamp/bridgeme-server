@@ -3,7 +3,7 @@ import * as pushUtil from '../utils/push.util';
 
 const router = express.Router();
 
-router.post('/callback', (req, res, next)=> {
+router.post('/callback', (req, res, next) => {
   pushUtil.sendPush(
     req.body.recipient.id,
     'MESSAGE',
