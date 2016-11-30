@@ -1,8 +1,8 @@
 import FCM from 'fcm-push';
 import mongoose from 'mongoose';
 
-const User = mongoose.model('user');
 const Key = mongoose.model('key');
+const User = mongoose.model('user');
 
 const NOTIFICATION_CONFIG = {
   sound: 'default',
@@ -56,8 +56,7 @@ export function sendPush(receiverId, notificationType, bodyParam) {
 function generateBody(notificationType, bodyParam) {
   if (notificationType === 'MESSAGE') {
     return `${bodyParam}`;
-  }
-  else {
+  } else {
     return `${bodyParam} ${NOTIFICATION_TYPE[notificationType].bodyParam}`;
   }
 }
