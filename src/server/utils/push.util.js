@@ -45,13 +45,7 @@ export function sendPush(receiverId, notificationType, bodyParam) {
           badge: true,
         };
         const fcm = new FCM(serverKey);
-        fcm.send(message)
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (err) {
-            console.log(err);
-          });
+        fcm.send(message);
       });
     })
     .catch((err) => {
