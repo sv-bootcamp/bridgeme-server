@@ -45,7 +45,10 @@ export function sendPush(receiverId, notificationType, bodyParam) {
           priority: 'high',
         };
         const fcm = new FCM(fcmToken);
-        fcm.send(message);
+        fcm.send(message)
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })
     .catch((err) => {
