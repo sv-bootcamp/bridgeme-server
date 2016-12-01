@@ -5,7 +5,7 @@ import userCallback from '../config/json/user.callback';
 const Key = mongoose.model('key');
 
 export function callback(req, res, next) {
-  extraData = {
+  const extraData = {
     opponent:{
       name: req.body.sender.name,
       id: req.body.sender.id,
