@@ -24,7 +24,7 @@ const NOTIFICATION_TYPE = {
   },
 };
 
-export function sendPush(receiverId, notificationType, bodyParam) {
+export function sendPush(receiverId, notificationType, bodyParam, extraData = {}) {
   let fcmToken = '';
   Key.findOne({ name: 'fcmToken' }).exec()
     .then((fcmTokenObject) => {
@@ -41,6 +41,10 @@ export function sendPush(receiverId, notificationType, bodyParam) {
             body: generateBody(notificationType, bodyParam),
             sound: NOTIFICATION_CONFIG.sound,
             vibrate: NOTIFICATION_CONFIG.vibrate,
+          },
+          data: {
+            notificationType: notificationType,
+            extraData: extraData,
           },
           priority: 'high',
         };
