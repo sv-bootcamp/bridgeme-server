@@ -8,7 +8,7 @@ export function callback(req, res, next) {
   const extraData = {
     opponent:{
       name: req.body.sender.name,
-      id: req.body.sender.id,
+      userId: req.body.sender.id,
     }
   };
 
