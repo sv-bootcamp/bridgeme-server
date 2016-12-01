@@ -13,7 +13,7 @@ export function callback(req, res, next) {
   res.status(200).end();
 }
 
-export function getAppKey(req, res, next) {
+export function getAppId(req, res, next) {
   Key.findOne({ name: 'sendBirdAppId' }).exec()
     .then((sendBirdAppIdObject) => {
       res.status(200).json({ key: sendBirdAppIdObject.key });

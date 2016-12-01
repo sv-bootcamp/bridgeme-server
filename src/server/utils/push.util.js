@@ -29,7 +29,7 @@ export function sendPush(receiverId, notificationType, bodyParam) {
   Key.findOne({ name: 'fcmToken' }).exec()
     .then((fcmTokenObject) => {
       fcmToken = fcmTokenObject.key;
-      return User.findOne({_id: receiverId}).exec();
+      return User.findOne({ _id: receiverId }).exec();
     })
     .then((receiverProfile) => {
       receiverProfile.deviceToken.forEach(token => {

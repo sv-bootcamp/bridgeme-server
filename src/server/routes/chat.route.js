@@ -7,6 +7,6 @@ const router = express.Router();
 router.post('/callback', chat.callback);
 
 //get Sendbird appKey for access in client.
-router.get('/appkey', chat.getAppKey);
+router.get('/appid', chat.getAppId);
 
 export default router;
