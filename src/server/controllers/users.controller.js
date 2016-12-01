@@ -93,6 +93,7 @@ export function localSignUp(req, res, next) {
     email: req.body.email,
     password: cryptoPassword,
     platform_type: 0,
+    deviceToken: [],
   };
 
   validateEmail(registrationData.email)
@@ -107,12 +108,11 @@ export function localSignUp(req, res, next) {
       if (existingUser) {
         res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
+        registrationData.deviceToken.push(req.body.deviceToken);
         return User(registrationData).save();
       }
     })
     .then(registeredUser => {
-      registeredUser.deviceToken.push(req.body.deviceToken);
-      registeredUser.save();
       return stampUser(registeredUser);
     })
     .then(stampedUser => {
@@ -260,10 +260,10 @@ export function signIn(req, res, next) {
       })
       .then((existingUser) => {
         if (!existingUser) {
+          registrationData.deviceToken = [];
+          registrationData.deviceToken.push(req.body.deviceToken);
           new User(registrationData).save()
             .then((registeredUser) => {
-              registeredUser.deviceToken.push(req.body.deviceToken);
-              registeredUser.save();
               return stampUser(registeredUser);
             })
             .then((stampedUser) => {
