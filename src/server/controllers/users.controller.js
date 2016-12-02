@@ -607,7 +607,7 @@ export function getMentoringRequestStatus(req, res, next) {
     });
 }
 
-export function signout(req, res, next) {
+export function signOut(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {
       const index = user.deviceToken.indexOf(req.body.deviceToken);
