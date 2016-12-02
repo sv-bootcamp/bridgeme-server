@@ -15,9 +15,9 @@ const Survey = mongoose.model('survey');
 
 const API_BASE_URL = 'http://localhost:8000/survey';
 
-describe('Test Survey API', function () {
-  describe('/create', function () {
-    it(': Save mentee survey.', function (done) {
+describe('Test Survey API', () => {
+  describe('/create', () => {
+    it(': Save mentee survey.', (done) => {
       let options = {
         method: 'POST',
         uri: `${API_BASE_URL}/create`,
@@ -33,11 +33,12 @@ describe('Test Survey API', function () {
           done();
         })
         .catch((err) => {
-
+          should.fail(err);
+          done();
         });
     });
 
-    it(': Save mentor survey.', function (done) {
+    it(': Save mentor survey.', (done) => {
       let options = {
         method: 'POST',
         uri: `${API_BASE_URL}/create`,
@@ -56,12 +57,13 @@ describe('Test Survey API', function () {
           done();
         })
         .catch((err) => {
-
+          should.fail(err);
+          done();
         });
     });
   });
 
-  describe('/request/:type', function () {
+  describe('/request/:type', () => {
     it('request /request/:type with Invalid parameter.', function (done) {
       this.timeout(4000);
       let options = {
@@ -78,10 +80,11 @@ describe('Test Survey API', function () {
       };
 
       rp(options)
-        .then(function (result) {
-
+        .then((result) => {
+          should.fail();
+          done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           err.statusCode.should.equal(400);
           err.error.err_point.should.equal(surveyCallback.ERR_INVALID_PARAMS);
           done();
@@ -104,13 +107,14 @@ describe('Test Survey API', function () {
       };
 
       rp(options)
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           result.body.survey_id.should.equal(menteeData.surveyA001_1.survey_id);
           done();
         })
-        .catch(function (err) {
-
+        .catch((err) => {
+          should.fail(err);
+          done();
         });
     });
 
@@ -130,19 +134,20 @@ describe('Test Survey API', function () {
       };
 
       rp(options)
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           result.body.survey_id.should.equal(mentorData.surveyB001_1.survey_id);
           done();
         })
-        .catch(function (err) {
-
+        .catch((err) => {
+          should.fail(err);
+          done();
         });
     });
   });
 
-  describe('/answer', function () {
-    it(': Save answer.', function (done) {
+  describe('/answer', () => {
+    it(': Save answer.', (done) => {
       let options = {
         method: 'POST',
         uri: `${API_BASE_URL}/answer`,
@@ -161,7 +166,8 @@ describe('Test Survey API', function () {
           done();
         })
         .catch((err) => {
-
+          should.fail(err);
+          done();
         });
     });
   });

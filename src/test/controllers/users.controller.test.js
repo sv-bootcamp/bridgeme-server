@@ -731,7 +731,7 @@ function unauthorizedAccessTest(uri, done) {
       should.fail('status code is not 401');
       done();
     })
-    .catch((err) = {
+    .catch((err) => {
       err.statusCode.should.equal(401);
       done();
     });
