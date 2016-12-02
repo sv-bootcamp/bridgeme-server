@@ -386,40 +386,43 @@ function crawlByAccessTokenFacebook(accessToken) {
 }
 
 export function editGeneralProfile(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
-      if (user) {
-        return validateEmail(req.body.email);
-      } else {
-        throw err;
-      }
-    })
+  validateEmail(req.body.email)
     .then((isValid) => {
       if (isValid) {
-        let editData = {
-          name: req.body.name,
-          email: req.body.email,
-          languages: req.body.languages,
-          location: req.body.location,
-          about: req.body.about,
-          education: req.body.education,
-          experience: req.body.experience,
-        };
-        return User.update({ _id: req.user._id }, { $set: editData }).exec();
+        return setKey();
       } else {
         throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
       }
     })
-    .then(updateData => {
-      if (updateData) {
-        return setKey();
+    .then(keyData => {
+      if (keyData) {
+        return User.findOne({ _id: req.user._id }).exec();
+      } else {
+        throw new Error(userCallback.ERR_AWS_KEY);
+      }
+    })
+    .then((user) => {
+      if (user) {
+        user.name = req.body.name;
+        user.email = req.body.email;
+        user.languages = req.body.languages;
+        user.location = req.body.location;
+        user.about = req.body.about;
+        user.education = req.body.education;
+        user.experience = req.body.experience;
+
+        return user.save();
       } else {
         throw new Error(userCallback.ERR_MONGOOSE);
       }
     })
-    .then(keyData => {
-      if (keyData) {
-        if (req.body.image == null) {
+    .then(updateUser => {
+      if (updateUser) {
+        console.log(updateUser.profile_picture);
+        if (updateUser.profile_picture === undefined && req.body.image === '') {
+          let profileUrl = `https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png`;
+          return updateProfile(req, profileUrl);
+        } else if (req.body.image === '') {
           res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
         } else {
           let bucketName = 'yodabucket';
@@ -451,12 +454,15 @@ export function editGeneralProfile(req, res, next) {
               }
             })
             .catch((err) => {
-              res.status(400).json({ err_msg: err_stack });
+              res.status(400).json({ err_msg: err });
             });
         }
       } else {
-        throw new Error(userCallback.ERR_AWS_KEY);
+        throw new Error(userCallback.ERR_MONGOOSE);
       }
+    })
+    .then((dafaultImage) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
     })
     .catch(err => {
       res.status(400).json(err);
