@@ -387,13 +387,7 @@ function crawlByAccessTokenFacebook(accessToken) {
 
 export function editGeneralProfile(req, res, next) {
   validateEmail(req.body.email)
-    .then((isValid) => {
-      if (isValid) {
-        return setKey();
-      } else {
-        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
-      }
-    })
+    .then(isValid => setKey())
     .then(keyData => {
       if (keyData) {
         return User.findOne({ _id: req.user._id }).exec();
@@ -416,21 +410,26 @@ export function editGeneralProfile(req, res, next) {
         throw new Error(userCallback.ERR_MONGOOSE);
       }
     })
-    .then(updateUser => {
-      if (updateUser) {
-        console.log(updateUser.profile_picture);
-        if (updateUser.profile_picture === undefined && req.body.image === '') {
-          let profileUrl = `https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png`;
-          return updateProfile(req, profileUrl);
+    .then(updatedUser => {
+      const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+      const bucketName = 'yodabucket';
+      if (updatedUser) {
+        if (updatedUser.profile_picture === undefined && req.body.image === '') {
+          let profileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
+          updateProfile(req, profileUrl)
+            .then((dafaultImage) => {
+              res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
+            })
+            .catch(err => {
+              res.status(400).json(err);
+            });
         } else if (req.body.image === '') {
           res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
         } else {
-          let bucketName = 'yodabucket';
           let now = new Date();
           let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
           let encondedImage = new Buffer(req.body.image, 'base64');
 
-          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
           let params = {
             Bucket: bucketName,
             Key: imageKey,
@@ -460,9 +459,6 @@ export function editGeneralProfile(req, res, next) {
       } else {
         throw new Error(userCallback.ERR_MONGOOSE);
       }
-    })
-    .then((dafaultImage) => {
-      res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
     })
     .catch(err => {
       res.status(400).json(err);
