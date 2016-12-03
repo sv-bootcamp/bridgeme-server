@@ -119,7 +119,7 @@ router.post('/signIn', user.signIn);
  *       "err_point": "Failed to sign out."
  *     }
  */
-router.post('/signOut', apiProtector, user.signout);
+router.post('/signOut', apiProtector, user.signOut);
 
 /**
  * @api {post} /users/secretCode Request a secret code

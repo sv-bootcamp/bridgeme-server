@@ -11,13 +11,13 @@ const API_BASE_URL = 'http://localhost:8000';
 
 let matchData;
 
-describe('Test Match API', function () {
+describe('Test Match API', () => {
 
   describe('User B request mentoring to User A.', () => {
-    it('Sign up with valid Facebook user B.', done => {
+    it('Sign up with valid Facebook user B.', (done) => {
       rp({
         method: 'POST',
-        uri: `${API_BASE_URL}/users/signin`,
+        uri: `${API_BASE_URL}/users/signIn`,
         form: {
           access_token: userData.USER_B_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -26,20 +26,19 @@ describe('Test Match API', function () {
         resolveWithFullResponse: true,
         json: true,
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(201);
-
           userData.USER_B_DATA = result.body.user;
           userData.USER_B_DATA.access_token = result.body.access_token;
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
     });
 
-    it('request mentoring to Invalid User.', done => {
+    it('request mentoring to Invalid User.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/request`,
@@ -54,11 +53,11 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           should.fail();
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           err.statusCode.should.equal(400);
           done();
         });
@@ -83,17 +82,17 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(201);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
     });
 
-    it('User B Retrieve activity page.', done => {
+    it('User B Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -103,7 +102,7 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           matchData = result.body;
           result.statusCode.should.equal(200);
           result.body.pending.length.should.equal(1);
@@ -112,7 +111,7 @@ describe('Test Match API', function () {
           result.body.requested.length.should.equal(0);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
@@ -120,10 +119,10 @@ describe('Test Match API', function () {
   });
 
   describe('User A accept mentoring from User B.', () => {
-    it('Sign up with User A.', done => {
+    it('Sign up with User A.', (done) => {
       rp({
         method: 'POST',
-        uri: `${API_BASE_URL}/users/signin`,
+        uri: `${API_BASE_URL}/users/signIn`,
         form: {
           access_token: userData.USER_A_FB_LONG_LIVED_ACCESS_TOKEN,
           platform_type: '1',
@@ -131,18 +130,18 @@ describe('Test Match API', function () {
         resolveWithFullResponse: true,
         json: true,
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           userData.USER_A_DATA = result.body.user;
           userData.USER_A_DATA.access_token = result.body.access_token;
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
     });
-    it('User A Retrieve activity page.', done => {
+    it('User A Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -152,7 +151,7 @@ describe('Test Match API', function () {
           access_token: userData.USER_A_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           matchData = result.body;
           result.statusCode.should.equal(200);
           result.body.pending.length.should.equal(0);
@@ -161,12 +160,12 @@ describe('Test Match API', function () {
           result.body.requested.length.should.equal(1);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
     });
-    it('User A accept request from User B.', done => {
+    it('User A accept request from User B.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/response`,
@@ -180,11 +179,11 @@ describe('Test Match API', function () {
           access_token: userData.USER_A_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
@@ -193,7 +192,7 @@ describe('Test Match API', function () {
   });
 
   describe('User B check request status is changed.', () => {
-    it('Sign up with User B.', done => {
+    it('Sign up with User B.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/users/signIn`,
@@ -204,19 +203,19 @@ describe('Test Match API', function () {
         resolveWithFullResponse: true,
         json: true,
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           userData.USER_B_DATA = result.body.user;
           userData.USER_B_DATA.access_token = result.body.access_token;
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
     });
 
-    it('User B Retrieve activity page.', done => {
+    it('User B Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -226,7 +225,7 @@ describe('Test Match API', function () {
           access_token: userData.USER_B_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           matchData = result.body;
           result.statusCode.should.equal(200);
           result.body.pending.length.should.equal(0);
@@ -235,7 +234,7 @@ describe('Test Match API', function () {
           result.body.requested.length.should.equal(0);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail(err);
           done();
         });
@@ -243,13 +242,13 @@ describe('Test Match API', function () {
   });
 
   describe('AnauthorizedAccess to API', () => {
-    it('request /activity without session coockie.', done => {
+    it('request /activity without session coockie.', (done) => {
       anauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
     });
-    it('request /request without session coockie.', done => {
+    it('request /request without session coockie.', (done) => {
       anauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
     });
-    it('request /response without session coockie.', done => {
+    it('request /response without session coockie.', (done) => {
       anauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
     });
   });
@@ -262,13 +261,12 @@ function anauthorizedAccessTest(method, uri, done) {
     resolveWithFullResponse: true,
     json: true,
   })
-    .then(function (result) {
+    .then((result) => {
       should.fail('status code is not 401');
       done();
     })
-    .catch(function (err) {
+    .catch((err) => {
       err.statusCode.should.equal(401);
       done();
     });
-
 }
