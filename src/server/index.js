@@ -11,6 +11,7 @@ import survey from './routes/survey.route';
 import users from './routes/users.route';
 
 export default (cb) => {
+  const limit = '5mb';
   const app = express();
   const db = mongoose();
 
@@ -20,10 +21,10 @@ export default (cb) => {
     app.use(compress());
   }
 
-  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.json({ limit: limit }));
   app.use(bodyParser.urlencoded({
     extended: true,
-    limit: '10mb',
+    limit: limit,
   }));
   app.use(bodyParser.json());
   app.use(methodOverride());
