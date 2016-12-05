@@ -415,7 +415,7 @@ export function editGeneralProfile(req, res, next) {
           .then((dafaultImage) => {
             res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
           })
-          .catch(err => {
+          .catch((err) => {
             res.status(400).json(err);
           });
       } else if (req.body.image === '') {
