@@ -27,14 +27,14 @@ export function requestMentoring(req, res, next) {
   let match = new Match(matchData);
 
   Match.findOne({ mentor_id: matchData.mentor_id, mentee_id: matchData.mentee_id }).exec()
-    .then(match => {
+    .then((match) => {
       if (!match) {
         return User.findOne({ _id: matchData.mentor_id }).exec();
       } else {
         throw new Error(matchCallback.ERR_MATCH_ALREADY_EXIST);
       }
     })
-    .then(mentor => {
+    .then((mentor) => {
       if (mentor) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
@@ -57,23 +57,23 @@ export function getMyActivity(req, res, next) {
   let activityData = {};
 
   findMenteeActivityByStatus(req.user._id, MATCH_STATUS.PENDING)
-    .then(pendingDoc => {
+    .then((pendingDoc) => {
       activityData['pending'] = pendingDoc;
       return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.ACCEPTED);
     })
-    .then(acceptedDoc => {
+    .then((acceptedDoc) => {
       activityData['accepted'] = acceptedDoc;
       return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.REJECTED);
     })
-    .then(rejectedDoc => {
+    .then((rejectedDoc) => {
       activityData['rejected'] = rejectedDoc;
       return findMentorActivity(req.user._id);
     })
-    .then(requestedDoc => {
+    .then((requestedDoc) => {
       activityData['requested'] = requestedDoc;
       res.status(200).json(activityData);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(400).json({ err_point: err.message, err: err.stack });
     });
 }

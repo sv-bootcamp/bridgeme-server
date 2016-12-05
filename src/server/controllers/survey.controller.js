@@ -14,7 +14,6 @@ const User = mongoose.model('user');
 
 // Get request
 export function getRequest(req, res, next) {
-  let surveyId;
   determineUser()
     .then((isSample) => {
       if (isSample) {
