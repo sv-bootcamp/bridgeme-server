@@ -25,17 +25,6 @@ const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
-// Return all users.
-export function getAll(req, res, next) {
-  User.find({}).exec()
-    .then((getAll) => {
-      res.status(200).json(getAll);
-    })
-    .catch((err) => {
-      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-    });
-}
-
 // Get all user list except logged in user
 export function getMentorList(req, res, next) {
   User.find({ _id: { $ne: req.user._id }, mentorMode: { $ne: false } })

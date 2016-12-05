@@ -110,36 +110,6 @@ describe('Test User API', () => {
     });
   });
 
-  describe('/all', () => {
-    it('request /all without access_token.', (done) => {
-      unauthorizedAccessTest(`${API_BASE_URL}/all`, done);
-    });
-
-    it('request /all with access_token.', (done) => {
-      rp({
-        method: 'GET',
-        uri: `${API_BASE_URL}/all`,
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.statusCode.should.equal(200);
-          let body = result.body;
-          body[0]._id.should.equal(userData.USER_A_DATA._id);
-          body[0].email.should.equal(userData.USER_A_DATA.email);
-          body[0].name.should.equal(userData.USER_A_DATA.name);
-          done();
-        })
-        .catch((err) => {
-          should.fail();
-          done();
-        });
-    });
-  });
-
   describe('/me', () => {
     it('request /me without access_token.', (done) => {
       unauthorizedAccessTest(API_BASE_URL + '/me', done);
