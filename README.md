@@ -1,4 +1,4 @@
-# yoda  [![Build Status](https://travis-ci.org/sv-bootcamp/yoda.svg?branch=master)](https://travis-ci.org/sv-bootcamp/yoda)
+# BridgeMe  [![Build Status](https://travis-ci.org/sv-bootcamp/bridgeme-client.svg?branch=master)](https://travis-ci.org/sv-bootcamp/yoda)
 Codename Yoda. Mentoring.
 
 [Go to yoda wiki page](https://github.com/sv-bootcamp/wiki/wiki/Project-Yoda)
@@ -9,3 +9,6 @@ How to test this on your local environment:
 2. `npm install` 
 3. `mongod --dbpath=/Users/ethkim/mongodb/data` (To start MongoDB with db path)
 3. `gulp` 
+
+## API Document
+The latest API Document is [here](https://brdgeme.com).
