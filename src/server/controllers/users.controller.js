@@ -38,14 +38,16 @@ export function getAll(req, res, next) {
 }
 
 export function getMentorList(req, res, next) {
-  let exceptList = [];
+  const exceptList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
   let match = { mentor_id: ObjectId(req.user._id) };
-  let project = { mentee_id: 1 };
   findConnection(match, project, 'mentee_id')
-    .then((menteelist) => {
-      menteelist.forEach(user => exceptList.push(user.mentee_id));
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
       match = { mentee_id: ObjectId(req.user._id) };
-      project = { mentor_id: 1 };
       return findConnection(match, project, 'mentor_id');
     })
     .then((mentorList) => {
