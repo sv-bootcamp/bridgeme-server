@@ -29,10 +29,10 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,locatio
 // Return all users.
 export function getAll(req, res, next) {
   User.find({}).exec()
-    .then(getAll => {
+    .then((getAll) => {
       res.status(200).json(getAll);
     })
-    .catch((err)=> {
+    .catch((err) => {
       res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
@@ -85,7 +85,7 @@ function findConnection(match, project, localField) {
 // Return my profile.
 export function getMyProfile(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
-    .then(myProfile => {
+    .then((myProfile) => {
       res.status(200).json(myProfile);
     })
     .catch((err) => {
@@ -98,17 +98,17 @@ export function getProfileById(req, res, next) {
   let userProfile = {};
 
   User.findOne({ _id: req.params._id }).exec()
-    .then(profile => {
+    .then((profile) => {
       userProfile = JSON.parse(JSON.stringify(profile));
       return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.user._id }).exec();
     })
-    .then(matchAsMentee => {
+    .then((matchAsMentee) => {
       userProfile.relation = {};
       userProfile.relation.asMentee =
         matchAsMentee ? matchAsMentee.status : matchController.MATCH_STATUS.REJECTED;
       return Match.findOne({ mentor_id: req.user._id, mentee_id: userProfile._id }).exec();
     })
-    .then(matchAsMentor => {
+    .then((matchAsMentor) => {
       userProfile.relation.asMentor =
         matchAsMentor ? matchAsMentor.status : matchController.MATCH_STATUS.REJECTED;
       res.status(200).json(userProfile);
@@ -131,14 +131,14 @@ export function localSignUp(req, res, next) {
   };
 
   validateEmail(registrationData.email)
-    .then(result => {
+    .then((result) => {
       if (result) {
         return User.findOne({ email: registrationData.email }).exec();
       } else {
         throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
       }
     })
-    .then(existingUser => {
+    .then((existingUser) => {
       if (existingUser) {
         res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
@@ -146,10 +146,10 @@ export function localSignUp(req, res, next) {
         return User(registrationData).save();
       }
     })
-    .then(registeredUser => {
+    .then((registeredUser) => {
       return stampUser(registeredUser);
     })
-    .then(stampedUser => {
+    .then((stampedUser) => {
       if (stampedUser) {
         res.status(201).json({
           user: stampedUser,
@@ -159,7 +159,7 @@ export function localSignUp(req, res, next) {
         throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(400).json({ err_msg: err.message });
     });
 }
@@ -170,7 +170,7 @@ export function localSignIn(req, res, next) {
   let cryptoPassword = cipher.final('hex');
 
   User.findOne({ email: req.body.email }).exec()
-    .then(existingUser => {
+    .then((existingUser) => {
       if (!existingUser) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
@@ -195,7 +195,7 @@ export function localSignIn(req, res, next) {
         access_token: jwtUtil.createAccessToken(stampedUser),
       });
     })
-    .catch(function (err) {
+    .catch((err) => {
       res.status(400).json({ err_msg: err.message });
     });
 }
@@ -203,17 +203,17 @@ export function localSignIn(req, res, next) {
 export function requestSecretCode(req, res, next) {
   if (req.body.email) {
     User.findOne({ email: req.body.email }).exec()
-      .then(user => {
+      .then((user) => {
         if (!user) {
           throw new Error(userCallback.ERR_USER_NOT_FOUND);
         } else {
           return SecretCode.findOne({ email: req.body.email, isValid: true }).exec();
         }
       })
-      .then(validSecretCode => {
+      .then((validSecretCode) => {
         if (validSecretCode) {
           SecretCode.update({ _id: validSecretCode._id }, { $set: { isValid: false } }).exec()
-            .catch(err => {
+            .catch((err) => {
               throw new Error(userCallback.ERR_FAIL_SECRETCODE);
             });
         }
@@ -225,12 +225,12 @@ export function requestSecretCode(req, res, next) {
           = cipher.update(new Date().toISOString(), 'utf-8', 'hex') + cipher.final('hex');
         return secretCode.save();
       })
-      .then(secretCode => {
+      .then((secretCode) => {
         mailingUtil.sendEmail(req.body.email, mailStrings.RESETPW_SUBJECT,
           mailStrings.RESETPW_HTML, secretCode.secretCode);
         res.status(201).json({ secretCode: secretCode.secretCode });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(400).json({ err_msg: err.message });
       });
   } else {
@@ -244,12 +244,12 @@ export function resetPassword(req, res, next) {
   let crytoPassword = cipher.final('hex');
 
   User.findOne({ email: req.body.email }).exec()
-    .then(user => {
+    .then((user) => {
       if (!user) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
       } else {
         SecretCode.findOne({ secretCode: req.body.secretCode }).exec()
-          .then(secretCode => {
+          .then((secretCode) => {
             if (secretCode.isValid) {
               return User.update(
                 { email: req.body.email },
@@ -259,15 +259,15 @@ export function resetPassword(req, res, next) {
               throw new Error(userCallback.ERR_INVALID_SECRETCODE);
             }
           })
-          .then(updatedUser => {
+          .then((updatedUser) => {
             res.status(200).json({ msg: userCallback.SUCCESS_RESET_PASSWORD });
           })
-          .catch(err => {
+          .catch((err) => {
             throw new Error(userCallback.ERR_FAIL_RESETPW);
           });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(400).json({ err_point: err.message });
     });
 }
@@ -413,86 +413,80 @@ function crawlByAccessTokenFacebook(accessToken) {
           resolve(result);
         }
       })
-      .catch(function (err) {
+      .catch((err) => {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
   });
 }
 
 export function editGeneralProfile(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
-      if (user) {
-        return validateEmail(req.body.email);
-      } else {
-        throw err;
-      }
-    })
-    .then((isValid) => {
-      if (isValid) {
-        let editData = {
-          name: req.body.name,
-          email: req.body.email,
-          languages: req.body.languages,
-          location: req.body.location,
-          about: req.body.about,
-          education: req.body.education,
-          experience: req.body.experience,
-        };
-        return User.update({ _id: req.user._id }, { $set: editData }).exec();
-      } else {
-        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
-      }
-    })
-    .then(updateData => {
-      if (updateData) {
-        return setKey();
-      } else {
-        throw new Error(userCallback.ERR_MONGOOSE);
-      }
-    })
-    .then(keyData => {
+  validateEmail(req.body.email)
+    .then(isValid => setKey())
+    .then((keyData) => {
       if (keyData) {
-        if (req.body.image == null) {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
-        } else {
-          let bucketName = 'yodabucket';
-          let now = new Date();
-          let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
-          let encondedImage = new Buffer(req.body.image, 'base64');
-
-          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-          let params = {
-            Bucket: bucketName,
-            Key: imageKey,
-            ACL: 'public-read',
-            Body: encondedImage,
-          };
-          S3.putObject(params).promise()
-            .then((data, err) => {
-              if (data) {
-                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-                return updateProfile(req, profileUrl);
-              } else {
-                throw new Error(userCallback.ERR_AWS);
-              }
-            })
-            .then((success) => {
-              if (success) {
-                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-              } else {
-                throw new Error(userCallback.ERR_MONGOOSE);
-              }
-            })
-            .catch((err) => {
-              res.status(400).json({ err_msg: err_stack });
-            });
-        }
+        return User.findOne({ _id: req.user._id }).exec();
       } else {
         throw new Error(userCallback.ERR_AWS_KEY);
       }
     })
-    .catch(err => {
+    .then((user) => {
+      user.name = req.body.name;
+      user.email = req.body.email;
+      user.languages = req.body.languages;
+      user.location = req.body.location;
+      user.about = req.body.about;
+      user.education = req.body.education;
+      user.experience = req.body.experience;
+
+      return user.save();
+    })
+    .then((updatedUser) => {
+      const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+      const bucketName = 'yodabucket';
+      if (updatedUser.profile_picture === undefined && req.body.image === '') {
+        let profileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
+        updateProfile(req, profileUrl)
+          .then((dafaultImage) => {
+            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      } else if (req.body.image === '') {
+        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+      } else {
+        let now = new Date();
+        let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
+        let encondedImage = new Buffer(req.body.image, 'base64');
+
+        let params = {
+          Bucket: bucketName,
+          Key: imageKey,
+          ACL: 'public-read',
+          Body: encondedImage,
+        };
+        S3.putObject(params).promise()
+          .then((data, err) => {
+            if (data) {
+              let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
+              return updateProfile(req, profileUrl);
+            } else {
+              throw new Error(userCallback.ERR_AWS);
+            }
+          })
+          .then((success) => {
+            if (success) {
+              res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+            } else {
+              throw new Error(userCallback.ERR_MONGOOSE);
+            }
+          })
+          .catch((err) => {
+            res.status(400).json({ err_msg: err });
+          });
+      }
+    })
+    .catch((err) => {
       res.status(400).json(err);
     });
 }
@@ -581,7 +575,7 @@ export function editPersonality(req, res, next) {
 
 export function getCareerInfo(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
+    .then((user) => {
       res.status(200).json(user.career);
     })
     .catch((err) => {
@@ -591,7 +585,7 @@ export function getCareerInfo(req, res, next) {
 
 export function getExpertiseInfo(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
+    .then((user) => {
       res.status(200).json(user.expertise);
     })
     .catch((err) => {
@@ -601,7 +595,7 @@ export function getExpertiseInfo(req, res, next) {
 
 export function getPersonalityInfo(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
+    .then((user) => {
       res.status(200).json(user.personality);
     })
     .catch((err) => {
@@ -616,7 +610,7 @@ export function setMentoringRequestStatus(req, res, next) {
         mentorMode: req.body.mentorMode,
       },
     }).exec()
-      .then(update => {
+      .then((update) => {
         res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
       })
       .catch((err) => {
@@ -629,7 +623,7 @@ export function setMentoringRequestStatus(req, res, next) {
 
 export function getMentoringRequestStatus(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
-    .then(user => {
+    .then((user) => {
       if (user.mentorMode == null) {
         res.status(200).json(true);
       } else {
@@ -641,7 +635,7 @@ export function getMentoringRequestStatus(req, res, next) {
     });
 }
 
-export function signout(req, res, next) {
+export function signOut(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {
       const index = user.deviceToken.indexOf(req.body.deviceToken);
