@@ -11,9 +11,9 @@ import survey from './routes/survey.route';
 import users from './routes/users.route';
 
 export default (cb) => {
-  const limit = '5mb';
   const app = express();
   const db = mongoose();
+  const limit = '5mb';
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
