@@ -494,10 +494,13 @@ function validateEmail(req) {
 
 function setKey() {
   return new Promise((resolve, reject) => {
-    Key.findOne({ index: 0 }).exec()
-      .then((key) => {
-        AWS.config.accessKeyId = key.accessKeyId;
-        AWS.config.secretAccessKey = key.secretAccessKey;
+    Key.findOne({ name: 'accessKeyId' }).exec()
+      .then((accessKeyIdObject) => {
+        AWS.config.accessKeyId = accessKeyIdObject.key;
+        return Key.findOne({ name: 'secretAccessKey' }).exec();
+      })
+      .then((secretAccessKeyObject) => {
+        AWS.config.secretAccessKey = secretAccessKeyObject.key;
         resolve(true);
       })
       .catch((err) => {
