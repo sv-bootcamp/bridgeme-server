@@ -15,6 +15,7 @@ import crypto from 'crypto';
 
 const Key = mongoose.model('key');
 const Match = mongoose.model('match');
+const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
@@ -36,16 +37,49 @@ export function getAll(req, res, next) {
     });
 }
 
-// Get all user list except logged in user
 export function getMentorList(req, res, next) {
-  User.find({ _id: { $ne: req.user._id }, mentorMode: { $ne: false } })
-    .sort({ stamp_login: -1 }).exec()
+  const exceptList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
+  let match = { mentor_id: ObjectId(req.user._id) };
+  findConnection(match, project, 'mentee_id')
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      match = { mentee_id: ObjectId(req.user._id) };
+      return findConnection(match, project, 'mentor_id');
+    })
     .then((mentorList) => {
-      res.status(200).json(mentorList);
+      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+        .sort({ stamp_login: -1 }).exec();
+    })
+    .then((user) => {
+      res.status(200).json(user);
     })
     .catch((err) => {
       res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
+}
+
+function findConnection(match, project, localField) {
+  return Match.aggregate([
+    {
+      $match: match,
+    },
+    {
+      $project: project,
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: localField,
+        foreignField: '_id',
+        as: 'list',
+      },
+    },
+  ]).exec();
 }
 
 // Return my profile.
