@@ -386,76 +386,70 @@ function crawlByAccessTokenFacebook(accessToken) {
 }
 
 export function editGeneralProfile(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
-    .then((user) => {
-      if (user) {
-        return validateEmail(req.body.email);
-      } else {
-        throw err;
-      }
-    })
-    .then((isValid) => {
-      if (isValid) {
-        let editData = {
-          name: req.body.name,
-          email: req.body.email,
-          languages: req.body.languages,
-          location: req.body.location,
-          about: req.body.about,
-          education: req.body.education,
-          experience: req.body.experience,
-        };
-        return User.update({ _id: req.user._id }, { $set: editData }).exec();
-      } else {
-        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
-      }
-    })
-    .then((updateData) => {
-      if (updateData) {
-        return setKey();
-      } else {
-        throw new Error(userCallback.ERR_MONGOOSE);
-      }
-    })
+  validateEmail(req.body.email)
+    .then(isValid => setKey())
     .then((keyData) => {
       if (keyData) {
-        if (req.body.image == null) {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
-        } else {
-          let bucketName = 'yodabucket';
-          let now = new Date();
-          let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
-          let encondedImage = new Buffer(req.body.image, 'base64');
-
-          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-          let params = {
-            Bucket: bucketName,
-            Key: imageKey,
-            ACL: 'public-read',
-            Body: encondedImage,
-          };
-          S3.putObject(params).promise()
-            .then((data, err) => {
-              if (data) {
-                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-                return updateProfile(req, profileUrl);
-              } else {
-                throw new Error(userCallback.ERR_AWS);
-              }
-            })
-            .then((success) => {
-              if (success) {
-                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-              } else {
-                throw new Error(userCallback.ERR_MONGOOSE);
-              }
-            })
-            .catch((err) => {
-              res.status(400).json({ err_msg: err_stack });
-            });
-        }
+        return User.findOne({ _id: req.user._id }).exec();
       } else {
         throw new Error(userCallback.ERR_AWS_KEY);
+      }
+    })
+    .then((user) => {
+      user.name = req.body.name;
+      user.email = req.body.email;
+      user.languages = req.body.languages;
+      user.location = req.body.location;
+      user.about = req.body.about;
+      user.education = req.body.education;
+      user.experience = req.body.experience;
+
+      return user.save();
+    })
+    .then((updatedUser) => {
+      const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+      const bucketName = 'yodabucket';
+      if (updatedUser.profile_picture === undefined && req.body.image === '') {
+        let profileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
+        updateProfile(req, profileUrl)
+          .then((dafaultImage) => {
+            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
+          })
+          .catch((err) => {
+            res.status(400).json(err);
+          });
+      } else if (req.body.image === '') {
+        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+      } else {
+        let now = new Date();
+        let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
+        let encondedImage = new Buffer(req.body.image, 'base64');
+
+        let params = {
+          Bucket: bucketName,
+          Key: imageKey,
+          ACL: 'public-read',
+          Body: encondedImage,
+        };
+        S3.putObject(params).promise()
+          .then((data, err) => {
+            if (data) {
+              let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
+              return updateProfile(req, profileUrl);
+            } else {
+              throw new Error(userCallback.ERR_AWS);
+            }
+          })
+          .then((success) => {
+            if (success) {
+              res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+            } else {
+              throw new Error(userCallback.ERR_MONGOOSE);
+            }
+          })
+          .catch((err) => {
+            res.status(400).json({ err_msg: err });
+          });
       }
     })
     .catch((err) => {

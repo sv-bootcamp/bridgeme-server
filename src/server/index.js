@@ -13,6 +13,7 @@ import users from './routes/users.route';
 export default (cb) => {
   const app = express();
   const db = mongoose();
+  const limit = '5mb';
 
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -20,8 +21,10 @@ export default (cb) => {
     app.use(compress());
   }
 
+  app.use(bodyParser.json({ limit: limit }));
   app.use(bodyParser.urlencoded({
     extended: true,
+    limit: limit,
   }));
   app.use(bodyParser.json());
   app.use(methodOverride());

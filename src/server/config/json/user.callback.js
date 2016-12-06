@@ -22,6 +22,7 @@ export default {
   SUCCESS_SIGNIN: 'Sign in success.',
   SUCCESS_SIGNOUT: 'Sign out success.',
   SUCCESS_UPDATE: 'Update success.',
+  SUCCESS_UPDATE_WITH_DEFAULT_IMAGE: 'Update success with default image.',
   SUCCESS_UPDATE_WITHOUT_IMAGE: 'Update success without image.',
   SUCCESS_CHECK_ACCESS_TOKEN: 'Valid access_token.',
 };
