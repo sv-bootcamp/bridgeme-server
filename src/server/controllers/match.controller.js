@@ -3,7 +3,6 @@ import * as pushUtil from '../utils/push.util';
 import userCallback from '../config/json/user.callback';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
-import matchStatus from '../config/json/match.status';
 import mongoose from 'mongoose';
 
 /*
@@ -14,6 +13,12 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
+
+export const MATCH_STATUS = {
+  ACCEPTED: 1,
+  PENDING: 2,
+  REJECTED: 0,
+};
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
@@ -51,14 +56,14 @@ export function requestMentoring(req, res, next) {
 export function getMyActivity(req, res, next) {
   let activityData = {};
 
-  findMenteeActivityByStatus(req.user._id, matchStatus.PENDING)
+  findMenteeActivityByStatus(req.user._id, MATCH_STATUS.PENDING)
     .then((pendingDoc) => {
       activityData['pending'] = pendingDoc;
-      return findMenteeActivityByStatus(req.user._id, matchStatus.ACCEPTED);
+      return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.ACCEPTED);
     })
     .then((acceptedDoc) => {
       activityData['accepted'] = acceptedDoc;
-      return findMenteeActivityByStatus(req.user._id, matchStatus.REJECTED);
+      return findMenteeActivityByStatus(req.user._id, MATCH_STATUS.REJECTED);
     })
     .then((rejectedDoc) => {
       activityData['rejected'] = rejectedDoc;
@@ -105,7 +110,7 @@ function findMentorActivity(mentor_id) {
     {
       $match: {
         mentor_id: ObjectId(mentor_id),
-        status: { $ne: matchStatus.REJECTED },
+        status: { $ne: 0 },
       },
     },
     {
@@ -131,7 +136,7 @@ function findMentorActivity(mentor_id) {
 
 export function responseMentoring(req, res, next) {
   ///todo: Validiate  match_id & option params (Luke Lee)
-  if (Number(req.body.option) === matchStatus.REJECTED) {
+  if (Number(req.body.option) === MATCH_STATUS.REJECTED) {
     Match.remove({ _id: req.body.match_id }, (err) => {
       if (err) {
         res.status(400).json({ err_point: matchCallback.ERR_MONGOOSE, err: err });
