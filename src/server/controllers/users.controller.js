@@ -27,7 +27,7 @@ const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
 export function getInitialMentorList(req, res, next) {
-  getMentorList(req.user.id)
+  getMentorList(req.user._id)
     .then((user) => {
       res.status(200).json(user);
     })
@@ -46,7 +46,6 @@ function getMentorList(userId) {
     let match = {
       mentor_id: ObjectId(userId),
     };
-
     findConnection(match, project, 'mentee_id')
       .then((menteeList) => {
         menteeList.forEach(user => exceptList.push(user.mentee_id));
@@ -62,19 +61,25 @@ function getMentorList(userId) {
           .sort({ stamp_login: -1 }).exec();
       })
       .then((user) => {
+        console.log(user);
         resolve(user);
       })
       .catch((err) => {
-        rejject(err);
-      })
+        reject(err);
+      });
   });
 }
 
 export function getFilteredMentorList(req, res, next) {
-  getMentorList(req.user.id)
-    .then((user) => {
-
-    })
+  let filter = req.body.filter;
+  res.status(200).json({ filter: req.body });
+  // getMentorList(req.body.user.id)
+  //   .then((user) => {
+  //     res.status(200).json({ user: user, filter: req.body });
+  //   })
+  //   .catch((err) => {
+  //     res.status(400).json({ err: err });
+  //   });
 }
 
 function findConnection(match, project, localField) {
@@ -346,6 +351,7 @@ export function signIn(req, res, next) {
     // TODO : Validiate accesstoken from linkedin API server.
     res.status(400).send("Doesn't support yet.");
   } else {
+    console.log(req.body.platform_type);
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
 }

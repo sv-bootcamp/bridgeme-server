@@ -469,6 +469,8 @@ router.get('/me', apiProtector, user.getMyProfile);
  */
 router.get('/mentorlist', apiProtector, user.getInitialMentorList);
 
+router.post('/mentorlist/filter', apiProtector, user.getFilteredMentorList);
+
 /**
  * @api {get} /users/career Request user career information
  * @apiName getCareerInfo
