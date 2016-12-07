@@ -26,17 +26,6 @@ const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
-// Return all users.
-export function getAll(req, res, next) {
-  User.find({}).exec()
-    .then((getAll) => {
-      res.status(200).json(getAll);
-    })
-    .catch((err) => {
-      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-    });
-}
-
 export function getMentorList(req, res, next) {
   const exceptList = [];
   const project = {
@@ -510,10 +499,13 @@ function validateEmail(req) {
 
 function setKey() {
   return new Promise((resolve, reject) => {
-    Key.findOne({ index: 0 }).exec()
-      .then((key) => {
-        AWS.config.accessKeyId = key.accessKeyId;
-        AWS.config.secretAccessKey = key.secretAccessKey;
+    Key.findOne({ name: 'accessKeyId' }).exec()
+      .then((accessKeyIdObject) => {
+        AWS.config.accessKeyId = accessKeyIdObject.key;
+        return Key.findOne({ name: 'secretAccessKey' }).exec();
+      })
+      .then((secretAccessKeyObject) => {
+        AWS.config.secretAccessKey = secretAccessKeyObject.key;
         resolve(true);
       })
       .catch((err) => {

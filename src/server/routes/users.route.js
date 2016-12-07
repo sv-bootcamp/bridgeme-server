@@ -384,33 +384,6 @@ router.post('/editMentorMode', apiProtector, user.setMentoringRequestStatus);
 //GET method
 
 /**
- * @api {get} /users/all Request All User info
- * @apiName getAll
- * @apiGroup User
- *
- * @apiSuccessExample {json} Success
- *     HTTP/1.1 200 OK
- *     [
- *      {
- *        User1's Info
- *      },
- *      {
- *        User2's Info
- *      },
- *      {
- *        User3's Info
- *      },....
- *     ]
- *
- * @apiErrorExample {json}
- *     HTTP/1.1 401 Not Authenticated
- *     {
- *       "err_point": {err_msg}
- *     }
- */
-router.get('/all', apiProtector, user.getAll);
-
-/**
  * @api {get} /users/id/:id Request User info
  * @apiName getProfileById
  * @apiGroup User

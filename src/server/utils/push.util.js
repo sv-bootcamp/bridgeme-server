@@ -24,11 +24,11 @@ const NOTIFICATION_TYPE = {
   },
 };
 
-export function sendPush(receiverId, notificationType, bodyParam) {
-  let serverKey = '';
-  Key.findOne({ index: 1 }).exec()
-    .then((key) => {
-      serverKey = key.secretAccessKey;
+export function sendPush(receiverId, notificationType, bodyParam, extraData = {}) {
+  let fcmToken = '';
+  Key.findOne({ name: 'fcmToken' }).exec()
+    .then((fcmTokenObject) => {
+      fcmToken = fcmTokenObject.key;
       return User.findOne({ _id: receiverId }).exec();
     })
     .then((receiverProfile) => {
@@ -42,16 +42,23 @@ export function sendPush(receiverId, notificationType, bodyParam) {
             sound: NOTIFICATION_CONFIG.sound,
             vibrate: NOTIFICATION_CONFIG.vibrate,
           },
+          data: {
+            notificationType: notificationType,
+            extraData: extraData,
+          },
           priority: 'high',
         };
-        const fcm = new FCM(serverKey);
-        fcm.send(message);
+        const fcm = new FCM(fcmToken);
+        fcm.send(message)
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
 function generateBody(notificationType, bodyParam) {
   if (notificationType === 'MESSAGE') {
@@ -59,4 +66,4 @@ function generateBody(notificationType, bodyParam) {
   } else {
     return `${bodyParam} ${NOTIFICATION_TYPE[notificationType].bodyParam}`;
   }
-};
+}
