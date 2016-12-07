@@ -288,7 +288,7 @@ export function signIn(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
-          profile_picture: facebookResult.profile_picture,
+          profile_picture: facebookResult.profile_picture ? facebookResult.profile_picture : undefined,
         };
         return User.findOne({ email: registrationData.email }).exec();
       })
@@ -409,7 +409,12 @@ function crawlByAccessTokenFacebook(accessToken) {
       .then((facebookPictureResult) => {
         // if HTTP request&response successfully.
         if (facebookPictureResult.statusCode === 200) {
-          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+            result.profile_picture = null;
+          } else {
+            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          }
+
           resolve(result);
         }
       })
