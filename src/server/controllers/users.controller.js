@@ -33,11 +33,16 @@ export function getMentorList(req, res, next) {
     mentee_id: 1,
     mentor_id: 1,
   };
-  let match = { mentor_id: ObjectId(req.user._id) };
+  let match = {
+    mentor_id: ObjectId(req.user._id),
+  };
   findConnection(match, project, 'mentee_id')
     .then((menteeList) => {
       menteeList.forEach(user => exceptList.push(user.mentee_id));
-      match = { mentee_id: ObjectId(req.user._id) };
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: matchController.MATCH_STATUS.ACCEPTED,
+      };
       return findConnection(match, project, 'mentor_id');
     })
     .then((mentorList) => {
