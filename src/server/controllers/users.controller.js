@@ -19,11 +19,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
-
-// AWS S3 vars.
-const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-const bucketName = 'yodabucket';
-const defaultProfileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
+const defaultProfileUrl = 'https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png';
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -444,6 +440,8 @@ export function editGeneralProfile(req, res, next) {
       if (req.body.image === '') {
         res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
       } else {
+        const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+        const bucketName = 'yodabucket';
         let now = new Date();
         let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
         let encondedImage = new Buffer(req.body.image, 'base64');
