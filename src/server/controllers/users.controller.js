@@ -20,6 +20,11 @@ const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
 
+// AWS S3 vars.
+const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+const bucketName = 'yodabucket';
+const defaultProfileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
+
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
 const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
@@ -117,6 +122,7 @@ export function localSignUp(req, res, next) {
     password: cryptoPassword,
     platform_type: 0,
     deviceToken: [],
+    profile_picture: defaultProfileUrl,
   };
 
   validateEmail(registrationData.email)
@@ -277,7 +283,7 @@ export function signIn(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
-          profile_picture: facebookResult.profile_picture ? facebookResult.profile_picture : undefined,
+          profile_picture: facebookResult.profile_picture,
         };
         return User.findOne({ email: registrationData.email }).exec();
       })
@@ -399,7 +405,7 @@ function crawlByAccessTokenFacebook(accessToken) {
         // if HTTP request&response successfully.
         if (facebookPictureResult.statusCode === 200) {
           if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
-            result.profile_picture = null;
+            result.profile_picture = defaultProfileUrl;
           } else {
             result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
           }
@@ -435,18 +441,7 @@ export function editGeneralProfile(req, res, next) {
       return user.save();
     })
     .then((updatedUser) => {
-      const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-      const bucketName = 'yodabucket';
-      if (updatedUser.profile_picture === undefined && req.body.image === '') {
-        let profileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
-        updateProfile(req, profileUrl)
-          .then((dafaultImage) => {
-            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      } else if (req.body.image === '') {
+      if (req.body.image === '') {
         res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
       } else {
         let now = new Date();
