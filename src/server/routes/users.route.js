@@ -467,7 +467,7 @@ router.get('/me', apiProtector, user.getMyProfile);
  *     }
  *
  */
-router.get('/mentorlist', apiProtector, user.getMentorList);
+router.get('/mentorlist', apiProtector, user.getInitialMentorList);
 
 /**
  * @api {get} /users/career Request user career information
