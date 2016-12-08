@@ -2,7 +2,7 @@ version: 2
 groups:
   code-review:
     approve_by_comment:
-      approve_regex: ^Approved
+      approve_regex: '(?i):shipit:|:\\+1:|LGTM'
       enabled: true
       reject_regex: ^Rejected
     required: 1
