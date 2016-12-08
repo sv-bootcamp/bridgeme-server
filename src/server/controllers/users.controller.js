@@ -28,6 +28,7 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,locatio
 
 export function getMentorList(req, res, next) {
   const exceptList = [];
+  const pendingList = [];
   const project = {
     mentee_id: 1,
     mentor_id: 1,
@@ -46,6 +47,17 @@ export function getMentorList(req, res, next) {
     })
     .then((mentorList) => {
       mentorList.forEach(user => exceptList.push(user.mentor_id));
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: matchController.MATCH_STATUS.PENDING,
+      };
+      return findConnection(match, project, 'mentee_id');
+    })
+    .then((pendingStatus) => {
+      pendingStatus.forEach(user => pendingList.push(user.mentor_id));
+      return User.update({ _id: { $in: pendingList } }, { $set: { pending: true } }).exec();
+    })
+    .then(() => {
       return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
         .sort({ stamp_login: -1 }).exec();
     })
@@ -53,6 +65,7 @@ export function getMentorList(req, res, next) {
       res.status(200).json(user);
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
