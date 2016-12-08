@@ -6,10 +6,10 @@ const Key = mongoose.model('key');
 
 export function callback(req, res, next) {
   const extraData = {
-    opponent:{
+    opponent: {
       name: req.body.sender.name,
       userId: req.body.sender.id,
-    }
+    },
   };
 
   pushUtil.sendPush(
