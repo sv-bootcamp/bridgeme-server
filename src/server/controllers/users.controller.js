@@ -420,22 +420,49 @@ function crawlByAccessTokenFacebook(accessToken) {
           return request({
             method: 'GET',
             url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { type: 'large', redirect: '0' },
+            qs: { height: '100', redirect: '0' },
             resolveWithFullResponse: true,
           });
         }
       })
-      .then((facebookPictureResult) => {
+      .then((facebookSmallPictureResult) => {
         // if HTTP request&response successfully.
-        if (facebookPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+        if (facebookSmallPictureResult.statusCode === 200) {
+          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
             result.profile_picture_small = `${defaultProfileUrl}_small`;
+          } else {
+            result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
+          }
+          return request({
+            method: 'GET',
+            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
+            qs: { height: '300', redirect: '0' },
+            resolveWithFullResponse: true,
+          });
+        }
+      })
+      .then((facebookMediumPictureResult) => {
+        if (facebookMediumPictureResult.statusCode === 200) {
+          if (JSON.parse(facebookMediumPictureResult.body).data.is_silhouette) {
             result.profile_picture_medium = `${defaultProfileUrl}_medium`;
+          } else {
+            result.profile_picture_medium = JSON.parse(facebookMediumPictureResult.body).data.url;
+          }
+          return request({
+            method: 'GET',
+            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
+            qs: { height: '600', redirect: '0' },
+            resolveWithFullResponse: true,
+          });
+        }
+      })
+      .then((facebookLargePictureResult) => {
+        if (facebookLargePictureResult.statusCode === 200) {
+          if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
             result.profile_picture_large = `${defaultProfileUrl}_large`;
           } else {
-            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+            result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
           }
-
           resolve(result);
         }
       })
