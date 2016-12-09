@@ -305,7 +305,7 @@ export function signIn(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
-          profile_picture_small: ${facebookResult.profile_picture_small},
+          profile_picture_small: facebookResult.profile_picture_small,
           profile_picture_medium: facebookResult.profile_picture_medium,
           profile_picture_large: facebookResult.profile_picture_large,
         };
