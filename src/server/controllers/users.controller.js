@@ -53,9 +53,13 @@ export function getFilteredMentorList(req, res, next) {
       return careerFilteredList;
     })
     .then((careerFilteredList) => {
+      if (!req.body.expertise.length) {
+        return careerFilteredList;
+      }
+
       careerFilteredList.forEach((user) => {
         user.expertise.forEach((userExpertise) => {
-          if (req.body.expertise.includes(userExpertise.select)) {
+          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)) {
             filteredList.push(user);
           }
         });
@@ -77,6 +81,8 @@ function checkExpertiseFilter(arr, val) {
 }
 
 function checkCareerFilter(userInfo, filter) {
+  if (userInfo === undefined) return false;
+
   if (filter.area === 'All') {
     userInfo.area = filter.area;
     userInfo.role = filter.role;
