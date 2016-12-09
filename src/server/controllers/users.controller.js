@@ -19,6 +19,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
+const defaultProfileUrl = 'https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png';
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -94,6 +95,7 @@ function checkCareerFilter(userInfo, filter) {
 
 export function MentorList(req, res, next) {
   const exceptList = [];
+  const pendingList = [];
   const project = {
     mentee_id: 1,
     mentor_id: 1,
@@ -114,7 +116,18 @@ export function MentorList(req, res, next) {
     })
     .then((mentorList) => {
       mentorList.forEach(user => exceptList.push(user.mentor_id));
-      return User.find({ _id: { $ne: req.body._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: matchController.MATCH_STATUS.PENDING,
+      };
+      return findConnection(match, project, 'mentee_id');
+    })
+    .then((pendingStatus) => {
+      pendingStatus.forEach(user => pendingList.push(user.mentor_id));
+      return User.update({ _id: { $in: pendingList } }, { $set: { pending: true } }).exec();
+    })
+    .then(() => {
+      return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
@@ -223,6 +236,7 @@ export function localSignUp(req, res, next) {
     password: cryptoPassword,
     platform_type: 0,
     deviceToken: [],
+    profile_picture: defaultProfileUrl,
   };
 
   validateEmail(registrationData.email)
@@ -505,7 +519,12 @@ function crawlByAccessTokenFacebook(accessToken) {
       .then((facebookPictureResult) => {
         // if HTTP request&response successfully.
         if (facebookPictureResult.statusCode === 200) {
-          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+            result.profile_picture = defaultProfileUrl;
+          } else {
+            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          }
+
           resolve(result);
         }
       })
@@ -537,20 +556,11 @@ export function editGeneralProfile(req, res, next) {
       return user.save();
     })
     .then((updatedUser) => {
-      const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-      const bucketName = 'yodabucket';
-      if (updatedUser.profile_picture === undefined && req.body.image === '') {
-        let profileUrl = `${S3.endpoint.href}${bucketName}/profile/default/pattern.png`;
-        updateProfile(req, profileUrl)
-          .then((dafaultImage) => {
-            res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITH_DEFAULT_IMAGE });
-          })
-          .catch((err) => {
-            res.status(400).json(err);
-          });
-      } else if (req.body.image === '') {
+      if (req.body.image === '') {
         res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
       } else {
+        const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+        const bucketName = 'yodabucket';
         let now = new Date();
         let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
         let encondedImage = new Buffer(req.body.image, 'base64');
