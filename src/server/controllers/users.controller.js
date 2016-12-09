@@ -27,7 +27,7 @@ const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
 export function getInitialMentorList(req, res, next) {
-  getMentorList(req.user.id)
+  getMentorList(req.user._id)
     .then((user) => {
       res.status(200).json(user);
     })
@@ -39,7 +39,6 @@ export function getInitialMentorList(req, res, next) {
 export function getFilteredMentorList(req, res, next) {
   const careerFilteredList = [];
   const careerFilteredNameList = [];
-
   const filteredList = [];
 
   getMentorList(req.user._id)
@@ -55,9 +54,8 @@ export function getFilteredMentorList(req, res, next) {
     .then((careerFilteredList) => {
       careerFilteredList.forEach((user) => {
         user.expertise.forEach((userExpertise) => {
-          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
-            && !(checkAvailability(careerFilteredNameList, user._id))) {
-            filteredList.push(user._id);
+          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)) {
+            filteredList.push(user);
           }
         });
       });
@@ -77,18 +75,11 @@ function checkExpertiseFilter(arr, val) {
   });
 }
 
-function checkAvailability(arr, val) {
-  return arr.some(function (arrVal) {
-    return val == arrVal;
-  });
-}
-
 function checkCareerFilter(userInfo, filter) {
   if (filter.area === 'All') {
     userInfo.area = filter.area;
     userInfo.role = filter.role;
   }
-
   if (filter.role === 'All') userInfo.role = filter.role;
   if (filter.years === 'All') userInfo.years = filter.years;
   if (filter.education_background === 'All') userInfo.education_background = filter.education_background;
@@ -99,6 +90,39 @@ function checkCareerFilter(userInfo, filter) {
     && userInfo.education_background === filter.education_background)
     return true;
   else return false;
+}
+
+export function MentorList(req, res, next) {
+  const exceptList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
+  let matchOption = {
+    mentor: {
+      mentor_id: ObjectId(req.body._id)
+    },
+    mentee: {
+      mentee_id: ObjectId(req.body._id),
+      status: matchController.MATCH_STATUS.ACCEPTED,
+    }
+  };
+  findConnection(matchOption.mentor, project, 'mentee_id')
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      return findConnection(matchOption.mentee, project, 'mentor_id');
+    })
+    .then((mentorList) => {
+      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      return User.find({ _id: { $ne: req.body._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+        .sort({ stamp_login: -1 }).exec();
+    })
+    .then((user) => {
+      resolve(user);
+    })
+    .catch((err) => {
+      reject({ err_point: userCallback.ERR_MONGOOSE, err: err });
+    });
 }
 
 export function getMentorList(userId) {
@@ -134,10 +158,10 @@ export function getMentorList(userId) {
   });
 }
 
-function findConnection(match, project, localField) {
+function findConnection(matchOption, project, localField) {
   return Match.aggregate([
     {
-      $match: match,
+      $match: matchOption,
     },
     {
       $project: project,
