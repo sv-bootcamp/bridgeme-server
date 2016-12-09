@@ -84,7 +84,6 @@ let userSchema = new Schema({
   profile_picture_large: String,
   job_position: String,
   about: String,
-  pending: Boolean,
   languages: String,
   mentorMode: Boolean,
   deviceToken: Array,
