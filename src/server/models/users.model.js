@@ -80,7 +80,7 @@ let userSchema = new Schema({
   company: String,
   timezone: Number,
   profile_picture_small: String,
-  profile_picture_medium: String,
+  profile_picture: String,
   profile_picture_large: String,
   job_position: String,
   about: String,

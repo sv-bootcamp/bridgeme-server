@@ -147,7 +147,7 @@ export function localSignUp(req, res, next) {
     platform_type: 0,
     deviceToken: [],
     profile_picture_small: `${defaultProfileUrl}_small`,
-    profile_picture_medium: `${defaultProfileUrl}_medium`,
+    profile_picture: `${defaultProfileUrl}_medium`,
     profile_picture_large: `${defaultProfileUrl}_large`,
   };
 
@@ -310,7 +310,7 @@ export function signIn(req, res, next) {
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
           profile_picture_small: facebookResult.profile_picture_small,
-          profile_picture_medium: facebookResult.profile_picture_medium,
+          profile_picture: facebookResult.profile_picture_medium,
           profile_picture_large: facebookResult.profile_picture_large,
         };
         return User.findOne({ email: registrationData.email }).exec();
@@ -545,7 +545,7 @@ function updateProfile(req, imageKey) {
     User.update({ _id: req.user._id }, {
       $set: {
         profile_picture_small: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
-        profile_picture_medium: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
+        profile_picture: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
         profile_picture_large: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
       },
     }).exec()
