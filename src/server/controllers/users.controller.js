@@ -441,13 +441,14 @@ function crawlByAccessTokenFacebook(accessToken) {
           });
         }
       })
-      .then((facebookMediumPictureResult) => {
-        if (facebookMediumPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookMediumPictureResult.body).data.is_silhouette) {
-            result.profile_picture_medium = `${defaultProfileUrl}_medium`;
+      .then((facebookPictureResult) => {
+        if (facebookPictureResult.statusCode === 200) {
+          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+            result.profile_picture = `${defaultProfileUrl}_medium`;
           } else {
-            result.profile_picture_medium = JSON.parse(facebookMediumPictureResult.body).data.url;
+            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
           }
+
           return request({
             method: 'GET',
             url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
@@ -463,6 +464,7 @@ function crawlByAccessTokenFacebook(accessToken) {
           } else {
             result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
           }
+
           resolve(result);
         }
       })
