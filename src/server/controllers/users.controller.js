@@ -310,7 +310,7 @@ export function signIn(req, res, next) {
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
           profile_picture_small: facebookResult.profile_picture_small,
-          profile_picture: facebookResult.profile_picture_medium,
+          profile_picture: facebookResult.profile_picture,
           profile_picture_large: facebookResult.profile_picture_large,
         };
         return User.findOne({ email: registrationData.email }).exec();
@@ -424,20 +424,49 @@ function crawlByAccessTokenFacebook(accessToken) {
           return request({
             method: 'GET',
             url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { type: 'large', redirect: '0' },
+            qs: { height: '100', redirect: '0' },
+            resolveWithFullResponse: true,
+          });
+        }
+      })
+      .then((facebookSmallPictureResult) => {
+        // if HTTP request&response successfully.
+        if (facebookSmallPictureResult.statusCode === 200) {
+          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+            result.profile_picture_small = `${defaultProfileUrl}_small`;
+          } else {
+            result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
+          }
+          return request({
+            method: 'GET',
+            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
+            qs: { height: '300', redirect: '0' },
             resolveWithFullResponse: true,
           });
         }
       })
       .then((facebookPictureResult) => {
-        // if HTTP request&response successfully.
         if (facebookPictureResult.statusCode === 200) {
           if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
-            result.profile_picture_small = `${defaultProfileUrl}_small`;
-            result.profile_picture_medium = `${defaultProfileUrl}_medium`;
-            result.profile_picture_large = `${defaultProfileUrl}_large`;
+            result.profile_picture = `${defaultProfileUrl}_medium`;
           } else {
             result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+          }
+
+          return request({
+            method: 'GET',
+            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
+            qs: { height: '600', redirect: '0' },
+            resolveWithFullResponse: true,
+          });
+        }
+      })
+      .then((facebookLargePictureResult) => {
+        if (facebookLargePictureResult.statusCode === 200) {
+          if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
+            result.profile_picture_large = `${defaultProfileUrl}_large`;
+          } else {
+            result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
           }
 
           resolve(result);
