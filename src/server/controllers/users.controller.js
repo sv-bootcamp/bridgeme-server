@@ -428,7 +428,6 @@ function crawlByAccessTokenFacebook(accessToken) {
       .then((facebookPictureResult) => {
         // if HTTP request&response successfully.
         if (facebookPictureResult.statusCode === 200) {
-          console.log(facebookPictureResult.body);
           if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
             result.profile_picture_small = `${defaultProfileUrl}_small`;
             result.profile_picture_medium = `${defaultProfileUrl}_medium`;
