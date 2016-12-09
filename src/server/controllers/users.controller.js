@@ -60,7 +60,7 @@ export function getMentorList(req, res, next) {
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
-      return Promise.all(user, user.map(item => {
+      return Promise.all(user, user.map((item) => {
         if (pendingList.includes(item._id.toString())) {
           item.pending = true;
         }
