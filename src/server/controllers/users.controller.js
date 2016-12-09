@@ -55,7 +55,7 @@ export function getFilteredMentorList(req, res, next) {
     .then((careerFilteredList) => {
       careerFilteredList.forEach((user) => {
         user.expertise.forEach((userExpertise) => {
-          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)) {
+          if (req.body.expertise.includes(userExpertise.select)) {
             filteredList.push(user);
           }
         });
@@ -81,6 +81,7 @@ function checkCareerFilter(userInfo, filter) {
     userInfo.area = filter.area;
     userInfo.role = filter.role;
   }
+
   if (filter.role === 'All') userInfo.role = filter.role;
   if (filter.years === 'All') userInfo.years = filter.years;
   if (filter.education_background === 'All') userInfo.education_background = filter.education_background;
@@ -96,31 +97,33 @@ function checkCareerFilter(userInfo, filter) {
 export function MentorList(req, res, next) {
   const exceptList = [];
   const pendingList = [];
-  const project = {
+  const projectOption = {
     mentee_id: 1,
     mentor_id: 1,
   };
+
   let matchOption = {
-    mentor: {
-      mentor_id: ObjectId(req.body._id)
+    connected: {
+      mentor_id: ObjectId(req.body._id),
     },
-    mentee: {
+    accepted: {
       mentee_id: ObjectId(req.body._id),
       status: matchController.MATCH_STATUS.ACCEPTED,
-    }
+    },
+    pending: {
+      mentee_id: ObjectId(req.user._id),
+      status: matchController.MATCH_STATUS.PENDING,
+    },
   };
-  findConnection(matchOption.mentor, project, 'mentee_id')
+
+  findConnection(matchOption.connected, projectOption, 'mentee_id')
     .then((menteeList) => {
       menteeList.forEach(user => exceptList.push(user.mentee_id));
-      return findConnection(matchOption.mentee, project, 'mentor_id');
+      return findConnection(matchOption.accepted, projectOption, 'mentor_id');
     })
     .then((mentorList) => {
       mentorList.forEach(user => exceptList.push(user.mentor_id));
-      match = {
-        mentee_id: ObjectId(req.user._id),
-        status: matchController.MATCH_STATUS.PENDING,
-      };
-      return findConnection(match, project, 'mentee_id');
+      return findConnection(matchOption.pending, projectOption, 'mentee_id');
     })
     .then((pendingStatus) => {
       pendingStatus.forEach(user => pendingList.push(user.mentor_id));
@@ -171,13 +174,13 @@ export function getMentorList(userId) {
   });
 }
 
-function findConnection(matchOption, project, localField) {
+function findConnection(matchOption, projectOption, localField) {
   return Match.aggregate([
     {
       $match: matchOption,
     },
     {
-      $project: project,
+      $project: projectOption,
     },
     {
       $lookup: {
