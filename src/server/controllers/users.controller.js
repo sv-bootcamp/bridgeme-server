@@ -422,41 +422,36 @@ function crawlByAccessTokenFacebook(accessToken) {
         if (facebookDataResult.statusCode === 200 && result.verified === true) {
           // Crawl user profile_picture from facebook by access token.
           return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_SMALL);
+        } else {
+          res.status(400).json(err);
         }
       })
       .then((facebookSmallPictureResult) => {
-        // if HTTP request&response successfully.
-        if (facebookSmallPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
-            result.profile_picture_small = `${defaultProfileUrl}_small`;
-          } else {
-            result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
-          }
-
-          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
+        if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+          result.profile_picture_small = `${defaultProfileUrl}_small`;
+        } else {
+          result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
         }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
       })
       .then((facebookPictureResult) => {
-        if (facebookPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
-            result.profile_picture = `${defaultProfileUrl}_medium`;
-          } else {
-            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
-          }
-
-          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
+        if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+          result.profile_picture = `${defaultProfileUrl}_medium`;
+        } else {
+          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
         }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
       })
       .then((facebookLargePictureResult) => {
-        if (facebookLargePictureResult.statusCode === 200) {
-          if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
-            result.profile_picture_large = `${defaultProfileUrl}_large`;
-          } else {
-            result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
-          }
-
-          resolve(result);
+        if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
+          result.profile_picture_large = `${defaultProfileUrl}_large`;
+        } else {
+          result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
         }
+  
+        resolve(result);
       })
       .catch((err) => {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
