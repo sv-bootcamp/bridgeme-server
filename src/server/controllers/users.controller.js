@@ -450,7 +450,6 @@ export function signIn(req, res, next) {
     // TODO : Validiate accesstoken from linkedin API server.
     res.status(400).send("Doesn't support yet.");
   } else {
-    console.log(req.body.platform_type);
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PLATFORM });
   }
 }
