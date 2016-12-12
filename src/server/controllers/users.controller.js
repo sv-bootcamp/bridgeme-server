@@ -132,12 +132,16 @@ export function MentorList(req, res, next) {
       return findConnection(matchOption.pending, projectOption, 'mentee_id');
     })
     .then((pendingStatus) => {
-      pendingStatus.forEach(user => pendingList.push(user.mentor_id));
-      return User.update({ _id: { $in: pendingList } }, { $set: { pending: true } }).exec();
-    })
-    .then(() => {
+      pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
       return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
         .sort({ stamp_login: -1 }).exec();
+    })
+    .then((user) => {
+      return Promise.all(user, user.map((item) => {
+        if (pendingList.includes(item._id.toString())) {
+          item.pending = true;
+        }
+      }));
     })
     .then((user) => {
       resolve(user);
