@@ -60,7 +60,7 @@ export function getMentorList(req, res, next) {
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
-      let userData = JSON.parse(JSON.stringify(user));
+      const userData = JSON.parse(JSON.stringify(user));
       return new Promise((resolve) => {
         userData.forEach(item => {
           if (pendingList.includes(item._id.toString())) {
@@ -74,7 +74,6 @@ export function getMentorList(req, res, next) {
       res.status(200).json(user);
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
