@@ -22,9 +22,9 @@ const platform = { local: '0', facebook: '1', linkedin: '2' };
 
 // Image constant vars.
 const bucketName = 'yodabucket';
-const IMAGE_SIZE_SMALL = 100;
-const IMAGE_SIZE_MEDIUM = 300;
-const IMAGE_SIZE_LARGE = 600;
+const IMAGE_SIZE_SMALL = '100';
+const IMAGE_SIZE_MEDIUM = '300';
+const IMAGE_SIZE_LARGE = '600';
 const S3_endpoint_href = `https://s3.ap-northeast-2.amazonaws.com/`;
 const defaultProfileUrl = `${S3_endpoint_href}${bucketName}/profile/default/pattern`;
 
@@ -432,26 +432,29 @@ function crawlByAccessTokenFacebook(accessToken) {
           } else {
             result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
           }
+
           return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
         }
       })
       .then((facebookPictureResult) => {
         if (facebookPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
             result.profile_picture = `${defaultProfileUrl}_medium`;
           } else {
             result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
           }
+
           return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
         }
       })
       .then((facebookLargePictureResult) => {
         if (facebookLargePictureResult.statusCode === 200) {
-          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+          if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
             result.profile_picture_large = `${defaultProfileUrl}_large`;
           } else {
             result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
           }
+
           resolve(result);
         }
       })
