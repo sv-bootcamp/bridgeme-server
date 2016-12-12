@@ -421,12 +421,7 @@ function crawlByAccessTokenFacebook(accessToken) {
         // if HTTP request&response successfully.
         if (facebookDataResult.statusCode === 200 && result.verified === true) {
           // Crawl user profile_picture from facebook by access token.
-          return request({
-            method: 'GET',
-            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { height: '100', redirect: '0' },
-            resolveWithFullResponse: true,
-          });
+          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_SMALL);
         }
       })
       .then((facebookSmallPictureResult) => {
@@ -437,44 +432,41 @@ function crawlByAccessTokenFacebook(accessToken) {
           } else {
             result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
           }
-          return request({
-            method: 'GET',
-            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { height: '300', redirect: '0' },
-            resolveWithFullResponse: true,
-          });
+          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
         }
       })
       .then((facebookPictureResult) => {
         if (facebookPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
             result.profile_picture = `${defaultProfileUrl}_medium`;
           } else {
             result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
           }
-
-          return request({
-            method: 'GET',
-            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { height: '600', redirect: '0' },
-            resolveWithFullResponse: true,
-          });
+          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
         }
       })
       .then((facebookLargePictureResult) => {
         if (facebookLargePictureResult.statusCode === 200) {
-          if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
+          if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
             result.profile_picture_large = `${defaultProfileUrl}_large`;
           } else {
             result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
           }
-
           resolve(result);
         }
       })
       .catch((err) => {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
+  });
+}
+
+function crawlFacebookProfileBySize(id, size) {
+  return request({
+    method: 'GET',
+    url: FB_GRAPH_BASE_URL + (id + '/') + FB_GRAPH_GET_PICTURE_URI,
+    qs: { height: size, redirect: '0' },
+    resolveWithFullResponse: true,
   });
 }
 
