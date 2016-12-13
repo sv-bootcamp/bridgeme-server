@@ -10,6 +10,6 @@ RUN npm install
 
 COPY . /app
 
-EXPOSE 80
+EXPOSE 5000
 
-CMD [ "gulp" ]
+CMD [ "npm", "start" ]
