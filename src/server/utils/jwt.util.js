@@ -1,10 +1,8 @@
-import fs from 'fs';
 import jwt from 'jsonwebtoken';
 
 const JWT_CREATE_OPTION = { algorithm: 'HS256', expiresIn: '60min' };
 
-const KEY_FILE = './jwt_key.pem';
-const KEY = process.env.NODE_ENV === 'test' ? 'thisistestsecret' : fs.readFileSync(KEY_FILE);
+const KEY = process.env.NODE_ENV === 'test' ? 'thisistestsecret' : 'thisisproductsecret';
 
 export default {
   apiProtector(req, res, next) {
