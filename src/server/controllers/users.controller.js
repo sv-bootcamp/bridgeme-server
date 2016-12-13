@@ -60,7 +60,7 @@ export function getMentorList(req, res, next) {
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
-      let userData = JSON.parse(JSON.stringify(user));
+      const userData = JSON.parse(JSON.stringify(user));
       return new Promise((resolve) => {
         userData.forEach(item => {
           if (pendingList.includes(item._id.toString())) {
