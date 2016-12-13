@@ -23,7 +23,7 @@ This Repository is for our server-side source code. [This link](https://github.c
 1. `docker run -p 80:5000 --env-file env.list <IMAGE-ID> &`
 <br>
 
-## Unit test
+## Unit testing
 `gulp test`
 <br>
 ## Documents
