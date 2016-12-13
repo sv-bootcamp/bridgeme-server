@@ -16,11 +16,11 @@ This Repository is for our server-side source code. [This link](https://github.c
 <br>
 
 ## Run - Gulp
-1. `gulp`
+`gulp`
 <br>
 
 ## Run - Docker
-1. `docker run -p 80:5000 --env-file env.list <IMAGE-ID> &`
+`docker run -p 80:5000 --env-file env.list <IMAGE-ID> &`
 <br>
 
 ## Unit testing
