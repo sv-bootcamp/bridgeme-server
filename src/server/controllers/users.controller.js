@@ -39,7 +39,7 @@ export function getInitialMentorList(req, res, next) {
 
 export function getFilteredMentorList(req, res, next) {
   const careerFilteredList = [];
-  const careerFilteredNameList = [];
+  const careerFilteredIdList = [];
   const filteredList = [];
 
   getMentorList(req.user._id)
@@ -47,7 +47,7 @@ export function getFilteredMentorList(req, res, next) {
       mentorList.forEach((user) => {
         if (checkCareerFilter(user.career[0], req.body.career)) {
           careerFilteredList.push(user);
-          careerFilteredNameList.push(user._id);
+          careerFilteredIdList.push(user._id);
         }
       });
       return careerFilteredList;
@@ -59,7 +59,8 @@ export function getFilteredMentorList(req, res, next) {
 
       careerFilteredList.forEach((user) => {
         user.expertise.forEach((userExpertise) => {
-          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)) {
+          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
+            && arrayContainsElement(careerFilteredIdList, user._id)) {
             filteredList.push(user);
           }
         });
@@ -67,7 +68,10 @@ export function getFilteredMentorList(req, res, next) {
       return filteredList;
     })
     .then((filteredList) => {
-      res.status(200).json(filteredList);
+      res.status(200).json({
+        number: filteredList.length,
+        users: filteredList,
+      });
     })
     .catch((err) => {
       res.status(400).json({ err: err });
@@ -75,28 +79,37 @@ export function getFilteredMentorList(req, res, next) {
 }
 
 function checkExpertiseFilter(arr, val) {
-  return arr.some(function (arrVal) {
+  return arr.some((arrVal) => {
     return val === arrVal.select;
+  });
+}
+
+function arrayContainsElement(arr, val) {
+  return arr.some((arrVal) => {
+    return val === arrVal;
   });
 }
 
 function checkCareerFilter(userInfo, filter) {
   if (userInfo === undefined) return false;
+  let userBool = {
+    area: filter.area === 'All' ? 1 : 0,
+    role: filter.role === 'All' ? 1 : 0,
+    years: filter.years === 'All' ? 1 : 0,
+    background: filter.education_background === 'All' ? 1 : 0,
+  };
 
-  if (filter.area === 'All') {
-    userInfo.area = filter.area;
-    userInfo.role = filter.role;
+  if (userBool.area) {
+    userBool.role = 1;
+  } else {
+    userBool.area = userInfo.area === filter.area || userBool.area ? 1 : 0;
+    userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
   }
 
-  if (filter.role === 'All') userInfo.role = filter.role;
-  if (filter.years === 'All') userInfo.years = filter.years;
-  if (filter.education_background === 'All') userInfo.education_background = filter.education_background;
+  if (userInfo.years != filter.years && !userBool.years) userBool.years = 0;
+  if (userInfo.background != filter.education_background && !userBool.background) userBool.background = 0;
 
-  if (userInfo.area === filter.area
-    && userInfo.role === filter.role
-    && userInfo.years === filter.years
-    && userInfo.education_background === filter.education_background)
-    return true;
+  if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
   else return false;
 }
 
