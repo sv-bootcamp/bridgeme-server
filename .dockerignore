@@ -1,1 +1,6 @@
-.gitignore
+#Useless Folders
+node_modules/
+dist-server/
+dist-test/
+coverage/
+apidoc/
