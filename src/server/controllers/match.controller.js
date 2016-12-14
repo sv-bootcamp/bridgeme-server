@@ -38,7 +38,8 @@ export function requestMentoring(req, res, next) {
       if (mentor) {
         // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-          mailStrings.REQUEST_HTML, matchData.contents);
+          `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
+          `<image src="${req.user.profile_picture}"> said "${matchData.contents}"`);
         pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
