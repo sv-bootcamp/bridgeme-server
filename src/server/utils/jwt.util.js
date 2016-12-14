@@ -14,7 +14,8 @@ const jwt_key = Key.findOne({ name: 'jwtKey' }).exec()
 
 export default {
   apiProtector(req, res, next) {
-    jwt.verify(req.headers.access_token, jwt_key.emitted.fulfill[0], function (err, decoded) {
+    const key = process.env.NODE_ENV === 'test' ? 'test' : jwt_key.emitted.fulfill[0];
+    jwt.verify(req.headers.access_token, key, function (err, decoded) {
       if (err) {
         res.status(401).json({ err_point: err.message });
       } else {
@@ -29,12 +30,13 @@ export default {
   },
 
   createAccessToken(user) {
-    console.log(jwt_key.emitted.fulfill[0]);
-    return jwt.sign(this.generatePayload(user), jwt_key.emitted.fulfill[0], JWT_CREATE_OPTION);
+    const key = process.env.NODE_ENV === 'test' ? 'test' : jwt_key.emitted.fulfill[0];
+    return jwt.sign(this.generatePayload(user), key, JWT_CREATE_OPTION);
   },
 
   updateAccessToken(previousToken, updateTokenCallback) {
-    jwt.verify(previousToken, jwt_key.emitted.fulfill[0], { ignoreExpiration: true }, function (err, decodedUser) {
+    const key = process.env.NODE_ENV === 'test' ? 'test' : jwt_key.emitted.fulfill[0];
+    jwt.verify(previousToken, key, { ignoreExpiration: true }, function (err, decodedUser) {
       if (typeof updateTokenCallback === 'function') {
         updateTokenCallback(err, decodedUser ? this.createAccessToken(decodedUser) : undefined);
       }
