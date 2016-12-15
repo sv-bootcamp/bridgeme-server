@@ -27,32 +27,27 @@ const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
-export function getInitialMentorList(req, res, next) {
-  getMentorList(req.user._id)
-    .then((user) => {
-      res.status(200).json(user);
-    })
-  .catch((err) => {
-    res.status(400).json(err);
-  });
-}
-
-export function getFilteredMentorList(req, res, next) {
+export function getMentorList(req, res, next) {
   const careerFilteredList = [];
   const careerFilteredIdList = [];
   const filteredList = [];
 
-  getMentorList(req.user._id)
+  // console.log(req.body);
+
+  getInitialMentorList(req.user._id)
     .then((mentorList) => {
+      if (req.body.initial === true) {
+        return mentorList;
+      }
+
       mentorList.forEach((user) => {
         if (checkCareerFilter(user.career[0], req.body.career)) {
           careerFilteredList.push(user);
+          // console.log(user.name);
           careerFilteredIdList.push(user._id);
         }
       });
-      return careerFilteredList;
-    })
-    .then((careerFilteredList) => {
+
       if (!req.body.expertise.length) {
         return careerFilteredList;
       }
@@ -61,19 +56,20 @@ export function getFilteredMentorList(req, res, next) {
         user.expertise.forEach((userExpertise) => {
           if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
             && arrayContainsElement(careerFilteredIdList, user._id)) {
+            // console.log(user.name);
             filteredList.push(user);
           }
         });
       });
+
       return filteredList;
     })
-    .then((filteredList) => {
-      res.status(200).json({
-        number: filteredList.length,
-        users: filteredList,
-      });
+    .then((mentorList) => {
+      // console.log(mentorList);
+      res.status(200).json(mentorList);
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err: err });
     });
 }
@@ -106,14 +102,50 @@ function checkCareerFilter(userInfo, filter) {
     userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
   }
 
-  if (userInfo.years != filter.years && !userBool.years) userBool.years = 0;
-  if (userInfo.background != filter.education_background && !userBool.background) userBool.background = 0;
+  // console.log(userInfo.years + '*' + filter.years);
+  // console.log(userInfo.years != filter.years);
+  // console.log(userInfo.background + '*' + filter.education_background);
+  // console.log(userInfo.education_background != filter.education_background);
+
+  if (userInfo.years == filter.years && !userBool.years) userBool.years = 1;
+  if (userInfo.education_background == filter.education_background && !userBool.background) userBool.background = 1;
+
+  // console.log(userBool);
 
   if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
   else return false;
 }
 
-export function MentorList(req, res, next) {
+export function countExpectedExpertiseMatching(req, res, next) {
+  const careerFilteredList = [];
+  let countResult = [0, 0, 0, 0, 0, 0, 0];
+
+  getInitialMentorList(req.user._id)
+    .then((mentorList) => {
+      mentorList.forEach((user) => {
+        if (checkCareerFilter(user.career[0], req.body.career)) {
+          careerFilteredList.push(user);
+        }
+      });
+    })
+    .then(() => {
+      careerFilteredList.forEach((user) => {
+        user.expertise.forEach((expItem) => {
+          countResult[expItem.index]++;
+        });
+      });
+    })
+    .then(() => {
+      res.status(200).json(countResult);
+      return next();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json({ err: err });
+    });
+}
+
+export function initialMentorList(req, res, next) {
   const exceptList = [];
   const pendingList = [];
   const projectOption = {
@@ -152,7 +184,7 @@ export function MentorList(req, res, next) {
     .then((user) => {
       const userData = JSON.parse(JSON.stringify(user));
       return new Promise((resolve) => {
-        userData.forEach(item => {
+        userData.forEach((item) => {
           if (pendingList.includes(item._id.toString())) {
             item.pending = true;
           }
@@ -168,7 +200,7 @@ export function MentorList(req, res, next) {
     });
 }
 
-export function getMentorList(userId) {
+export function getInitialMentorList(userId) {
   return new Promise((resolve, reject) => {
     const exceptList = [];
     const project = {
@@ -178,6 +210,7 @@ export function getMentorList(userId) {
     let match = {
       mentor_id: ObjectId(userId),
     };
+
     findConnection(match, project, 'mentee_id')
       .then((menteeList) => {
         menteeList.forEach(user => exceptList.push(user.mentee_id));

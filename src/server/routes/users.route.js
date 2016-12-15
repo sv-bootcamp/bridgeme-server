@@ -442,9 +442,34 @@ router.get('/id/:_id', apiProtector, user.getProfileById);
 router.get('/me', apiProtector, user.getMyProfile);
 
 /**
- * @api {get} /users/mentorlist Request Mentor's list
+ * @api {post} /users/mentorlist Request Mentor's list with career/expertise filter
  * @apiName getMentorList
  * @apiGroup User
+ *
+ * @apiParam {json} Parameter Sample when you request list with no filter.
+ *     {
+ *       initial: true
+ *     }
+ *
+ * @apiParam {json} Parameter Sample when you request list with filters.
+ *     {
+ *       "expertise" : [
+ *         {
+ *           "select" : "Get a new job",
+ *           "index" : 1
+ *         },
+ *         {
+ *           "select": "Career change",
+ *           "index": 4
+ *         }
+ *       ],
+ *       "career" : {
+ *         "area" : "Design",
+ *         "role" : "Visual/UI Designer",
+ *         "years" : "All",
+ *         "education_background" : "All"
+ *       }
+ *     }
  *
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 200 OK
@@ -467,9 +492,37 @@ router.get('/me', apiProtector, user.getMyProfile);
  *     }
  *
  */
-router.get('/mentorlist', apiProtector, user.getInitialMentorList);
+router.post('/mentorlist', apiProtector, user.getMentorList);
 
-router.post('/mentorlist/filter', apiProtector, user.getFilteredMentorList);
+/**
+ * @api {post} /users/mentorlist/count Request expected user number per expertise with career filter
+ * @apiName countExpectedExpertiseMatching
+ * @apiGroup User
+ *
+ *
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        Mentor1's Info
+ *      },
+ *      {
+ *        Mentor2's Info
+ *      },
+ *      {
+ *        Mentor3's Info
+ *      },....
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.post('/mentorlist/count', apiProtector, user.countExpectedExpertiseMatching);
 
 /**
  * @api {get} /users/career Request user career information
