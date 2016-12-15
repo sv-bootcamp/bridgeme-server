@@ -6,6 +6,7 @@ const Key = mongoose.model('key');
 
 const jwt_key = Key.findOne({ name: 'jwtKey' }).exec()
   .then((jwtObject) => {
+    console.log(jwtObject);
     return jwtObject.key;
   })
   .catch((err) => {
