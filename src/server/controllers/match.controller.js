@@ -40,7 +40,7 @@ export function requestMentoring(req, res, next) {
           .then((user) => {
             mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
               `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
-              `<image src="${user.profile_picture}"> said "${matchData.contents}"`);
+              `${mailStrings.REQUEST_CONTENTS}`);
           })
           .catch((err) => {
 
