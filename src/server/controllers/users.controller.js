@@ -32,8 +32,6 @@ export function getMentorList(req, res, next) {
   const careerFilteredIdList = [];
   const filteredList = [];
 
-  // console.log(req.body);
-
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
       if (req.body.initial === true) {
@@ -43,7 +41,6 @@ export function getMentorList(req, res, next) {
       mentorList.forEach((user) => {
         if (checkCareerFilter(user.career[0], req.body.career)) {
           careerFilteredList.push(user);
-          // console.log(user.name);
           careerFilteredIdList.push(user._id);
         }
       });
