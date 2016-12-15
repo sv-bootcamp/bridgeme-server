@@ -15,7 +15,7 @@ const jwt_key = Key.findOne({ name: 'jwtKey' }).exec()
 
 export default {
   apiProtector(req, res, next) {
-    const key = process.env.NODE_ENV === 'test' ? 'test' : 'development';
+    const key = 'development';
     jwt.verify(req.headers.access_token, key, function (err, decoded) {
       if (err) {
         res.status(401).json({ err_point: err.message });
@@ -31,12 +31,12 @@ export default {
   },
 
   createAccessToken(user) {
-    const key = process.env.NODE_ENV === 'test' ? 'test' : 'development';
+    const key = 'development';
     return jwt.sign(this.generatePayload(user), key, JWT_CREATE_OPTION);
   },
 
   updateAccessToken(previousToken, updateTokenCallback) {
-    const key = process.env.NODE_ENV === 'test' ? 'test' : 'development';
+    const key = 'development';
     jwt.verify(previousToken, key, { ignoreExpiration: true }, function (err, decodedUser) {
       if (typeof updateTokenCallback === 'function') {
         updateTokenCallback(err, decodedUser ? this.createAccessToken(decodedUser) : undefined);
