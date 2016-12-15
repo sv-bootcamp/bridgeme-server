@@ -36,20 +36,26 @@ export function requestMentoring(req, res, next) {
     })
     .then((mentor) => {
       if (mentor) {
-        // TODO: Confirm method whether send mail or send in-app message.
-        mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-          `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
-          `<image src="${req.user.profile_picture}"> said "${matchData.contents}"`);
+        User.find({ _id: req.user._id }).exec()
+          .then((user) => {
+            mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
+              `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
+              `<image src="${user.profile_picture}"> said "${matchData.contents}"`);
+          })
+          .catch((err) => {
+
+          });
         pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then((match) => {
+    .then((user) => {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err_point: err.message, err: err.stack });
     });
 }
