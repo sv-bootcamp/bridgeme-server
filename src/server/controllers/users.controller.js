@@ -53,7 +53,6 @@ export function getMentorList(req, res, next) {
         user.expertise.forEach((userExpertise) => {
           if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
             && arrayContainsElement(careerFilteredIdList, user._id)) {
-            // console.log(user.name);
             filteredList.push(user);
           }
         });
@@ -62,11 +61,9 @@ export function getMentorList(req, res, next) {
       return filteredList;
     })
     .then((mentorList) => {
-      // console.log(mentorList);
       res.status(200).json(mentorList);
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).json({ err: err });
     });
 }
@@ -99,15 +96,8 @@ function checkCareerFilter(userInfo, filter) {
     userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
   }
 
-  // console.log(userInfo.years + '*' + filter.years);
-  // console.log(userInfo.years != filter.years);
-  // console.log(userInfo.background + '*' + filter.education_background);
-  // console.log(userInfo.education_background != filter.education_background);
-
   if (userInfo.years == filter.years && !userBool.years) userBool.years = 1;
   if (userInfo.education_background == filter.education_background && !userBool.background) userBool.background = 1;
-
-  // console.log(userBool);
 
   if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
   else return false;
@@ -137,7 +127,6 @@ export function countExpectedExpertiseMatching(req, res, next) {
       return next();
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).json({ err: err });
     });
 }
