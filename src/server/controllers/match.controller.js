@@ -36,22 +36,16 @@ export function requestMentoring(req, res, next) {
     })
     .then((mentor) => {
       if (mentor) {
-        User.find({ _id: req.user._id }).exec()
-          .then((user) => {
-            mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-              `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
-              `${mailStrings.REQUEST_CONTENTS}`);
-          })
-          .catch((err) => {
-
-          });
+        mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
+          `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
+          `${mailStrings.REQUEST_CONTENTS}`);
         pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
         throw new Error(matchCallback.ERR_CANNOT_FOUND_MENTOR);
       }
     })
-    .then((user) => {
+    .then((match) => {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {

@@ -104,11 +104,7 @@ export function getMyProfile(req, res, next) {
       res.status(200).json(myProfile);
     })
     .catch((err) => {
-      return next(new ErrorModule(err, {
-        statusCode: err.statusCode,
-        err_point: userCallback.ERR_MONGOOSE,
-      }));
-      // res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
 
@@ -133,11 +129,7 @@ export function getProfileById(req, res, next) {
       res.status(200).json(userProfile);
     })
     .catch((err) => {
-      return next(new ErrorModule(err, {
-        statusCode: err.statusCode,
-        err_point: userCallback.ERR_MONGOOSE,
-      }));
-      // res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
+      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
 
@@ -159,11 +151,7 @@ export function localSignUp(req, res, next) {
       if (result) {
         return User.findOne({ email: registrationData.email }).exec();
       } else {
-        return next(new ErrorModule(err, {
-          statusCode: err.statusCode,
-          err_point: userCallback.ERR_INVALID_EMAIL_FORMAT,
-        }));
-        // throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
+        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
       }
     })
     .then((existingUser) => {
@@ -184,18 +172,10 @@ export function localSignUp(req, res, next) {
           access_token: jwtUtil.createAccessToken(stampedUser),
         });
       } else {
-        return next(new ErrorModule(err, {
-          statusCode: 500,
-          err_point: userCallback.ERR_FAIL_REGISTER,
-        }));
-        // throw new Error(userCallback.ERR_FAIL_REGISTER);
+        throw new Error(userCallback.ERR_FAIL_REGISTER);
       }
     })
     .catch((err) => {
-      // return next(new ErrorModule(err, {
-      //   statusCode: err.statusCode,
-      //   err_point: userCallback.ERR_FAIL_SIGNIN,
-      // }));
       res.status(400).json({ err_msg: err.message });
     });
 }
