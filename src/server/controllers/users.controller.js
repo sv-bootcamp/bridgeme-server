@@ -156,7 +156,7 @@ export function localSignUp(req, res, next) {
     })
     .then((existingUser) => {
       if (existingUser) {
-        res.status(201).json(existingUser);
+        res.status(201).json({ msg: userCallback.ERR_EXISTING_EMAIL });
       } else {
         registrationData.deviceToken.push(req.body.deviceToken);
         return User(registrationData).save();
