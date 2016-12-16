@@ -49,7 +49,6 @@ export function requestMentoring(req, res, next) {
       res.status(201).json({ msg: matchCallback.SUCCESS_REQUEST });
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).json({ err_point: err.message, err: err.stack });
     });
 }
