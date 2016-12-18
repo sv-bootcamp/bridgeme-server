@@ -1,4 +1,4 @@
-FROM node:argon
+FROM node:6.4.0
 MAINTAINER Bridgeme <yoda.mentor.lab@gmail.com>
 
 RUN mkdir -p /app
