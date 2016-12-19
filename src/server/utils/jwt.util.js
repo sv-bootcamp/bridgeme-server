@@ -1,8 +1,7 @@
+import fs from 'fs';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 
 const JWT_CREATE_OPTION = { algorithm: 'HS256', expiresIn: '60min' };
-const Key = mongoose.model('key');
 
 const KEY_FILE = './jwt_key.pem';
 const KEY = process.env.NODE_ENV === 'test' ? 'thisistestsecret' : fs.readFileSync(KEY_FILE);
