@@ -27,7 +27,7 @@ export function getMentorList(req, res, next) {
 
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
-      if (req.body.initial === 'true') {
+      if (req.body.initial === true) {
         return mentorList;
       }
 
@@ -155,7 +155,7 @@ export function getInitialMentorList(userId) {
               $nin: exceptList,
             },
             mentorMode: {
-              $ne: false
+              $ne: false,
             },
           })
           .sort({ stamp_login: -1 }).exec();
@@ -319,11 +319,11 @@ export function responseMentoring(req, res, next) {
         pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
         return Match.update(
           {
-            _id: req.body.match_id
+            _id: req.body.match_id,
           },
           {
             status: req.body.option,
-            response_date: Date.now()
+            response_date: Date.now(),
           }).exec();
       })
       .then((match) => {

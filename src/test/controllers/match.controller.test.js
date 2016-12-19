@@ -276,11 +276,11 @@ describe('Test Match API', () => {
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
           career: {
-            area: "Design",
-            role: "Visual/UI Designer",
-            years : "All",
-            education_background : "All",
-          }
+            area: 'Design',
+            role: 'Visual/UI Designer',
+            years: 'All',
+            education_background: 'All',
+          },
         },
         resolveWithFullResponse: true,
         json: true,
