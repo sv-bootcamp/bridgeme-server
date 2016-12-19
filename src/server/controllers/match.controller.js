@@ -205,9 +205,9 @@ export function requestMentoring(req, res, next) {
     })
     .then((mentor) => {
       if (mentor) {
-        // TODO: Confirm method whether send mail or send in-app message.
         mailingUtil.sendEmail(mentor.email, mailStrings.REQUEST_SUBJECT,
-          mailStrings.REQUEST_HTML, matchData.contents);
+          `${mailStrings.REQUEST_TITLE}${req.user.name}${mailStrings.REQUEST_BODY}`,
+          `${mailStrings.REQUEST_CONTENTS}`);
         pushUtil.sendPush(mentor._id, 'REQUEST', req.user.name);
         return match.save();
       } else {
