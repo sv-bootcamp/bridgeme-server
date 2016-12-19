@@ -21,7 +21,7 @@ let educationSchema = new Schema({
   location: {
     name: String,
   },
-  startYear: {
+  start_year: {
     name: String,
   },
   year: {
