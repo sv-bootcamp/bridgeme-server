@@ -90,7 +90,8 @@ function checkCareerFilter(userInfo, filter) {
   }
 
   if (userInfo.years == filter.years && !userBool.years) userBool.years = 1;
-  if (userInfo.education_background == filter.education_background && !userBool.background) userBool.background = 1;
+  if (userInfo.education_background == filter.education_background && !userBool.background)
+    userBool.background = 1;
 
   if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
   else return false;
@@ -157,7 +158,16 @@ export function initialMentorList(req, res, next) {
     })
     .then((pendingStatus) => {
       pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
-      return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+      return User.find(
+        {
+          _id: {
+            $ne: req.user._id,
+            $nin: exceptList,
+          },
+          mentorMode: {
+            $ne: false
+          },
+        })
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
@@ -201,7 +211,17 @@ export function getInitialMentorList(userId) {
       })
       .then((mentorList) => {
         mentorList.forEach(user => exceptList.push(user.mentor_id));
-        return User.find({ _id: { $ne: userId, $nin: exceptList, }, mentorMode: { $ne: false }, })
+        return User.find(
+          {
+            _id:
+            {
+              $ne: userId,
+              $nin: exceptList,
+            },
+            mentorMode: {
+              $ne: false
+            },
+          })
           .sort({ stamp_login: -1 }).exec();
       })
       .then((user) => {
@@ -361,7 +381,14 @@ export function responseMentoring(req, res, next) {
     Match.findOne({ _id: req.body.match_id }).exec()
       .then((match) => {
         pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
-        return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
+        return Match.update(
+          {
+            _id: req.body.match_id
+          },
+          {
+            status: req.body.option,
+            response_date: Date.now()
+          }).exec();
       })
       .then((match) => {
         return User.findOne({ _id: match.mentor_id }).exec();

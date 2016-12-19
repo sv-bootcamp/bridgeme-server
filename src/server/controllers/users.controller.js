@@ -19,7 +19,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
-const defaultProfileUrl = 'https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png';
+const defaultProfileUrl
+  = 'https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png';
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
