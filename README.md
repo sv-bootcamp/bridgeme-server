@@ -20,7 +20,7 @@ This Repository is for our server-side source code. [This link](https://github.c
 <br>
 
 ## Run - Docker
-`docker run -p 80:5000 --env-file env.list <IMAGE-ID> &`
+`docker run --link mongo:27017 -v ~/jwt_key.pem:/app/jwt_key.pem -p 80:5000 -d IMAGE_ID`
 <br>
 
 ## Unit testing
