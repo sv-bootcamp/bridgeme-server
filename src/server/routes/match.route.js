@@ -11,7 +11,7 @@ const router = express.Router();
 
 //POST method
 
-/**
+/*
  * @api {post} /match/mentorList Request Mentor's list with career/expertise filter
  * @apiName getMentorList
  * @apiGroup User
@@ -44,15 +44,15 @@ const router = express.Router();
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 200 OK
  *     [
- *      {
- *        Mentor1's Info
- *      },
- *      {
- *        Mentor2's Info
- *      },
- *      {
- *        Mentor3's Info
- *      },....
+ *       {
+ *         Mentor1's Info
+ *       },
+ *       {
+ *         Mentor2's Info
+ *       },
+ *       {
+ *         Mentor3's Info
+ *       },....
  *     ]
  *
  * @apiErrorExample {json}
@@ -69,26 +69,33 @@ router.post('/mentorList', apiProtector, match.getMentorList);
  * @apiName countExpectedExpertiseMatching
  * @apiGroup User
  *
+ * @apiParam {json} career Career value that user set
  *
+ * @apiParamExample {json} Parameter Sample
+ *     {
+ *       "career": {
+ *         "area": "Design",
+ *         "role": "Visual/UI Designer",
+ *         "years": "All",
+ *         "education_background": "All"
+ *       }
+ *     }
  *
  * @apiSuccessExample {json} Success
  *     HTTP/1.1 200 OK
- *     [
- *      {
- *        Mentor1's Info
- *      },
- *      {
- *        Mentor2's Info
- *      },
- *      {
- *        Mentor3's Info
- *      },....
- *     ]
+ *     {
+ *       countResult: [ 1, 0, 2, 3, 2, 3, 0 ]
+ *     }
  *
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "err_point": {err_msg}
+ *       "career": {
+ *         "area": "Design",
+ *         "role": "Visual/UI Designer",
+ *         "years": "All",
+ *         "education_background": "All"
+ *       }
  *     }
  *
  */

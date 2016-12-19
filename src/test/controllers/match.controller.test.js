@@ -269,6 +269,30 @@ describe('Test Match API', () => {
           done();
         });
     });
+
+    it('request /mentorList/count', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList/count`,
+        form: {
+          initial: true,
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          result.body.length.should.equal(1);
+          done();
+        })
+        .catch((err) => {
+          should.fail();
+          done();
+        });
+    });
   });
 
   describe('UnauthorizedAccess to API', () => {
