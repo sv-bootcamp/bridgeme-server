@@ -19,7 +19,14 @@ const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
-const defaultProfileUrl = 'https://s3.ap-northeast-2.amazonaws.com/yodabucket/profile/default/pattern.png';
+
+// Image constant vars.
+const bucketName = 'yodabucket';
+const IMAGE_SIZE_SMALL = '100';
+const IMAGE_SIZE_MEDIUM = '300';
+const IMAGE_SIZE_LARGE = '600';
+const S3_endpoint_href = `https://s3.ap-northeast-2.amazonaws.com/`;
+const defaultProfileUrl = `${S3_endpoint_href}${bucketName}/profile/default/pattern`;
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -143,7 +150,9 @@ export function localSignUp(req, res, next) {
     password: cryptoPassword,
     platform_type: 0,
     deviceToken: [],
-    profile_picture: defaultProfileUrl,
+    profile_picture_small: `${defaultProfileUrl}_small`,
+    profile_picture: `${defaultProfileUrl}_medium`,
+    profile_picture_large: `${defaultProfileUrl}_large`,
   };
 
   validateEmail(registrationData.email)
@@ -304,7 +313,9 @@ export function signIn(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
+          profile_picture_small: facebookResult.profile_picture_small,
           profile_picture: facebookResult.profile_picture,
+          profile_picture_large: facebookResult.profile_picture_large,
         };
         return User.findOne({ email: registrationData.email }).exec();
       })
@@ -414,29 +425,50 @@ function crawlByAccessTokenFacebook(accessToken) {
         // if HTTP request&response successfully.
         if (facebookDataResult.statusCode === 200 && result.verified === true) {
           // Crawl user profile_picture from facebook by access token.
-          return request({
-            method: 'GET',
-            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { type: 'large', redirect: '0' },
-            resolveWithFullResponse: true,
-          });
+          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_SMALL);
+        } else {
+          res.status(400).json(err);
         }
       })
-      .then((facebookPictureResult) => {
-        // if HTTP request&response successfully.
-        if (facebookPictureResult.statusCode === 200) {
-          if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
-            result.profile_picture = defaultProfileUrl;
-          } else {
-            result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
-          }
-
-          resolve(result);
+      .then((facebookSmallPictureResult) => {
+        if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+          result.profile_picture_small = `${defaultProfileUrl}_small`;
+        } else {
+          result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
         }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
+      })
+      .then((facebookPictureResult) => {
+        if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+          result.profile_picture = `${defaultProfileUrl}_medium`;
+        } else {
+          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+        }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
+      })
+      .then((facebookLargePictureResult) => {
+        if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
+          result.profile_picture_large = `${defaultProfileUrl}_large`;
+        } else {
+          result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
+        }
+  
+        resolve(result);
       })
       .catch((err) => {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
       });
+  });
+}
+
+function crawlFacebookProfileBySize(id, size) {
+  return request({
+    method: 'GET',
+    url: FB_GRAPH_BASE_URL + (id + '/') + FB_GRAPH_GET_PICTURE_URI,
+    qs: { height: size, redirect: '0' },
+    resolveWithFullResponse: true,
   });
 }
 
@@ -466,7 +498,6 @@ export function editGeneralProfile(req, res, next) {
         res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
       } else {
         const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-        const bucketName = 'yodabucket';
         let now = new Date();
         let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
         let encondedImage = new Buffer(req.body.image, 'base64');
@@ -480,8 +511,8 @@ export function editGeneralProfile(req, res, next) {
         S3.putObject(params).promise()
           .then((data, err) => {
             if (data) {
-              let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-              return updateProfile(req, profileUrl);
+              let profileUrl = `${S3_endpoint_href}${bucketName}/${imageKey}`;
+              return updateProfile(req, imageKey);
             } else {
               throw new Error(userCallback.ERR_AWS);
             }
@@ -532,10 +563,14 @@ function setKey() {
   });
 }
 
-function updateProfile(req, profileUrl) {
+function updateProfile(req, imageKey) {
   return new Promise((resolve, reject) => {
     User.update({ _id: req.user._id }, {
-      $set: { profile_picture: profileUrl },
+      $set: {
+        profile_picture_small: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
+        profile_picture: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
+        profile_picture_large: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
+      },
     }).exec()
       .then((data) => {
         resolve(data);

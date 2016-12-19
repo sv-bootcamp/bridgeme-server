@@ -21,6 +21,9 @@ let educationSchema = new Schema({
   location: {
     name: String,
   },
+  start_year: {
+    name: String,
+  },
   year: {
     name: String,
   },
@@ -79,7 +82,9 @@ let userSchema = new Schema({
   skills: String,
   company: String,
   timezone: Number,
+  profile_picture_small: String,
   profile_picture: String,
+  profile_picture_large: String,
   job_position: String,
   about: String,
   languages: String,
