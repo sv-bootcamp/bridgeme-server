@@ -1,0 +1,22 @@
+version: 2
+groups:
+  code-review:
+    approve_by_comment:
+      approve_regex: '(?i):shipit:|:\\+1:|LGTM'
+      enabled: true
+      reject_regex: ^Rejected
+    required: 1
+    reset_on_push:
+      enabled: false
+    users:
+    - ace0625
+    - djflexible
+    - ethkim
+    - heartjigi
+    - ifndefdeadmau5
+    - KyuaKwon
+    - lyw0149
+    - MechanicKim
+    - nlpenguin
+    - SarahhhC
+    - sv-yoda

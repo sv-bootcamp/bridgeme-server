@@ -11,24 +11,21 @@ const NOTIFICATION_CONFIG = {
 
 const NOTIFICATION_TYPE = {
   REQUEST: {
-    title: 'New Request',
     bodyParam: 'has requested a connection to you.',
   },
   CONNECTION: {
-    title: 'New Connection',
     bodyParam: 'and you are connected now.',
   },
   MESSAGE: {
-    title: 'New Message',
     bodyParam: 'You’ve got new message.',
   },
 };
 
-export function sendPush(receiverId, notificationType, bodyParam) {
-  let serverKey = '';
-  Key.findOne({ index: 1 }).exec()
-    .then((key) => {
-      serverKey = key.secretAccessKey;
+export function sendPush(receiverId, notificationType, bodyParam, extraData = {}) {
+  let fcmToken = '';
+  Key.findOne({ name: 'fcmToken' }).exec()
+    .then((fcmTokenObject) => {
+      fcmToken = fcmTokenObject.key;
       return User.findOne({ _id: receiverId }).exec();
     })
     .then((receiverProfile) => {
@@ -36,22 +33,28 @@ export function sendPush(receiverId, notificationType, bodyParam) {
         const message = {
           to: token,
           notification: {
-            title: NOTIFICATION_TYPE[notificationType].title,
             content_available: true,
             body: generateBody(notificationType, bodyParam),
             sound: NOTIFICATION_CONFIG.sound,
             vibrate: NOTIFICATION_CONFIG.vibrate,
           },
+          data: {
+            notificationType: notificationType,
+            extraData: extraData,
+          },
           priority: 'high',
         };
-        const fcm = new FCM(serverKey);
-        fcm.send(message);
+        const fcm = new FCM(fcmToken);
+        fcm.send(message)
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })
     .catch((err) => {
       console.log(err);
     });
-};
+}
 
 function generateBody(notificationType, bodyParam) {
   if (notificationType === 'MESSAGE') {
@@ -59,4 +62,4 @@ function generateBody(notificationType, bodyParam) {
   } else {
     return `${bodyParam} ${NOTIFICATION_TYPE[notificationType].bodyParam}`;
   }
-};
+}

@@ -15,9 +15,18 @@ import crypto from 'crypto';
 
 const Key = mongoose.model('key');
 const Match = mongoose.model('match');
+const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
+
+// Image constant vars.
+const bucketName = 'yodabucket';
+const IMAGE_SIZE_SMALL = '100';
+const IMAGE_SIZE_MEDIUM = '300';
+const IMAGE_SIZE_LARGE = '600';
+const S3_endpoint_href = `https://s3.ap-northeast-2.amazonaws.com/`;
+const defaultProfileUrl = `${S3_endpoint_href}${bucketName}/profile/default/pattern`;
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -25,27 +34,74 @@ const FB_GRAPH_GET_MY_PROFILE_URI = 'me/';
 const FB_GRAPH_GET_PICTURE_URI = 'picture/';
 const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,location,verified';
 
-// Return all users.
-export function getAll(req, res, next) {
-  User.find({}).exec()
-    .then((getAll) => {
-      res.status(200).json(getAll);
+export function getMentorList(req, res, next) {
+  const exceptList = [];
+  const pendingList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
+  let match = {
+    mentor_id: ObjectId(req.user._id),
+  };
+  findConnection(match, project, 'mentee_id')
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: matchController.MATCH_STATUS.ACCEPTED,
+      };
+      return findConnection(match, project, 'mentor_id');
+    })
+    .then((mentorList) => {
+      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: matchController.MATCH_STATUS.PENDING,
+      };
+      return findConnection(match, project, 'mentee_id');
+    })
+    .then((pendingStatus) => {
+      pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
+      return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+        .sort({ stamp_login: -1 }).exec();
+    })
+    .then((user) => {
+      const userData = JSON.parse(JSON.stringify(user));
+      return new Promise((resolve) => {
+        userData.forEach(item => {
+          if (pendingList.includes(item._id.toString())) {
+            item.pending = true;
+          }
+        });
+        resolve(userData);
+      });
+    })
+    .then((user) => {
+      res.status(200).json(user);
     })
     .catch((err) => {
       res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
     });
 }
 
-// Get all user list except logged in user
-export function getMentorList(req, res, next) {
-  User.find({ _id: { $ne: req.user._id }, mentorMode: { $ne: false } })
-    .sort({ stamp_login: -1 }).exec()
-    .then((mentorList) => {
-      res.status(200).json(mentorList);
-    })
-    .catch((err) => {
-      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-    });
+function findConnection(match, project, localField) {
+  return Match.aggregate([
+    {
+      $match: match,
+    },
+    {
+      $project: project,
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: localField,
+        foreignField: '_id',
+        as: 'list',
+      },
+    },
+  ]).exec();
 }
 
 // Return my profile.
@@ -94,6 +150,9 @@ export function localSignUp(req, res, next) {
     password: cryptoPassword,
     platform_type: 0,
     deviceToken: [],
+    profile_picture_small: `${defaultProfileUrl}_small`,
+    profile_picture: `${defaultProfileUrl}_medium`,
+    profile_picture_large: `${defaultProfileUrl}_large`,
   };
 
   validateEmail(registrationData.email)
@@ -254,7 +313,9 @@ export function signIn(req, res, next) {
           platform_type: req.body.platform_type,
           locale: facebookResult.locale,
           timezone: facebookResult.timezone,
+          profile_picture_small: facebookResult.profile_picture_small,
           profile_picture: facebookResult.profile_picture,
+          profile_picture_large: facebookResult.profile_picture_large,
         };
         return User.findOne({ email: registrationData.email }).exec();
       })
@@ -364,20 +425,37 @@ function crawlByAccessTokenFacebook(accessToken) {
         // if HTTP request&response successfully.
         if (facebookDataResult.statusCode === 200 && result.verified === true) {
           // Crawl user profile_picture from facebook by access token.
-          return request({
-            method: 'GET',
-            url: FB_GRAPH_BASE_URL + (result.id + '/') + FB_GRAPH_GET_PICTURE_URI,
-            qs: { type: 'large', redirect: '0' },
-            resolveWithFullResponse: true,
-          });
+          return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_SMALL);
+        } else {
+          res.status(400).json(err);
         }
       })
-      .then((facebookPictureResult) => {
-        // if HTTP request&response successfully.
-        if (facebookPictureResult.statusCode === 200) {
-          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
-          resolve(result);
+      .then((facebookSmallPictureResult) => {
+        if (JSON.parse(facebookSmallPictureResult.body).data.is_silhouette) {
+          result.profile_picture_small = `${defaultProfileUrl}_small`;
+        } else {
+          result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
         }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
+      })
+      .then((facebookPictureResult) => {
+        if (JSON.parse(facebookPictureResult.body).data.is_silhouette) {
+          result.profile_picture = `${defaultProfileUrl}_medium`;
+        } else {
+          result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
+        }
+  
+        return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
+      })
+      .then((facebookLargePictureResult) => {
+        if (JSON.parse(facebookLargePictureResult.body).data.is_silhouette) {
+          result.profile_picture_large = `${defaultProfileUrl}_large`;
+        } else {
+          result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
+        }
+  
+        resolve(result);
       })
       .catch((err) => {
         reject({ err_point: userCallback.ERR_INVALID_ACCESS_TOKEN });
@@ -385,77 +463,70 @@ function crawlByAccessTokenFacebook(accessToken) {
   });
 }
 
+function crawlFacebookProfileBySize(id, size) {
+  return request({
+    method: 'GET',
+    url: FB_GRAPH_BASE_URL + (id + '/') + FB_GRAPH_GET_PICTURE_URI,
+    qs: { height: size, redirect: '0' },
+    resolveWithFullResponse: true,
+  });
+}
+
 export function editGeneralProfile(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
-    .then((user) => {
-      if (user) {
-        return validateEmail(req.body.email);
-      } else {
-        throw err;
-      }
-    })
-    .then((isValid) => {
-      if (isValid) {
-        let editData = {
-          name: req.body.name,
-          email: req.body.email,
-          languages: req.body.languages,
-          location: req.body.location,
-          about: req.body.about,
-          education: req.body.education,
-          experience: req.body.experience,
-        };
-        return User.update({ _id: req.user._id }, { $set: editData }).exec();
-      } else {
-        throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
-      }
-    })
-    .then((updateData) => {
-      if (updateData) {
-        return setKey();
-      } else {
-        throw new Error(userCallback.ERR_MONGOOSE);
-      }
-    })
+  validateEmail(req.body.email)
+    .then(isValid => setKey())
     .then((keyData) => {
       if (keyData) {
-        if (req.body.image == null) {
-          res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
-        } else {
-          let bucketName = 'yodabucket';
-          let now = new Date();
-          let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
-          let encondedImage = new Buffer(req.body.image, 'base64');
-
-          const S3 = new AWS.S3({ region: 'ap-northeast-2' });
-          let params = {
-            Bucket: bucketName,
-            Key: imageKey,
-            ACL: 'public-read',
-            Body: encondedImage,
-          };
-          S3.putObject(params).promise()
-            .then((data, err) => {
-              if (data) {
-                let profileUrl = `${S3.endpoint.href}${bucketName}/${imageKey}`;
-                return updateProfile(req, profileUrl);
-              } else {
-                throw new Error(userCallback.ERR_AWS);
-              }
-            })
-            .then((success) => {
-              if (success) {
-                res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-              } else {
-                throw new Error(userCallback.ERR_MONGOOSE);
-              }
-            })
-            .catch((err) => {
-              res.status(400).json({ err_msg: err_stack });
-            });
-        }
+        return User.findOne({ _id: req.user._id }).exec();
       } else {
         throw new Error(userCallback.ERR_AWS_KEY);
+      }
+    })
+    .then((user) => {
+      user.name = req.body.name;
+      user.email = req.body.email;
+      user.languages = req.body.languages;
+      user.location = req.body.location;
+      user.about = req.body.about;
+      user.education = req.body.education;
+      user.experience = req.body.experience;
+
+      return user.save();
+    })
+    .then((updatedUser) => {
+      if (req.body.image === '') {
+        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE });
+      } else {
+        const S3 = new AWS.S3({ region: 'ap-northeast-2' });
+        let now = new Date();
+        let imageKey = `profile/${req.user._id}/${now.getTime()}.png`;
+        let encondedImage = new Buffer(req.body.image, 'base64');
+
+        let params = {
+          Bucket: bucketName,
+          Key: imageKey,
+          ACL: 'public-read',
+          Body: encondedImage,
+        };
+        S3.putObject(params).promise()
+          .then((data, err) => {
+            if (data) {
+              let profileUrl = `${S3_endpoint_href}${bucketName}/${imageKey}`;
+              return updateProfile(req, imageKey);
+            } else {
+              throw new Error(userCallback.ERR_AWS);
+            }
+          })
+          .then((success) => {
+            if (success) {
+              res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+            } else {
+              throw new Error(userCallback.ERR_MONGOOSE);
+            }
+          })
+          .catch((err) => {
+            res.status(400).json({ err_msg: err });
+          });
       }
     })
     .catch((err) => {
@@ -477,10 +548,13 @@ function validateEmail(req) {
 
 function setKey() {
   return new Promise((resolve, reject) => {
-    Key.findOne({ index: 0 }).exec()
-      .then((key) => {
-        AWS.config.accessKeyId = key.accessKeyId;
-        AWS.config.secretAccessKey = key.secretAccessKey;
+    Key.findOne({ name: 'accessKeyId' }).exec()
+      .then((accessKeyIdObject) => {
+        AWS.config.accessKeyId = accessKeyIdObject.key;
+        return Key.findOne({ name: 'secretAccessKey' }).exec();
+      })
+      .then((secretAccessKeyObject) => {
+        AWS.config.secretAccessKey = secretAccessKeyObject.key;
         resolve(true);
       })
       .catch((err) => {
@@ -489,10 +563,14 @@ function setKey() {
   });
 }
 
-function updateProfile(req, profileUrl) {
+function updateProfile(req, imageKey) {
   return new Promise((resolve, reject) => {
     User.update({ _id: req.user._id }, {
-      $set: { profile_picture: profileUrl },
+      $set: {
+        profile_picture_small: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
+        profile_picture: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
+        profile_picture_large: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
+      },
     }).exec()
       .then((data) => {
         resolve(data);

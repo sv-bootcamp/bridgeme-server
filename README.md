@@ -1,11 +1,36 @@
-# yoda  [![Build Status](https://travis-ci.org/sv-bootcamp/yoda.svg?branch=master)](https://travis-ci.org/sv-bootcamp/yoda)
-Codename Yoda. Mentoring.
+# BridgeMe - Server  <br>
+BridgeMe is an iOS and Android mobile app where users find career counselors and have a 1:1 communication.<br>
+This Repository is for our server-side source code. [This link](https://github.com/sv-bootcamp/bridgeme-client) is our client repository.<br><br>
+[![Build Status](https://travis-ci.org/sv-bootcamp/bridgeme-server.svg?branch=master)](https://travis-ci.org/sv-bootcamp/bridgeme-server)
 
-[Go to yoda wiki page](https://github.com/sv-bootcamp/wiki/wiki/Project-Yoda)
+## Run Environment
 
-How to test this on your local environment:
+#### Node.js (v7.2.0) - [Installation page](https://nodejs.org/ko/download/)
+#### MongoDB (v3.2.11) - [Installation page](https://www.mongodb.com/download-center?jmp=docs#community)
+#### Docker (v1.12.3)  - [Installation page](https://www.docker.com/products/docker#/linux)
+## Quick installation
+1. `git clone https://github.com/sv-bootcamp/bridgeme-server.git`
+2. `npm install -g gulp`
+3. `npm install`
+4. `sudo service mongod start`
+<br>
 
-1. `git clone https://github.com/sv-bootcamp/yoda.git` 
-2. `npm install` 
-3. `mongod --dbpath=/Users/ethkim/mongodb/data` (To start MongoDB with db path)
-3. `gulp` 
+## Run - Gulp
+`gulp`
+<br>
+
+## Run - Docker
+`docker run --link mongo:27017 -v ~/jwt_key.pem:/app/jwt_key.pem -p 80:5000 -d {IMAGE_ID}`
+<br>
+
+## Unit testing
+`gulp test`
+<br>
+## Documents
+The latest API Document is [here](https://brdgeme.com).
+
+## Wiki
+[Go to wiki page](https://github.com/sv-bootcamp/bridgeme-server/wiki)
+
+## Download application
+<a href='https://play.google.com/store/apps/details?id=com.svbootcamp.bridgeme&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img height='50px' alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
