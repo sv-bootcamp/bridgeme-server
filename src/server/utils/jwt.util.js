@@ -17,15 +17,12 @@ export default {
       }
     });
   },
-  
   generatePayload(user) {
     return { _id: user._id, name: user.name, email: user.email };
   },
-  
   createAccessToken(user) {
     return jwt.sign(this.generatePayload(user), KEY, JWT_CREATE_OPTION);
   },
-  
   updateAccessToken(previousToken, updateTokenCallback) {
     jwt.verify(previousToken, KEY, { ignoreExpiration: true }, function (err, decodedUser) {
       if (typeof updateTokenCallback === 'function') {
@@ -33,5 +30,4 @@ export default {
       }
     }.bind(this));
   },
-  
 };
