@@ -25,7 +25,7 @@ gulp.task('build', () => {
 
 gulp.task('build:server', () => {
   const envs = env.set({
-    NODE_ENV: 'development'
+    NODE_ENV: process.env.NODE_ENV === 'production' ? 'production' : 'development'
   });
   return gulp.src('./src/server/**/*.js')
     .pipe(envs)
