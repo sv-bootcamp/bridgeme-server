@@ -12,6 +12,89 @@ const router = express.Router();
 //POST method
 
 /**
+ * @api {post} /match/mentorList Request Mentor's list with career/expertise filter
+ * @apiName getMentorList
+ * @apiGroup User
+ *
+ * @apiParam {json} Parameter Sample when you request list with no filter.
+ *     {
+ *       initial: true
+ *     }
+ *
+ * @apiParam {json} Parameter Sample when you request list with filters.
+ *     {
+ *       "expertise" : [
+ *         {
+ *           "select" : "Get a new job",
+ *           "index" : 1
+ *         },
+ *         {
+ *           "select": "Career change",
+ *           "index": 4
+ *         }
+ *       ],
+ *       "career" : {
+ *         "area" : "Design",
+ *         "role" : "Visual/UI Designer",
+ *         "years" : "All",
+ *         "education_background" : "All"
+ *       }
+ *     }
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        Mentor1's Info
+ *      },
+ *      {
+ *        Mentor2's Info
+ *      },
+ *      {
+ *        Mentor3's Info
+ *      },....
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.post('/mentorList', apiProtector, match.getMentorList);
+
+/**
+ * @api {post} /match/mentorList/count Request expected user number per expertise with career filter
+ * @apiName countExpectedExpertiseMatching
+ * @apiGroup User
+ *
+ *
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *        Mentor1's Info
+ *      },
+ *      {
+ *        Mentor2's Info
+ *      },
+ *      {
+ *        Mentor3's Info
+ *      },....
+ *     ]
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.post('/mentorList/count', apiProtector, match.countExpectedExpertiseMatching);
+
+/**
  * @api {post} /match/request Send request to mentor
  * @apiName requestMentoring
  * @apiDescription Mentee request mentoring to mentor via message.
