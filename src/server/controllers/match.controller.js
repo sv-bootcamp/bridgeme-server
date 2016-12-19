@@ -27,7 +27,7 @@ export function getMentorList(req, res, next) {
 
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
-      if (req.body.initial === true) {
+      if (req.body.initial === 'true') {
         return mentorList;
       }
 
