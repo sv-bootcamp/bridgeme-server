@@ -11,15 +11,12 @@ const NOTIFICATION_CONFIG = {
 
 const NOTIFICATION_TYPE = {
   REQUEST: {
-    title: 'New Request',
     bodyParam: 'has requested a connection to you.',
   },
   CONNECTION: {
-    title: 'New Connection',
     bodyParam: 'and you are connected now.',
   },
   MESSAGE: {
-    title: 'New Message',
     bodyParam: 'You’ve got new message.',
   },
 };
@@ -36,7 +33,6 @@ export function sendPush(receiverId, notificationType, bodyParam, extraData = {}
         const message = {
           to: token,
           notification: {
-            title: NOTIFICATION_TYPE[notificationType].title,
             content_available: true,
             body: generateBody(notificationType, bodyParam),
             sound: NOTIFICATION_CONFIG.sound,
