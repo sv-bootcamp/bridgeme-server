@@ -1,6 +1,6 @@
 # BridgeMe - Server  <br>
 BridgeMe is an iOS and Android mobile app where users find career counselors and have a 1:1 communication.<br>
-This Repository is for our server-side source code. [This link](https://github.com/sv-bootcamp/wiki/wiki/Project-Yoda) is our client repository.<br><br>
+This Repository is for our server-side source code. [This link](https://github.com/sv-bootcamp/bridgeme-client) is our client repository.<br><br>
 [![Build Status](https://travis-ci.org/sv-bootcamp/bridgeme-server.svg?branch=master)](https://travis-ci.org/sv-bootcamp/bridgeme-server)
 
 ## Run Environment
@@ -20,7 +20,7 @@ This Repository is for our server-side source code. [This link](https://github.c
 <br>
 
 ## Run - Docker
-`docker run --link mongo:27017 -v ~/jwt_key.pem:/app/jwt_key.pem -p 80:5000 -d IMAGE_ID`
+`docker run --link mongo:27017 -v ~/jwt_key.pem:/app/jwt_key.pem -p 80:5000 -d {IMAGE_ID}`
 <br>
 
 ## Unit testing
