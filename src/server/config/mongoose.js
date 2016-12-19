@@ -6,10 +6,8 @@ import '../models/users.model';
 import '../models/match.model';
 import '../models/secretCode.model';
 
-const DATABASE_BASE_URL = process.env.NODE_ENV === 'production' ?
-  'mongodb://172.17.0.2:27017/' : 'mongodb://localhost:27017/';
+const DATABASE_BASE_URL = 'mongodb://localhost:27017/';
 const DATABASE_ENV_URL = {
-  production: 'BridgeMe',
   development: 'BridgeMe',
   test: 'BridgeMeTest',
 };
