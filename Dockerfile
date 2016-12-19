@@ -12,4 +12,4 @@ COPY . /app
 
 EXPOSE 5000
 
-CMD [ "NODE_ENV=production", ""npm", "start" ]
+CMD [ "NODE_ENV=production", "npm", "start" ]
