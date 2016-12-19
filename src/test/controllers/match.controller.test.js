@@ -275,7 +275,12 @@ describe('Test Match API', () => {
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
-          initial: true,
+          career: {
+            area: "Design",
+            role: "Visual/UI Designer",
+            years : "All",
+            education_background : "All",
+          }
         },
         resolveWithFullResponse: true,
         json: true,
@@ -285,7 +290,6 @@ describe('Test Match API', () => {
       })
         .then((result) => {
           result.statusCode.should.equal(200);
-          result.body.length.should.equal(1);
           done();
         })
         .catch((err) => {
