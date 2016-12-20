@@ -63,7 +63,7 @@ describe('Test Match API', () => {
         });
     });
 
-    it('User B request mentoring to User A', function (done) {
+    it('User B request mentoring to User A', (done) => {
       //TODO issue :  this.timeout() doesn't work with arrow function.
       //For wating to send mail.
       this.timeout(10000);

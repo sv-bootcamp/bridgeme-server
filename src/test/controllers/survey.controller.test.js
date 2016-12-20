@@ -91,7 +91,7 @@ describe('Test Survey API', () => {
         });
     });
 
-    it('request /request/:type with mentee (Valid parameter).', function (done) {
+    it('request /request/:type with mentee (Valid parameter).', (done) => {
       this.timeout(4000);
       let options = {
         method: 'GET',
@@ -118,7 +118,7 @@ describe('Test Survey API', () => {
         });
     });
 
-    it('request /request/:type with mentor (Valid parameter).', function (done) {
+    it('request /request/:type with mentor (Valid parameter).', (done) => {
       this.timeout(4000);
       let options = {
         method: 'GET',

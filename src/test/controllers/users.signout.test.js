@@ -1,9 +1,9 @@
 import rp from 'request-promise';
 import userData from '../fixtures/userData';
 
-describe('Test User API', function () {
-  describe('/signOut', function () {
-    it(': Sign out', done => {
+describe('Test User API', () => {
+  describe('/signOut', () => {
+    it(': Sign out', (done) => {
       rp({
         method: 'POST',
         uri: 'http://localhost:8000/users/signOut',
@@ -16,11 +16,11 @@ describe('Test User API', function () {
           access_token: userData.USER_B_DATA.access_token,
         },
       })
-        .then(function (result) {
+        .then((result) => {
           result.statusCode.should.equal(200);
           done();
         })
-        .catch(function (err) {
+        .catch((err) => {
           should.fail();
           done();
         });
