@@ -148,7 +148,14 @@ export function responseMentoring(req, res, next) {
     Match.findOne({ _id: req.body.match_id }).exec()
       .then((match) => {
         pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
-        return Match.update({ _id: req.body.match_id }, { status: req.body.option, response_date: Date.now() }).exec();
+        return Match.update(
+          {
+            _id: req.body.match_id
+          },
+          {
+            status: req.body.option,
+            response_date: Date.now()
+          }).exec();
       })
       .then((match) => {
         return User.findOne({ _id: match.mentor_id }).exec();

@@ -63,7 +63,16 @@ export function getMentorList(req, res, next) {
     })
     .then((pendingStatus) => {
       pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
-      return User.find({ _id: { $ne: req.user._id, $nin: exceptList, }, mentorMode: { $ne: false }, })
+      return User.find(
+        {
+          _id: {
+            $ne: req.user._id,
+            $nin: exceptList,
+          },
+          mentorMode: {
+            $ne: false
+          },
+        })
         .sort({ stamp_login: -1 }).exec();
     })
     .then((user) => {
@@ -567,9 +576,12 @@ function updateProfile(req, imageKey) {
   return new Promise((resolve, reject) => {
     User.update({ _id: req.user._id }, {
       $set: {
-        profile_picture_small: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
-        profile_picture: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
-        profile_picture_large: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
+        profile_picture_small:
+          `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
+        profile_picture:
+          `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
+        profile_picture_large:
+          `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
       },
     }).exec()
       .then((data) => {
