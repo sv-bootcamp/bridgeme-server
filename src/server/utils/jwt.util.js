@@ -33,6 +33,4 @@ export default {
       }
     }.bind(this));
   },
-
 };
-
