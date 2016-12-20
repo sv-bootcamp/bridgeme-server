@@ -85,13 +85,17 @@ function checkCareerFilter(userInfo, filter) {
   if (userBool.area) {
     userBool.role = 1;
   } else {
-    userBool.area = userInfo.area === filter.area || userBool.area ? 1 : 0;
+    userBool.area = userInfo.area === filter.area ? 1 : 0;
     userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
   }
 
-  if (userInfo.years == filter.years && !userBool.years) userBool.years = 1;
-  if (userInfo.education_background == filter.education_background && !userBool.background)
+  if (userInfo.years === filter.years && !userBool.years) {
+    userBool.years = 1;
+  }
+
+  if (userInfo.education_background === filter.education_background && !userBool.background) {
     userBool.background = 1;
+  }
 
   if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
   else return false;
