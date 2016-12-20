@@ -437,7 +437,7 @@ function crawlByAccessTokenFacebook(accessToken) {
         } else {
           result.profile_picture_small = JSON.parse(facebookSmallPictureResult.body).data.url;
         }
-  
+
         return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_MEDIUM);
       })
       .then((facebookPictureResult) => {
@@ -446,7 +446,7 @@ function crawlByAccessTokenFacebook(accessToken) {
         } else {
           result.profile_picture = JSON.parse(facebookPictureResult.body).data.url;
         }
-  
+
         return crawlFacebookProfileBySize(result.id, IMAGE_SIZE_LARGE);
       })
       .then((facebookLargePictureResult) => {
@@ -455,7 +455,7 @@ function crawlByAccessTokenFacebook(accessToken) {
         } else {
           result.profile_picture_large = JSON.parse(facebookLargePictureResult.body).data.url;
         }
-  
+
         resolve(result);
       })
       .catch((err) => {
