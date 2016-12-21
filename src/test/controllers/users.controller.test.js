@@ -112,7 +112,7 @@ describe('Test User API', () => {
 
   describe('/me', () => {
     it('request /me without access_token.', (done) => {
-      unauthorizedAccessTest(API_BASE_URL + '/me', done);
+      unauthorizedAccessTest('GET', API_BASE_URL + '/me', done);
     });
 
     it('request /me with access_token.', (done) => {
@@ -140,37 +140,9 @@ describe('Test User API', () => {
     });
   });
 
-  describe('/mentorList', () => {
-    it('request /mentorList without access_token.', (done) => {
-      unauthorizedAccessTest(API_BASE_URL + '/mentorList', done);
-    });
-
-    it('request /mentorList with access_token.', (done) => {
-      rp({
-        method: 'GET',
-        uri: `${API_BASE_URL}/mentorList`,
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.statusCode.should.equal(200);
-          let body = result.body;
-          body.length.should.equal(0);
-          done();
-        })
-        .catch((err) => {
-          should.fail();
-          done();
-        });
-    });
-  });
-
   describe('/id/:id', () => {
     it('request /id/:id without access_token.', (done) => {
-      unauthorizedAccessTest(`${API_BASE_URL}/id/${userData.USER_A_DATA._id}`, done);
+      unauthorizedAccessTest('GET', `${API_BASE_URL}/id/${userData.USER_A_DATA._id}`, done);
     });
 
     it('request /id/:id with access_token.', (done) => {
@@ -690,9 +662,9 @@ describe('/accessToken', () => {
   });
 });
 
-function unauthorizedAccessTest(uri, done) {
+function unauthorizedAccessTest(method, uri, done) {
   rp({
-    method: 'GET',
+    method: method,
     uri: uri,
     resolveWithFullResponse: true,
     json: true,
