@@ -241,20 +241,78 @@ describe('Test Match API', () => {
     });
   });
 
-  describe('AnauthorizedAccess to API', () => {
+  describe('/mentorList', () => {
+    it('request /mentorList without access_token.', (done) => {
+      unauthorizedAccessTest('POST', API_BASE_URL + '/match/mentorList', done);
+    });
+
+    it('request /mentorList with access_token.', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList`,
+        form: {
+          initial: 'true',
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          result.body.length.should.equal(1);
+          done();
+        })
+        .catch((err) => {
+          should.fail();
+          done();
+        });
+    });
+
+    it('request /mentorList/count', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList/count`,
+        form: {
+          career: {
+            area: 'Design',
+            role: 'Visual/UI Designer',
+            years: 'All',
+            education_background: 'All',
+          },
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+  describe('UnauthorizedAccess to API', () => {
     it('request /activity without session coockie.', (done) => {
-      anauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
+      unauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
     });
     it('request /request without session coockie.', (done) => {
-      anauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
+      unauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
     });
     it('request /response without session coockie.', (done) => {
-      anauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
+      unauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
     });
   });
 });
 
-function anauthorizedAccessTest(method, uri, done) {
+function unauthorizedAccessTest(method, uri, done) {
   rp({
     method: method,
     uri: uri,
