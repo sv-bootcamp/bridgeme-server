@@ -27,8 +27,8 @@ const expertiseSchema = new Schema({
 });
 
 filterSchema.set('toJSON', {
-  getters: true,  // Bring all elements include virtuals.
-  virtuals: true,  // Set all virtuals show up in the console.log output.
+  getters: true,
+  virtuals: true,
 });
 
 export default mongoose.model('filter', filterSchema);
