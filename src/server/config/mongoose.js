@@ -1,3 +1,4 @@
+import fs from 'fs';
 import mongoose from 'mongoose';
 import '../models/answer.model';
 import '../models/key.model';
@@ -6,7 +7,8 @@ import '../models/users.model';
 import '../models/match.model';
 import '../models/secretCode.model';
 
-const DATABASE_BASE_URL = 'mongodb://api:27017/';
+const HOST_NAME = process.env.NODE_ENV !== 'test' ? '172.17.0.2' : 'localhost';
+const DATABASE_BASE_URL = `mongodb://${HOST_NAME}:27017/`;
 const DATABASE_ENV_URL = {
   development: 'BridgeMe',
   test: 'BridgeMeTest',
