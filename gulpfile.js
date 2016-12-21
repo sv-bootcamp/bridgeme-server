@@ -2,7 +2,6 @@ const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const env = require('gulp-env');
 const envFile = require('node-env-file');
-const fs = require('fs');
 const gulp = require('gulp');
 const nodemon = require('gulp-nodemon');
 const install = require('gulp-install');
@@ -11,6 +10,7 @@ const jscs = require('gulp-jscs');
 const mocha = require('gulp-mocha');
 const runSequence = require('run-sequence');
 const sourcemaps = require('gulp-sourcemaps');
+const fs = require('fs');
 
 gulp.task('default', () => {
   runSequence(['build', 'jscs', 'apidoc'], 'server:development');
