@@ -24,6 +24,7 @@ export function getMentorList(req, res, next) {
   let careerFilteredList = [];
   let careerFilteredIdList = [];
   let filteredList = [];
+  let filteredIdList = [];
 
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
@@ -37,7 +38,6 @@ export function getMentorList(req, res, next) {
           }
         });
       }
-      console.log(careerFilteredList);
       return careerFilteredList;
     })
     .then((careerFilteredList) => {
@@ -47,8 +47,9 @@ export function getMentorList(req, res, next) {
         careerFilteredList.forEach((user) => {
           user.expertise.forEach((userExpertise) => {
             if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
-              && arrayContainsElement(careerFilteredIdList, user._id)) {
+              && !arrayContainsElement(filteredIdList, user._id)) {
               filteredList.push(user);
+              filteredIdList.push(user._id);
             }
           });
         });
@@ -110,7 +111,7 @@ function checkExpertiseFilter(arr, val) {
 
 function arrayContainsElement(arr, val) {
   return arr.some((arrVal) => {
-    return val === arrVal;
+    return val == arrVal;
   });
 }
 
