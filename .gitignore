@@ -5,13 +5,12 @@ dist-server/
 dist-test/
 coverage/
 .idea/
-apidoc/
 
 # DB Folder
 data/
 
-# scripts
-mongod
+# Env File
+*.list
 
 # Private Key
 *.pem

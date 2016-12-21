@@ -1,34 +1,46 @@
 const apidoc = require('gulp-apidoc');
 const babel = require('gulp-babel');
 const env = require('gulp-env');
+const envFile = require('node-env-file');
 const gulp = require('gulp');
+const nodemon = require('gulp-nodemon');
 const install = require('gulp-install');
 const istanbul = require('gulp-istanbul');
 const jscs = require('gulp-jscs');
 const mocha = require('gulp-mocha');
 const runSequence = require('run-sequence');
-const server = require('gulp-develop-server');
 const sourcemaps = require('gulp-sourcemaps');
+const fs = require('fs');
 
 gulp.task('default', () => {
-  runSequence(['build:server', 'build:test', 'jscs','apidoc'], 'server:start');
+  runSequence(['build', 'jscs', 'apidoc'], 'server:development');
 });
 
-gulp.task('install', () => {
-  gulp.src('./package.json')
-    .pipe(install());
+gulp.task('prod', () => {
+  runSequence(['build', 'apidoc'], 'server:production');
+});
+
+gulp.task('test', ['pre-test'], () => {
+  if (fs.existsSync('./env.test.list')) {
+    envFile('./env.test.list');
+  }
+
+  return gulp.src([
+    'dist-test/test/utils.js',
+    'dist-test/test/controllers/users.controller.test.js',
+    'dist-test/test/controllers/survey.controller.test.js',
+    'dist-test/test/controllers/match.controller.test.js',
+    'dist-test/test/controllers/users.signout.test.js',])
+    .pipe(mocha())
+    .pipe(istanbul.writeReports())
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: 40 } }))
+    .once('end', () => {
+      process.exit();
+    });
 });
 
 gulp.task('build', () => {
-  runSequence('build:server', 'build:test');
-});
-
-gulp.task('build:server', () => {
-  const envs = env.set({
-    NODE_ENV: 'development'
-  });
   return gulp.src('./src/server/**/*.js')
-    .pipe(envs)
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['es2015'],
@@ -39,63 +51,55 @@ gulp.task('build:server', () => {
 
 gulp.task('build:test', () => {
     const envs = env.set({
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
     });
-  return gulp.src('./src/**/*.js')
-    .pipe(envs)
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['es2015'],
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist-test'));
-});
+    return gulp.src('./src/**/*.js')
+      .pipe(envs)
+      .pipe(sourcemaps.init())
+      .pipe(babel({
+        presets: ['es2015'],
+      }))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest('dist-test'));
+  });
 
-gulp.task('server:start', () => {
-  server.listen({
-    path: 'server',
+gulp.task('server:development', () => {
+  envFile('./env.dev.list');
+  nodemon({
+    script: 'server.js',
+    env: { NODE_ENV: 'development' },
   });
 });
 
-gulp.task('server:restart', () => {
-  gulp.watch(['server'], server.restart);
+gulp.task('server:production', () => {
+  envFile('./env.prod.list');
+  nodemon({
+    script: 'server.js',
+    env: { NODE_ENV: 'production' },
+  });
 });
 
-gulp.task('pre-test',['build:test'], function () {
+gulp.task('pre-test', ['build:test'], () => {
   return gulp.src(['dist-test/server/**/*.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task('test', ['pre-test'], function () {
-  const envs = env.set({
-    NODE_ENV: 'test'
-  });
-  return gulp.src([
-    'dist-test/test/utils.js',
-    'dist-test/test/controllers/users.controller.test.js',
-    'dist-test/test/controllers/survey.controller.test.js',
-    'dist-test/test/controllers/match.controller.test.js',
-    'dist-test/test/controllers/users.signout.test.js',])
-    .pipe(envs)
-    .pipe(mocha())
-    .pipe(istanbul.writeReports())
-    .pipe(istanbul.enforceThresholds({ thresholds: { global: 40 } }))
-    .once('end', function () {
-      process.exit();
-    });
+gulp.task('install', () => {
+  gulp.src('./package.json')
+    .pipe(install());
 });
 
 gulp.task('jscs', () => {
   return gulp.src('./src/**/*.js')
-    .pipe(jscs({fix: true,}))
+    .pipe(jscs({ fix: true, }))
     .pipe(gulp.dest('src'));
 });
 
 gulp.task('apidoc', (done) => {
   apidoc({
-    src: "src",
-    dest: "dist-server/apidoc/"
+    src: 'src',
+    dest: 'dist-server/apidoc/',
   }, done);
 });
 
