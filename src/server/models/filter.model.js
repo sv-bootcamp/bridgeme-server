@@ -6,6 +6,11 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+const expertiseSchema = new Schema({
+  select: String,
+  index: Number,
+});
+
 let filterSchema = new Schema({
   user_id: Schema.Types.ObjectId,
   expertise: [expertiseSchema],
@@ -19,11 +24,6 @@ let filterSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-});
-
-const expertiseSchema = new Schema({
-  select: String,
-  index: Number,
 });
 
 filterSchema.set('toJSON', {
