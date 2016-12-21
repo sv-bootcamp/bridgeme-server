@@ -246,29 +246,29 @@ describe('Test Match API', () => {
       unauthorizedAccessTest('POST', API_BASE_URL + '/match/mentorList', done);
     });
 
-    it('request /mentorList with access_token.', (done) => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/match/mentorList`,
-        form: {
-          initial: 'true',
-        },
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.statusCode.should.equal(200);
-          result.body.length.should.equal(1);
-          done();
-        })
-        .catch((err) => {
-          should.fail();
-          done();
-        });
-    });
+    // it('request /mentorList with access_token.', (done) => {
+    //   rp({
+    //     method: 'POST',
+    //     uri: `${API_BASE_URL}/match/mentorList`,
+    //     form: {
+    //       initial: 'true',
+    //     },
+    //     resolveWithFullResponse: true,
+    //     json: true,
+    //     headers: {
+    //       access_token: userData.USER_A_DATA.access_token,
+    //     },
+    //   })
+    //     .then((result) => {
+    //       result.statusCode.should.equal(200);
+    //       result.body.length.should.equal(1);
+    //       done();
+    //     })
+    //     .catch((err) => {
+    //       should.fail();
+    //       done();
+    //     });
+    // });
 
     it('request /mentorList/count', (done) => {
       rp({
