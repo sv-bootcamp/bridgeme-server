@@ -28,7 +28,7 @@ export function getMentorList(req, res, next) {
 
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
-      if (req.body.initial === 'true') {
+      if (req.body.initial === true) {
         careerFilteredList = mentorList;
       } else {
         mentorList.forEach((user) => {
@@ -38,10 +38,11 @@ export function getMentorList(req, res, next) {
           }
         });
       }
+
       return careerFilteredList;
     })
     .then((careerFilteredList) => {
-      if (!req.body.expertise.length) {
+      if (req.body.expertise === undefined) {
         filteredList = careerFilteredList;
       } else {
         careerFilteredList.forEach((user) => {
