@@ -153,8 +153,8 @@ export function getInitialMentorList(userId) {
       .then((mentorList) => {
         mentorList.forEach(user => exceptList.push(user.mentor_id));
         match = {
-          mentee_id: ObjectId(req.user._id),
-          status: matchController.MATCH_STATUS.PENDING,
+          mentee_id: ObjectId(userId),
+          status: MATCH_STATUS.PENDING,
         };
         return findConnection(match, project, 'mentee_id');
       })
@@ -162,8 +162,7 @@ export function getInitialMentorList(userId) {
         pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
         return User.find(
           {
-            _id:
-            {
+            _id: {
               $ne: userId,
               $nin: exceptList,
             },
