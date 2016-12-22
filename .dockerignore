@@ -1,0 +1,17 @@
+#Useless Folders
+.c9/
+node_modules/
+dist-server/
+dist-test/
+
+coverage/
+.idea/
+
+# DB Folder
+data/
+
+# Env File
+*.list
+
+# Private Key
+*.pem

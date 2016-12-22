@@ -15,6 +15,7 @@ export default {
   ERR_INVALID_SECRETCODE: 'This secret code had expired.',
   ERR_MONGOOSE: 'An error occured at mongoose.',
   ERR_USER_NOT_FOUND: 'No such account exists.',
+  ERR_UNDEFINED_KEY: 'Key is undefined.',
   ERR_WRONG_PASSWORD: 'The password is not correct.',
   SUCCESS_EDIT: 'Edit success.',
   SUCCESS_RESET_PASSWORD: 'The password had been changed successfully.',
