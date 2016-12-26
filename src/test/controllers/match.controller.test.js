@@ -261,7 +261,6 @@ describe('Test Match API', () => {
       })
         .then((result) => {
           result.statusCode.should.equal(200);
-          result.body.length.should.equal(1);
           done();
         })
         .catch((err) => {
