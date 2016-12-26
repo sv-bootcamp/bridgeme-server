@@ -1,7 +1,7 @@
 {
-  "name": "YODA",
-  "version": "0.1.0",
-  "description": "YODA Server API",
-  "title": "Hello! YODA.",
-  "url" : "https://github.com/sv-bootcamp/yoda"
+  "name": "BridgeMe",
+  "version": "2.0.0",
+  "description": "BridgeMe Server API",
+  "title": "Hello! BridgeMe.",
+  "url" : "https://github.com/sv-bootcamp/bridgeme-server"
 }

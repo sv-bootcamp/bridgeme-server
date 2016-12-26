@@ -64,8 +64,6 @@ const router = express.Router();
  */
 router.post('/mentorList', apiProtector, match.getMentorList);
 
-router.post('/test', apiProtector, match.mentorList);
-
 /**
  * @api {post} /match/mentorList/count Request expected user number per expertise with career filter
  * @apiName countExpectedExpertiseMatching

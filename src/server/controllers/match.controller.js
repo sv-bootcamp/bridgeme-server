@@ -66,44 +66,6 @@ export function getMentorList(req, res, next) {
     });
 }
 
-export function mentorList(req, res, next) {
-  const exceptList = [];
-  const project = {
-    mentee_id: 1,
-    mentor_id: 1,
-  };
-  let match = { mentor_id: ObjectId(req.user._id) };
-
-  findConnection(match, project, 'mentee_id')
-    .then((menteeList) => {
-      menteeList.forEach(user => exceptList.push(user.mentee_id));
-      match = {
-        mentee_id: ObjectId(req.user._id),
-        status: MATCH_STATUS.ACCEPTED,
-      };
-      return findConnection(match, project, 'mentor_id');
-    })
-    .then((mentorList) => {
-      mentorList.forEach(user => exceptList.push(user.mentor_id));
-      return User.find({
-        _id: {
-          $ne: req.user._id,
-          $nin: exceptList,
-        },
-        mentorMode: {
-          $ne: false,
-        },
-      })
-      .sort({ stamp_login: -1 }).exec();
-    })
-    .then((user) => {
-      res.status(200).json(user);
-    })
-    .catch((err) => {
-      res.status(400).json({ err_point: userCallback.ERR_MONGOOSE, err: err });
-    });
-}
-
 function checkExpertiseFilter(arr, val) {
   return arr.some((arrVal) => {
     return val === arrVal.select;

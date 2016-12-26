@@ -1,8 +1,9 @@
 import FCM from 'fcm-push';
 import mongoose from 'mongoose';
 
-const Key = mongoose.model('key');
 const User = mongoose.model('user');
+
+const FCM_TOKEN = process.env.FCM_TOKEN;
 
 const NOTIFICATION_CONFIG = {
   sound: 'default',
@@ -22,12 +23,7 @@ const NOTIFICATION_TYPE = {
 };
 
 export function sendPush(receiverId, notificationType, bodyParam, extraData = {}) {
-  let fcmToken = '';
-  Key.findOne({ name: 'fcmToken' }).exec()
-    .then((fcmTokenObject) => {
-      fcmToken = fcmTokenObject.key;
-      return User.findOne({ _id: receiverId }).exec();
-    })
+  User.findOne({ _id: receiverId }).exec()
     .then((receiverProfile) => {
       receiverProfile.deviceToken.forEach(token => {
         const message = {
@@ -44,7 +40,7 @@ export function sendPush(receiverId, notificationType, bodyParam, extraData = {}
           },
           priority: 'high',
         };
-        const fcm = new FCM(fcmToken);
+        const fcm = new FCM(FCM_TOKEN);
         fcm.send(message)
           .catch((err) => {
             console.log(err);

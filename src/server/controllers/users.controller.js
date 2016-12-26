@@ -13,20 +13,23 @@ import crypto from 'crypto';
  * Methods about user, register user and handle session
  */
 
-const Key = mongoose.model('key');
 const Match = mongoose.model('match');
 const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };
 
+// AWS constant vars.
+const AWS_ACCESS_KEY_ID  = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+
 // Image constant vars.
 const bucketName = 'yodabucket';
 const IMAGE_SIZE_SMALL = '100';
 const IMAGE_SIZE_MEDIUM = '300';
 const IMAGE_SIZE_LARGE = '600';
-const S3_endpoint_href = `https://s3.ap-northeast-2.amazonaws.com/`;
-const defaultProfileUrl = `${S3_endpoint_href}${bucketName}/profile/default/pattern`;
+const S3_ENDPOINT_HREF = `https://s3.ap-northeast-2.amazonaws.com/`;
+const defaultProfileUrl = `${S3_ENDPOINT_HREF}${bucketName}/profile/default/pattern`;
 
 // FB Graph API constant vars.
 const FB_GRAPH_BASE_URL = 'https://graph.facebook.com/';
@@ -404,13 +407,10 @@ function crawlFacebookProfileBySize(id, size) {
 
 export function editGeneralProfile(req, res, next) {
   validateEmail(req.body.email)
-    .then(isValid => setKey())
-    .then((keyData) => {
-      if (keyData) {
-        return User.findOne({ _id: req.user._id }).exec();
-      } else {
-        throw new Error(userCallback.ERR_AWS_KEY);
-      }
+    .then((isValid) => {
+      AWS.config.accessKeyId = AWS_ACCESS_KEY_ID;
+      AWS.config.secretAccessKey = AWS_SECRET_ACCESS_KEY;
+      return User.findOne({ _id: req.user._id }).exec();
     })
     .then((user) => {
       user.name = req.body.name;
@@ -441,7 +441,7 @@ export function editGeneralProfile(req, res, next) {
         S3.putObject(params).promise()
           .then((data, err) => {
             if (data) {
-              let profileUrl = `${S3_endpoint_href}${bucketName}/${imageKey}`;
+              let profileUrl = `${S3_ENDPOINT_HREF}${bucketName}/${imageKey}`;
               return updateProfile(req, imageKey);
             } else {
               throw new Error(userCallback.ERR_AWS);
@@ -476,30 +476,13 @@ function validateEmail(req) {
   });
 }
 
-function setKey() {
-  return new Promise((resolve, reject) => {
-    Key.findOne({ name: 'accessKeyId' }).exec()
-      .then((accessKeyIdObject) => {
-        AWS.config.accessKeyId = accessKeyIdObject.key;
-        return Key.findOne({ name: 'secretAccessKey' }).exec();
-      })
-      .then((secretAccessKeyObject) => {
-        AWS.config.secretAccessKey = secretAccessKeyObject.key;
-        resolve(true);
-      })
-      .catch((err) => {
-        reject();
-      });
-  });
-}
-
 function updateProfile(req, imageKey) {
   return new Promise((resolve, reject) => {
     User.update({ _id: req.user._id }, {
       $set: {
-        profile_picture_small: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
-        profile_picture: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
-        profile_picture_large: `${S3_endpoint_href}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
+        profile_picture_small: `${S3_ENDPOINT_HREF}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_SMALL}`,
+        profile_picture: `${S3_ENDPOINT_HREF}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_MEDIUM}`,
+        profile_picture_large: `${S3_ENDPOINT_HREF}${bucketName}/copy/${imageKey}.${IMAGE_SIZE_LARGE}`,
       },
     }).exec()
       .then((data) => {
