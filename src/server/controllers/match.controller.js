@@ -42,7 +42,7 @@ export function getMentorList(req, res, next) {
       return careerFilteredList;
     })
     .then((careerFilteredList) => {
-      if (req.body.expertise === undefined) {
+      if (req.body.expertise === undefined || req.body.expertise.length === 0) {
         filteredList = careerFilteredList;
       } else {
         careerFilteredList.forEach((user) => {
@@ -62,6 +62,7 @@ export function getMentorList(req, res, next) {
       res.status(200).json(filteredList);
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err: err });
     });
 }
