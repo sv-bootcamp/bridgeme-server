@@ -137,6 +137,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
 function getInitialMentorList(userId) {
   return new Promise((resolve, reject) => {
     const exceptList = [];
+    const pendingList = [];
     const project = {
       mentee_id: 1,
       mentor_id: 1,
@@ -156,10 +157,17 @@ function getInitialMentorList(userId) {
       })
       .then((mentorList) => {
         mentorList.forEach(user => exceptList.push(user.mentor_id));
+        match = {
+          mentee_id: ObjectId(userId),
+          status: MATCH_STATUS.PENDING,
+        };
+        return findConnection(match, project, 'mentee_id');
+      })
+      .then((pendingStatus) => {
+        pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
         return User.find(
           {
-            _id:
-            {
+            _id: {
               $ne: userId,
               $nin: exceptList,
             },
@@ -168,6 +176,17 @@ function getInitialMentorList(userId) {
             },
           })
           .sort({ stamp_login: -1 }).exec();
+      })
+      .then((user) => {
+        const userData = JSON.parse(JSON.stringify(user));
+        return new Promise((resolve) => {
+          userData.forEach(item => {
+            if (pendingList.includes(item._id.toString())) {
+              item.pending = true;
+            }
+          });
+          resolve(userData);
+        });
       })
       .then((user) => {
         resolve(user);
