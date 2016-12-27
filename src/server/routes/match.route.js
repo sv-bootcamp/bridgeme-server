@@ -16,11 +16,6 @@ const router = express.Router();
  * @apiName getMentorList
  * @apiGroup User
  *
- * @apiParam {json} Parameter Sample when you request list with no filter.
- *     {
- *       initial: true
- *     }
- *
  * @apiParam {json} Parameter Sample when you request list with filters.
  *     {
  *       "expertise" : [

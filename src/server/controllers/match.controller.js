@@ -62,16 +62,12 @@ export function getMentorList(req, res, next) {
         .sort({stamp_login: -1}).exec();
     })
     .then((mentorList) => {
-      if (req.body.initial === true) {
-        careerFilteredList = mentorList;
-      } else {
-        mentorList.forEach((user) => {
-          if (checkCareerFilter(user.career[0], req.body.career)) {
-            careerFilteredList.push(user);
-            careerFilteredIdList.push(user._id);
-          }
-        });
-      }
+      mentorList.forEach((user) => {
+        if (checkCareerFilter(user.career[0], req.body.career)) {
+          careerFilteredList.push(user);
+          careerFilteredIdList.push(user._id);
+        }
+      });
 
       return careerFilteredList;
     })
