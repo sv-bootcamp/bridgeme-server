@@ -68,7 +68,6 @@ export function getMentorList(req, res, next) {
           careerFilteredIdList.push(user._id);
         }
       });
-
       return careerFilteredList;
     })
     .then((careerFilteredList) => {
