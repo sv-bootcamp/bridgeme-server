@@ -11,7 +11,7 @@ const router = express.Router();
 
 //POST method
 
-/*
+/**
  * @api {post} /match/mentorList Request Mentor's list with career/expertise filter
  * @apiName getMentorList
  * @apiGroup User

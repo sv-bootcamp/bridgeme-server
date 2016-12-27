@@ -21,12 +21,46 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
+  const exceptList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
+  let match = {
+    mentor_id: ObjectId(req.user._id),
+  };
+  let localField = {
+    mentee: 'mentee_id',
+    mentor: 'mentor_id',
+  };
+
   let careerFilteredList = [];
   let careerFilteredIdList = [];
   let filteredList = [];
   let filteredIdList = [];
 
-  getInitialMentorList(req.user._id)
+  findConnection(match, project, localField.mentee)
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: MATCH_STATUS.ACCEPTED,
+      };
+      return findConnection(match, project, localField.mentor);
+    })
+    .then((mentorList) => {
+      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      return User.find({
+        _id: {
+          $ne: req.user._id,
+          $nin: exceptList,
+        },
+        mentorMode: {
+          $ne: false,
+        },
+      })
+        .sort({stamp_login: -1}).exec();
+    })
     .then((mentorList) => {
       if (req.body.initial === true) {
         careerFilteredList = mentorList;
@@ -110,7 +144,41 @@ export function countExpectedExpertiseMatching(req, res, next) {
   const careerFilteredList = [];
   let countResult = [0, 0, 0, 0, 0, 0, 0];
 
-  getInitialMentorList(req.user._id)
+  const exceptList = [];
+  const project = {
+    mentee_id: 1,
+    mentor_id: 1,
+  };
+  let match = {
+    mentor_id: ObjectId(req.user._id),
+  };
+  let localField = {
+    mentee: 'mentee_id',
+    mentor: 'mentor_id',
+  };
+
+  findConnection(match, project, localField.mentee)
+    .then((menteeList) => {
+      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      match = {
+        mentee_id: ObjectId(req.user._id),
+        status: MATCH_STATUS.ACCEPTED,
+      };
+      return findConnection(match, project, localField.mentor);
+    })
+    .then((mentorList) => {
+      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      return User.find({
+        _id: {
+          $ne: req.user._id,
+          $nin: exceptList,
+        },
+        mentorMode: {
+          $ne: false,
+        },
+      })
+        .sort({ stamp_login: -1 }).exec();
+    })
     .then((mentorList) => {
       mentorList.forEach((user) => {
         if (checkCareerFilter(user.career[0], req.body.career)) {
@@ -134,50 +202,6 @@ export function countExpectedExpertiseMatching(req, res, next) {
     });
 }
 
-function getInitialMentorList(userId) {
-  return new Promise((resolve, reject) => {
-    const exceptList = [];
-    const project = {
-      mentee_id: 1,
-      mentor_id: 1,
-    };
-    let match = {
-      mentor_id: ObjectId(userId),
-    };
-
-    findConnection(match, project, 'mentee_id')
-      .then((menteeList) => {
-        menteeList.forEach(user => exceptList.push(user.mentee_id));
-        match = {
-          mentee_id: ObjectId(userId),
-          status: MATCH_STATUS.ACCEPTED,
-        };
-        return findConnection(match, project, 'mentor_id');
-      })
-      .then((mentorList) => {
-        mentorList.forEach(user => exceptList.push(user.mentor_id));
-        return User.find(
-          {
-            _id:
-            {
-              $ne: userId,
-              $nin: exceptList,
-            },
-            mentorMode: {
-              $ne: false,
-            },
-          })
-          .sort({ stamp_login: -1 }).exec();
-      })
-      .then((user) => {
-        resolve(user);
-      })
-      .catch((err) => {
-        reject({ err_point: userCallback.ERR_MONGOOSE, err: err });
-      });
-  });
-}
-
 function findConnection(matchOption, projectOption, localField) {
   return Match.aggregate([{
       $match: matchOption,
@@ -195,7 +219,6 @@ function findConnection(matchOption, projectOption, localField) {
     },
   ]).exec();
 }
-
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
