@@ -362,6 +362,32 @@ describe('Test User API', () => {
   });
 });
 
+describe('/editGeneral', () => {
+  it('request /editGeneral with session cookie.', (done) => {
+    let signUpData = signupData.general_data;
+    signUpData.email = userData.USER_A_DATA.email;
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editGeneral`,
+      form: signUpData,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
 describe('/editCareer', () => {
   it('request /editCareer with session cookie.', (done) => {
     rp({
@@ -513,8 +539,8 @@ describe('/personality', () => {
   });
 });
 
-describe('/setRequestStatus', () => {
-  it('request /setRequestStatus with invalid parameter.', (done) => {
+describe('/editMentorMode', () => {
+  it('request /editMentorMode with invalid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -536,7 +562,7 @@ describe('/setRequestStatus', () => {
       });
   });
 
-  it('request /setRequestStatus with valid parameter.', (done) => {
+  it('request /editMentorMode with valid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -559,7 +585,7 @@ describe('/setRequestStatus', () => {
   });
 });
 
-describe('/getRequestStatus', () => {
+describe('/mentorMode', () => {
   it('request /mentorMode with session cookie.', (done) => {
     rp({
       method: 'GET',
