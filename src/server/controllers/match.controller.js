@@ -21,40 +21,45 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
-  const careerFilteredList = [];
-  const careerFilteredIdList = [];
-  const filteredList = [];
+  let careerFilteredList = [];
+  let careerFilteredIdList = [];
+  let filteredList = [];
+  let filteredIdList = [];
 
   getInitialMentorList(req.user._id)
     .then((mentorList) => {
-      if (req.body.initial === 'true') {
-        return mentorList;
-      }
-
-      mentorList.forEach((user) => {
-        if (checkCareerFilter(user.career[0], req.body.career)) {
-          careerFilteredList.push(user);
-          careerFilteredIdList.push(user._id);
-        }
-      });
-
-      if (!req.body.expertise.length) {
-        return careerFilteredList;
-      }
-
-      careerFilteredList.forEach((user) => {
-        user.expertise.forEach((userExpertise) => {
-          if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
-            && arrayContainsElement(careerFilteredIdList, user._id)) {
-            filteredList.push(user);
+      if (req.body.initial === true) {
+        careerFilteredList = mentorList;
+      } else {
+        mentorList.forEach((user) => {
+          if (checkCareerFilter(user.career[0], req.body.career)) {
+            careerFilteredList.push(user);
+            careerFilteredIdList.push(user._id);
           }
         });
-      });
+      }
+
+      return careerFilteredList;
+    })
+    .then((careerFilteredList) => {
+      if (req.body.expertise === undefined || req.body.expertise.length === 0) {
+        filteredList = careerFilteredList;
+      } else {
+        careerFilteredList.forEach((user) => {
+          user.expertise.forEach((userExpertise) => {
+            if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
+              && !arrayContainsElement(filteredIdList, user._id)) {
+              filteredList.push(user);
+              filteredIdList.push(user._id);
+            }
+          });
+        });
+      }
 
       return filteredList;
     })
-    .then((mentorList) => {
-      res.status(200).json(mentorList);
+    .then((filteredList) => {
+      res.status(200).json(filteredList);
     })
     .catch((err) => {
       res.status(400).json({ err: err });
@@ -69,7 +74,7 @@ function checkExpertiseFilter(arr, val) {
 
 function arrayContainsElement(arr, val) {
   return arr.some((arrVal) => {
-    return val === arrVal;
+    return val == arrVal;
   });
 }
 
@@ -129,9 +134,10 @@ export function countExpectedExpertiseMatching(req, res, next) {
     });
 }
 
-export function getInitialMentorList(userId) {
+function getInitialMentorList(userId) {
   return new Promise((resolve, reject) => {
     const exceptList = [];
+    const pendingList = [];
     const project = {
       mentee_id: 1,
       mentor_id: 1,
@@ -151,10 +157,17 @@ export function getInitialMentorList(userId) {
       })
       .then((mentorList) => {
         mentorList.forEach(user => exceptList.push(user.mentor_id));
+        match = {
+          mentee_id: ObjectId(userId),
+          status: MATCH_STATUS.PENDING,
+        };
+        return findConnection(match, project, 'mentee_id');
+      })
+      .then((pendingStatus) => {
+        pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
         return User.find(
           {
-            _id:
-            {
+            _id: {
               $ne: userId,
               $nin: exceptList,
             },
@@ -163,6 +176,17 @@ export function getInitialMentorList(userId) {
             },
           })
           .sort({ stamp_login: -1 }).exec();
+      })
+      .then((user) => {
+        const userData = JSON.parse(JSON.stringify(user));
+        return new Promise((resolve) => {
+          userData.forEach(item => {
+            if (pendingList.includes(item._id.toString())) {
+              item.pending = true;
+            }
+          });
+          resolve(userData);
+        });
       })
       .then((user) => {
         resolve(user);
@@ -174,8 +198,7 @@ export function getInitialMentorList(userId) {
 }
 
 function findConnection(matchOption, projectOption, localField) {
-  return Match.aggregate([
-    {
+  return Match.aggregate([{
       $match: matchOption,
     },
     {
