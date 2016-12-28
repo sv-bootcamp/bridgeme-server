@@ -598,6 +598,52 @@ export function getMentoringRequestStatus(req, res, next) {
     });
 }
 
+export function activeBookmark(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      user.bookmark.push(req.body.id);
+      user.save();
+    })
+    .then(() => {
+      res.status(200).json({ msg: userCallback.SUCCESS_ACTIVE_BOOKMARK });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+export function inActiveBookmark(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      const index = user.bookmark.indexOf(req.body.id);
+      user.bookmark.splice(index, 1);
+      user.save();
+    })
+    .then(() => {
+      res.status(200).json({ msg: userCallback.SUCCESS_INACTIVE_BOOKMARK });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+export function getBookmark(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      let bookmarkList = user.bookmark;
+      // bookmarkList = bookmarkList.map(value => value.id);
+      // console.log(bookmarkList);
+      //JSON.parse(JSON.stringify(bookmarkList))
+      return User.find({ _id: { $nin: bookmarkList } }).exec();
+    })
+    .then((list) => {
+      res.status(200).json(list);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
 export function signOut(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {

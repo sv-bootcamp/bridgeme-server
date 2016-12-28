@@ -89,6 +89,7 @@ let userSchema = new Schema({
   languages: String,
   mentorMode: Boolean,
   deviceToken: Array,
+  bookmark: Array,
   reg_date: {
     type: Date,
     default: Date.now,

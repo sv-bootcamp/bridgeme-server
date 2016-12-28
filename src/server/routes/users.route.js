@@ -558,6 +558,8 @@ router.get('/personality', apiProtector, user.getPersonalityInfo);
  */
 router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
 
+router.get('/bookmark', apiProtector, user.getBookmark);
+
 /**
  * @api {get} /users/accessToken Token: Check
  * @apiName checkAccessToken
