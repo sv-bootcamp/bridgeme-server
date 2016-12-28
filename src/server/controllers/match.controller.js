@@ -21,35 +21,57 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
-  const exceptList = [];
-  const project = {
+  let exceptList = [];
+  let pendingList = [];
+
+  let project = {
     mentee_id: 1,
     mentor_id: 1,
   };
-  let match = {
-    mentor_id: ObjectId(req.user._id),
+
+  let matchOptions = {
+    option1: { mentor_id: ObjectId(req.user._id) },
+    option2: {
+      mentee_id: ObjectId(req.user._id),
+      status: MATCH_STATUS.ACCEPTED,
+    },
+    option3: {
+      mentee_id: ObjectId(req.user._id),
+      status: MATCH_STATUS.PENDING,
+    },
   };
+
   let localField = {
     mentee: 'mentee_id',
     mentor: 'mentor_id',
   };
 
-  let careerFilteredList = [];
-  let careerFilteredIdList = [];
-  let filteredList = [];
-  let filteredIdList = [];
+  let filter = req.body.career;
+  /*
+  let optionBool = {
+    area: 1,
+    role: 1,
+    years: 1,
+    educational_background: 1,
+  };
 
-  findConnection(match, project, localField.mentee)
-    .then((menteeList) => {
-      menteeList.forEach(user => exceptList.push(user.mentee_id));
-      match = {
-        mentee_id: ObjectId(req.user._id),
-        status: MATCH_STATUS.ACCEPTED,
-      };
-      return findConnection(match, project, localField.mentor);
-    })
-    .then((mentorList) => {
-      mentorList.forEach(user => exceptList.push(user.mentor_id));
+  if(filter.area === 'All' || this.area === filter.area) optionBool.area = 1;
+  if(filter.role === 'All' || this.role === filter.role) optionBool.role = 1;
+  if(filter.years === 'All' || this.years === filter.years) optionBool.years = 1;
+  if(filter.educational_background === 'All'
+    || this.educational_background === filter.educational_background)
+    optionBool.educational_background = 1;
+  */
+
+  Promise.all([findConnection(matchOptions.option1, project, localField.mentee),
+    findConnection(matchOptions.option2, project, localField.mentor),
+    findConnection(matchOptions.option3, project, 'mentee_id'),
+  ])
+    .then((results) => {
+      results[0].forEach(user => exceptList.push(user.mentee_id));
+      results[1].forEach(user => exceptList.push(user.mentor_id));
+      results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
+
       return User.find({
         _id: {
           $ne: req.user._id,
@@ -58,34 +80,27 @@ export function getMentorList(req, res, next) {
         mentorMode: {
           $ne: false,
         },
+        $where: function () {
+          let filter = `${req.body.career}`;
+          return ((this.career.area === filter.area) || (filter.area === 'All')
+          && (this.career.role === filter.role) || (filter.role === 'All')
+          && (this.career.years === filter.area) || (filter.years === 'All')
+          && (this.career.educational_background === filter.educational_background) || (filter.educational_background === 'All'));
+        },
       })
-        .sort({stamp_login: -1}).exec();
+        .sort({ stamp_login: -1 }).exec();
     })
-    .then((mentorList) => {
-      mentorList.forEach((user) => {
-        if (checkCareerFilter(user.career[0], req.body.career)) {
-          careerFilteredList.push(user);
-          careerFilteredIdList.push(user._id);
-        }
-      });
-      return careerFilteredList;
-    })
-    .then((careerFilteredList) => {
-      if (req.body.expertise === undefined || req.body.expertise.length === 0) {
-        filteredList = careerFilteredList;
-      } else {
-        careerFilteredList.forEach((user) => {
-          user.expertise.forEach((userExpertise) => {
-            if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
-              && !arrayContainsElement(filteredIdList, user._id)) {
-              filteredList.push(user);
-              filteredIdList.push(user._id);
-            }
-          });
+    .then((user) => {
+      return new Promise((resolve, reject) => {
+        let userData = JSON.parse(JSON.stringify(user));
+        userData.forEach((item) => {
+          if (pendingList.includes(item._id.toString())) {
+            item.pending = true;
+          }
         });
-      }
 
-      return filteredList;
+        resolve(userData);
+      });
     })
     .then((filteredList) => {
       res.status(200).json(filteredList);
@@ -109,30 +124,47 @@ function arrayContainsElement(arr, val) {
 
 function checkCareerFilter(userInfo, filter) {
   if (userInfo === undefined) return false;
-  let userBool = {
-    area: filter.area === 'All' ? 1 : 0,
-    role: filter.role === 'All' ? 1 : 0,
-    years: filter.years === 'All' ? 1 : 0,
-    background: filter.education_background === 'All' ? 1 : 0,
+
+  let optionBool = {
+    area: undefined,
+    role: undefined,
+    years: undefined,
+    educational_background: undefined,
   };
 
-  if (userBool.area) {
-    userBool.role = 1;
-  } else {
-    userBool.area = userInfo.area === filter.area ? 1 : 0;
-    userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
-  }
+  if (filter.area === 'All' || userInfo.area === filter.area) optionBool.area = 1;
+  if (filter.role === 'All' || userInfo.role === filter.role) optionBool.role = 1;
+  if (filter.years === 'All' || userInfo.years === filter.years) optionBool.years = 1;
+  if (filter.educational_background === 'All'
+    || userInfo.educational_background === filter.educational_background)
+    optionBool.educational_background = 1;
 
-  if (userInfo.years === filter.years && !userBool.years) {
-    userBool.years = 1;
-  }
 
-  if (userInfo.education_background === filter.education_background && !userBool.background) {
-    userBool.background = 1;
-  }
 
-  if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
-  else return false;
+  // let userBool = {
+  //   area: filter.area === 'All' ? 1 : 0,
+  //   role: filter.role === 'All' ? 1 : 0,
+  //   years: filter.years === 'All' ? 1 : 0,
+  //   background: filter.education_background === 'All' ? 1 : 0,
+  // };
+  //
+  // if (userBool.area) {
+  //   userBool.role = 1;
+  // } else {
+  //   userBool.area = userInfo.area === filter.area ? 1 : 0;
+  //   userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
+  // }
+  //
+  // if (userInfo.years === filter.years && !userBool.years) {
+  //   userBool.years = 1;
+  // }
+  //
+  // if (userInfo.education_background === filter.education_background && !userBool.background) {
+  //   userBool.background = 1;
+  // }
+  //
+  // if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
+  // else return false;
 }
 
 export function countExpectedExpertiseMatching(req, res, next) {
