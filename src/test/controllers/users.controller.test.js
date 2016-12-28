@@ -9,7 +9,7 @@ import userData from '../fixtures/userData';
  * Test for User API
  */
 
-const API_BASE_URL = 'http://localhost:8000/users';
+const API_BASE_URL = `http://localhost:${process.env.PORT}/users`;
 let mentorMode = true;
 
 describe('Test User API', () => {
