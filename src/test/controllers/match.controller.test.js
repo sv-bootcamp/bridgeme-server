@@ -292,7 +292,6 @@ describe('Test Match API', () => {
           done();
         })
         .catch((err) => {
-          console.log(err);
           should.fail();
           done();
         });

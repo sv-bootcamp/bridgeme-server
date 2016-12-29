@@ -89,7 +89,6 @@ export function getMentorList(req, res, next) {
 
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
-            console.log(userItem.name);
             careerFilteredList.full.push(userItem);
             careerFilteredList.idList.push(userItem._id);
           }
