@@ -264,6 +264,7 @@ describe('Test Match API', () => {
           done();
         })
         .catch((err) => {
+          console.log(err);
           should.fail();
           done();
         });
@@ -275,8 +276,8 @@ describe('Test Match API', () => {
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
           career: {
-            area: 'Design',
-            role: 'Visual/UI Designer',
+            area: 'All',
+            role: 'All',
             years: 'All',
             education_background: 'All',
           },
@@ -292,7 +293,6 @@ describe('Test Match API', () => {
           done();
         })
         .catch((err) => {
-          console.log(err);
           should.fail();
           done();
         });

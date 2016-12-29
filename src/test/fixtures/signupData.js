@@ -1,11 +1,11 @@
 export default {
   general_data: {
-    "name": "test",
-    "email": "",
-    "languages": "Korean",
-    "location": "",
-    "about": "Hello",
-    "image" : "",
+    name: 'test',
+    email: '',
+    languages: 'Korean',
+    location: '',
+    about: 'Hello',
+    image: '',
   },
   career_data: {
     career: [

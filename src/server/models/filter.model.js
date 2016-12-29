@@ -6,14 +6,9 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const expertiseSchema = new Schema({
-  select: String,
-  index: Number,
-});
-
 let filterSchema = new Schema({
   user_id: Schema.Types.ObjectId,
-  expertise: [expertiseSchema],
+  expertise: Array,
   career: {
     area: Number,
     role: Number,
