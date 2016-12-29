@@ -7,7 +7,7 @@ import userData from '../fixtures/userData';
  * Test for User API
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = `http://localhost:${process.env.PORT}`;
 
 let matchData;
 
