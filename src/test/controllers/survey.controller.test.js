@@ -13,7 +13,7 @@ import userData from '../fixtures/userData';
 
 const Survey = mongoose.model('survey');
 
-const API_BASE_URL = 'http://localhost:8000/survey';
+const API_BASE_URL = `http://localhost:${process.env.PORT}/survey`;
 
 describe('Test Survey API', () => {
   describe('/create', () => {

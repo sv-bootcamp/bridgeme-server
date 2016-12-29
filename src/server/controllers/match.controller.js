@@ -20,6 +20,202 @@ export const MATCH_STATUS = {
   REJECTED: 0,
 };
 
+export function getMentorList(req, res, next) {
+  let careerFilteredList = [];
+  let careerFilteredIdList = [];
+  let filteredList = [];
+  let filteredIdList = [];
+
+  getInitialMentorList(req.user._id)
+    .then((mentorList) => {
+      if (req.body.initial === true) {
+        careerFilteredList = mentorList;
+      } else {
+        mentorList.forEach((user) => {
+          if (checkCareerFilter(user.career[0], req.body.career)) {
+            careerFilteredList.push(user);
+            careerFilteredIdList.push(user._id);
+          }
+        });
+      }
+
+      return careerFilteredList;
+    })
+    .then((careerFilteredList) => {
+      if (req.body.expertise === undefined || req.body.expertise.length === 0) {
+        filteredList = careerFilteredList;
+      } else {
+        careerFilteredList.forEach((user) => {
+          user.expertise.forEach((userExpertise) => {
+            if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
+              && !arrayContainsElement(filteredIdList, user._id)) {
+              filteredList.push(user);
+              filteredIdList.push(user._id);
+            }
+          });
+        });
+      }
+
+      return filteredList;
+    })
+    .then((filteredList) => {
+      res.status(200).json(filteredList);
+    })
+    .catch((err) => {
+      res.status(400).json({ err: err });
+    });
+}
+
+function checkExpertiseFilter(arr, val) {
+  return arr.some((arrVal) => {
+    return val === arrVal.select;
+  });
+}
+
+function arrayContainsElement(arr, val) {
+  return arr.some((arrVal) => {
+    return val == arrVal;
+  });
+}
+
+function checkCareerFilter(userInfo, filter) {
+  if (userInfo === undefined) return false;
+  let userBool = {
+    area: filter.area === 'All' ? 1 : 0,
+    role: filter.role === 'All' ? 1 : 0,
+    years: filter.years === 'All' ? 1 : 0,
+    background: filter.education_background === 'All' ? 1 : 0,
+  };
+
+  if (userBool.area) {
+    userBool.role = 1;
+  } else {
+    userBool.area = userInfo.area === filter.area ? 1 : 0;
+    userBool.role = userInfo.role === filter.role || userBool.role ? 1 : 0;
+  }
+
+  if (userInfo.years === filter.years && !userBool.years) {
+    userBool.years = 1;
+  }
+
+  if (userInfo.education_background === filter.education_background && !userBool.background) {
+    userBool.background = 1;
+  }
+
+  if (userBool.area && userBool.role && userBool.years && userBool.background) return true;
+  else return false;
+}
+
+export function countExpectedExpertiseMatching(req, res, next) {
+  const careerFilteredList = [];
+  let countResult = [0, 0, 0, 0, 0, 0, 0];
+
+  getInitialMentorList(req.user._id)
+    .then((mentorList) => {
+      mentorList.forEach((user) => {
+        if (checkCareerFilter(user.career[0], req.body.career)) {
+          careerFilteredList.push(user);
+        }
+      });
+    })
+    .then(() => {
+      careerFilteredList.forEach((user) => {
+        user.expertise.forEach((expItem) => {
+          countResult[expItem.index]++;
+        });
+      });
+    })
+    .then(() => {
+      res.status(200).json(countResult);
+      return next();
+    })
+    .catch((err) => {
+      res.status(400).json({ err: err });
+    });
+}
+
+function getInitialMentorList(userId) {
+  return new Promise((resolve, reject) => {
+    const exceptList = [];
+    const pendingList = [];
+    const project = {
+      mentee_id: 1,
+      mentor_id: 1,
+    };
+    let match = {
+      mentor_id: ObjectId(userId),
+    };
+
+    findConnection(match, project, 'mentee_id')
+      .then((menteeList) => {
+        menteeList.forEach(user => exceptList.push(user.mentee_id));
+        match = {
+          mentee_id: ObjectId(userId),
+          status: MATCH_STATUS.ACCEPTED,
+        };
+        return findConnection(match, project, 'mentor_id');
+      })
+      .then((mentorList) => {
+        mentorList.forEach(user => exceptList.push(user.mentor_id));
+        match = {
+          mentee_id: ObjectId(userId),
+          status: MATCH_STATUS.PENDING,
+        };
+        return findConnection(match, project, 'mentee_id');
+      })
+      .then((pendingStatus) => {
+        pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
+        return User.find(
+          {
+            _id: {
+              $ne: userId,
+              $nin: exceptList,
+            },
+            mentorMode: {
+              $ne: false,
+            },
+          })
+          .sort({ stamp_login: -1 }).exec();
+      })
+      .then((user) => {
+        const userData = JSON.parse(JSON.stringify(user));
+        return new Promise((resolve) => {
+          userData.forEach(item => {
+            if (pendingList.includes(item._id.toString())) {
+              item.pending = true;
+            }
+          });
+          resolve(userData);
+        });
+      })
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((err) => {
+        reject({ err_point: userCallback.ERR_MONGOOSE, err: err });
+      });
+  });
+}
+
+function findConnection(matchOption, projectOption, localField) {
+  return Match.aggregate([{
+      $match: matchOption,
+    },
+    {
+      $project: projectOption,
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: localField,
+        foreignField: '_id',
+        as: 'list',
+      },
+    },
+  ]).exec();
+}
+
+
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {
   let matchData = req.body;
@@ -148,13 +344,12 @@ export function responseMentoring(req, res, next) {
     Match.findOne({ _id: req.body.match_id }).exec()
       .then((match) => {
         pushUtil.sendPush(match.mentee_id, 'CONNECTION', req.user.name);
-        return Match.update(
-          {
-            _id: req.body.match_id
+        return Match.update({
+            _id: req.body.match_id,
           },
           {
             status: req.body.option,
-            response_date: Date.now()
+            response_date: Date.now(),
           }).exec();
       })
       .then((match) => {

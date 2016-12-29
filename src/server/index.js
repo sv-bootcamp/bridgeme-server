@@ -18,7 +18,7 @@ export default (cb) => {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
   } else if (process.env.NODE_ENV === 'production') {
-    app.use(compress());
+    app.use(morgan('combined'));
   }
 
   app.use(bodyParser.json({ limit: limit }));
@@ -36,9 +36,9 @@ export default (cb) => {
 
   app.use(express.static(__dirname + '/apidoc'));
 
-  const server = app.listen(process.env.NODE_ENV === 'test' ? 8000 : 80, cb ? cb : () => {
+  const server = app.listen(process.env.PORT, cb ? cb : () => {
     /* eslint-disable no-console */
-    console.log(`Listening on port ${process.env.NODE_ENV}`);
+    console.log(`Listening on port ${process.env.PORT}`);
     /* eslint-enable */
   });
 

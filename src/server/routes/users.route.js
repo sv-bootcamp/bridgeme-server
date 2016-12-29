@@ -442,34 +442,6 @@ router.get('/id/:_id', apiProtector, user.getProfileById);
 router.get('/me', apiProtector, user.getMyProfile);
 
 /**
- * @api {get} /users/mentorlist Request Mentor's list
- * @apiName getMentorList
- * @apiGroup User
- *
- * @apiSuccessExample {json} Success
- *     HTTP/1.1 200 OK
- *     [
- *      {
- *        Mentor1's Info
- *      },
- *      {
- *        Mentor2's Info
- *      },
- *      {
- *        Mentor3's Info
- *      },....
- *     ]
- *
- * @apiErrorExample {json}
- *     HTTP/1.1 401 Not Authenticated
- *     {
- *       "err_point": {err_msg}
- *     }
- *
- */
-router.get('/mentorlist', apiProtector, user.getMentorList);
-
-/**
  * @api {get} /users/career Request user career information
  * @apiName getCareerInfo
  * @apiGroup User
