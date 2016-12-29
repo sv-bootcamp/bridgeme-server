@@ -1,6 +1,5 @@
 import * as mailingUtil from '../utils/mailing.util';
 import * as pushUtil from '../utils/push.util';
-import userCallback from '../config/json/user.callback';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
 import mongoose from 'mongoose';
@@ -21,16 +20,18 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
-  let exceptList = [];
+  let exceptionList = [];
   let pendingList = [];
 
-  let project = {
+  let projectOption = {
     mentee_id: 1,
     mentor_id: 1,
   };
 
   let matchOptions = {
-    option1: { mentor_id: ObjectId(req.user._id) },
+    option1: {
+      mentor_id: ObjectId(req.user._id)
+    },
     option2: {
       mentee_id: ObjectId(req.user._id),
       status: MATCH_STATUS.ACCEPTED,
@@ -46,19 +47,20 @@ export function getMentorList(req, res, next) {
     mentor: 'mentor_id',
   };
 
-  Promise.all([findConnection(matchOptions.option1, project, localField.mentee),
-    findConnection(matchOptions.option2, project, localField.mentor),
-    findConnection(matchOptions.option3, project, 'mentee_id'),
+  Promise.all([
+    findConnection(matchOptions.option1, projectOption, localField.mentee),
+    findConnection(matchOptions.option2, projectOption, localField.mentor),
+    findConnection(matchOptions.option3, projectOption, 'mentee_id'),
   ])
     .then((results) => {
-      results[0].forEach(user => exceptList.push(user.mentee_id));
-      results[1].forEach(user => exceptList.push(user.mentor_id));
+      results[0].forEach(user => exceptionList.push(user.mentee_id));
+      results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
 
       return User.find({
         _id: {
           $ne: req.user._id,
-          $nin: exceptList,
+          $nin: exceptionList,
         },
         mentorMode: {
           $ne: false,
@@ -66,9 +68,9 @@ export function getMentorList(req, res, next) {
       })
         .sort({ stamp_login: -1 }).exec();
     })
-    .then((user) => {
+    .then((userList) => {
       return new Promise((resolve, reject) => {
-        let userData = JSON.parse(JSON.stringify(user));
+        let userData = JSON.parse(JSON.stringify(userList));
         userData.forEach((item) => {
           if (pendingList.includes(item._id.toString())) {
             item.pending = true;
@@ -86,7 +88,7 @@ export function getMentorList(req, res, next) {
         };
 
         initialUserList.forEach((userItem) => {
-          if (checkCareerFilter(userItem.career, req.body.career)) {
+          if (isFitCareerFilter(userItem.career, req.body.career)) {
             console.log(userItem.name);
             careerFilteredList.full.push(userItem);
             careerFilteredList.idList.push(userItem._id);
@@ -105,8 +107,8 @@ export function getMentorList(req, res, next) {
 
         careerFilteredList.full.forEach((userItem) => {
           userItem.expertise.forEach((userExpertise) => {
-            if (checkExpertiseFilter(req.body.expertise, userExpertise.select)
-              && !arrayContainsElement(filteredList.idList, userItem._id)) {
+            if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
+              && !isArrayContainsElement(filteredList.idList, userItem._id)) {
               filteredList.full.push(userItem);
               filteredList.idList.push(userItem._id);
             }
@@ -124,32 +126,44 @@ export function getMentorList(req, res, next) {
     });
 }
 
-function checkExpertiseFilter(arr, val) {
+/*
+ Compare the user's expertise information and the filter.
+ So determine the user fits in filter.
+ */
+function isFitExpertiseFilter(arr, val) {
   return arr.some((arrVal) => {
     return val === arrVal.select;
   });
 }
 
-function arrayContainsElement(arr, val) {
+function isArrayContainsElement(arr, val) {
   return arr.some((arrVal) => {
     return val == arrVal;
   });
 }
 
-function checkCareerFilter(userInfo, filter) {
-  if (userInfo === undefined) return false;
-  else return ((filter.area === 'All' || userInfo.area === filter.area)
-    && (filter.role === 'All' || userInfo.role === filter.role)
-    && (filter.years === 'All' || userInfo.years === filter.years)
-    && (filter.educational_background === 'All'
-      || userInfo.educational_background === filter.educational_background));
+/*
+  Compare the user's career information and the filter.
+  So determine the user fits in filter.
+ */
+function isFitCareerFilter(userCareer, filter) {
+  if (userCareer === undefined) return false;
+  else {
+    if (filter.area !== 'All' && userCareer.area !== filter.area) return false;
+    else if (filter.role !== 'All' && userCareer.role !== filter.role) return false;
+    else if (filter.years !== 'All' && userCareer.years !== filter.years) return false;
+    else if (filter.educational_background !== 'All'
+      && userCareer.educational_background !== filter.educational_background)
+      return false;
+    else return false;
+  }
 }
 
 export function countExpectedExpertiseMatching(req, res, next) {
   const careerFilteredList = [];
   let countResult = [0, 0, 0, 0, 0, 0, 0];
 
-  const exceptList = [];
+  const exceptionList = [];
   const project = {
     mentee_id: 1,
     mentor_id: 1,
@@ -164,7 +178,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
 
   findConnection(match, project, localField.mentee)
     .then((menteeList) => {
-      menteeList.forEach(user => exceptList.push(user.mentee_id));
+      menteeList.forEach(user => exceptionList.push(user.mentee_id));
       match = {
         mentee_id: ObjectId(req.user._id),
         status: MATCH_STATUS.ACCEPTED,
@@ -172,11 +186,11 @@ export function countExpectedExpertiseMatching(req, res, next) {
       return findConnection(match, project, localField.mentor);
     })
     .then((mentorList) => {
-      mentorList.forEach(user => exceptList.push(user.mentor_id));
+      mentorList.forEach(user => exceptionList.push(user.mentor_id));
       return User.find({
         _id: {
           $ne: req.user._id,
-          $nin: exceptList,
+          $nin: exceptionList,
         },
         mentorMode: {
           $ne: false,
@@ -186,7 +200,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
     })
     .then((mentorList) => {
       mentorList.forEach((user) => {
-        if (checkCareerFilter(user.career[0], req.body.career)) {
+        if (isFitCareerFilter(user.career[0], req.body.career)) {
           careerFilteredList.push(user);
         }
       });
