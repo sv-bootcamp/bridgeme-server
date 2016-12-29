@@ -91,7 +91,6 @@ export function getMentorList(req, res, next) {
 
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
-            console.log(userItem.name);
             careerFilteredList.full.push(userItem);
             careerFilteredList.idList.push(userItem._id);
           }
@@ -162,10 +161,7 @@ function isFitCareerFilter(userCareer, filter) {
 }
 
 export function countExpectedExpertiseMatching(req, res, next) {
-  let countResult = [0, 0, 0, 0, 0, 0, 0];
-
   let exceptionList = [];
-  let pendingList = [];
 
   let projectOption = {
     mentee_id: 1,
@@ -194,12 +190,12 @@ export function countExpectedExpertiseMatching(req, res, next) {
   Promise.all([
     findConnection(matchOptions.option1, projectOption, localField.mentee),
     findConnection(matchOptions.option2, projectOption, localField.mentor),
-    findConnection(matchOptions.option3, projectOption, 'mentee_id'),
   ])
     .then((results) => {
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
-      results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
+      console.log('*');
+      console.log(exceptionList);
 
       return User.find({
         _id: {
@@ -218,6 +214,8 @@ export function countExpectedExpertiseMatching(req, res, next) {
           full: [],
           idList: [],
         };
+        console.log('**');
+        console.log(initialUserList);
 
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
@@ -230,13 +228,21 @@ export function countExpectedExpertiseMatching(req, res, next) {
       });
     })
     .then((careerFilteredList) => {
-      careerFilteredList.forEach((user) => {
-        user.expertise.forEach((expItem) => {
-          countResult[expItem.index]++;
+      return new Promise((resolve, reject) => {
+        console.log('***');
+        console.log(careerFilteredList);
+        let countResult = [0, 0, 0, 0, 0, 0, 0];
+
+        careerFilteredList.forEach((user) => {
+          user.expertise.forEach((expItem) => {
+            countResult[expItem.index]++;
+          });
         });
+
+        resolve(countResult);
       });
     })
-    .then(() => {
+    .then((countResult) => {
       res.status(200).json(countResult);
       return next();
     })
