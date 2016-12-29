@@ -15,10 +15,10 @@ let filterSchema = new Schema({
   user_id: Schema.Types.ObjectId,
   expertise: [expertiseSchema],
   career: {
-    area: String,
-    role: String,
-    years: String,
-    education_background: String,
+    area: Number,
+    role: Number,
+    years: Number,
+    education_background: Number,
   },
   date: {
     type: Date,
