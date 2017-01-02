@@ -1,5 +1,7 @@
 import * as mailingUtil from '../utils/mailing.util';
 import * as pushUtil from '../utils/push.util';
+import CareerData from '../config/json/career.data.js';
+import ExpertiseData from '../config/json/expertise.data.js';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
 import mongoose from 'mongoose';
@@ -161,29 +163,40 @@ function isFitCareerFilter(userCareer, filter) {
 
 export function countExpectedExpertiseMatching(req, res, next) {
   let exceptionList = [];
-  let project = {
+  let projectOption = {
     mentee_id: 1,
     mentor_id: 1,
   };
-  let match = {
-    mentor_id: ObjectId(req.user._id),
+
+  let matchOptions = {
+    option1: {
+      mentor_id: ObjectId(req.user._id),
+    },
+    option2: {
+      mentee_id: ObjectId(req.user._id),
+      status: MATCH_STATUS.ACCEPTED,
+    },
+    option3: {
+      mentee_id: ObjectId(req.user._id),
+      status: MATCH_STATUS.PENDING,
+    },
   };
+
   let localField = {
     mentee: 'mentee_id',
     mentor: 'mentor_id',
   };
 
-  findConnection(match, project, localField.mentee)
-    .then((menteeList) => {
-      menteeList.forEach(user => exceptionList.push(user.mentee_id));
-      match = {
-        mentee_id: ObjectId(req.user._id),
-        status: MATCH_STATUS.ACCEPTED,
-      };
-      return findConnection(match, project, localField.mentor);
-    })
-    .then((mentorList) => {
-      mentorList.forEach(user => exceptionList.push(user.mentor_id));
+  Promise.all([
+    findConnection(matchOptions.option1, projectOption, localField.mentee),
+    findConnection(matchOptions.option2, projectOption, localField.mentor),
+  ])
+    .then((results) => {
+      results[0].forEach(user => exceptionList.push(user.mentee_id));
+      results[1].forEach(user => exceptionList.push(user.mentor_id));
+      console.log('*');
+      console.log(exceptionList);
+
       return User.find({
         _id: {
           $ne: req.user._id,
@@ -195,13 +208,16 @@ export function countExpectedExpertiseMatching(req, res, next) {
       })
         .sort({ stamp_login: -1 }).exec();
     })
-    .then((mentorList) => {
+    .then((initialUserList) => {
       return new Promise((resolve, reject) => {
-        let careerFilteredList = [];
-
-        mentorList.forEach((user) => {
-          if (isFitCareerFilter(user.career, req.body.career)) {
-            careerFilteredList.push(user);
+        let careerFilteredList = {
+          full: [],
+          idList: [],
+        };
+        initialUserList.forEach((userItem) => {
+          if (isFitCareerFilter(userItem.career, req.body.career)) {
+            careerFilteredList.full.push(userItem);
+            careerFilteredList.idList.push(userItem._id);
           }
         });
 
