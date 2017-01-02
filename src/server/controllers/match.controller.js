@@ -20,7 +20,6 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
-  let exceptionList = [];
   let pendingList = [];
 
   let projectOption = {
@@ -30,7 +29,7 @@ export function getMentorList(req, res, next) {
 
   let matchOptions = {
     option1: {
-      mentor_id: ObjectId(req.user._id)
+      mentor_id: ObjectId(req.user._id),
     },
     option2: {
       mentee_id: ObjectId(req.user._id),
@@ -53,6 +52,8 @@ export function getMentorList(req, res, next) {
     findConnection(matchOptions.option3, projectOption, 'mentee_id'),
   ])
     .then((results) => {
+      let exceptionList = [];
+
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
@@ -86,7 +87,6 @@ export function getMentorList(req, res, next) {
           full: [],
           idList: [],
         };
-
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
             careerFilteredList.full.push(userItem);
@@ -148,22 +148,20 @@ function isArrayContainsElement(arr, val) {
 function isFitCareerFilter(userCareer, filter) {
   if (userCareer === undefined) return false;
   else {
+    // TODO: Compare the options with enum type, not a string comparision.
     if (filter.area !== 'All' && userCareer.area !== filter.area) return false;
     else if (filter.role !== 'All' && userCareer.role !== filter.role) return false;
     else if (filter.years !== 'All' && userCareer.years !== filter.years) return false;
     else if (filter.educational_background !== 'All'
       && userCareer.educational_background !== filter.educational_background)
       return false;
-    else return false;
+    else return true;
   }
 }
 
 export function countExpectedExpertiseMatching(req, res, next) {
-  const careerFilteredList = [];
-  let countResult = [0, 0, 0, 0, 0, 0, 0];
-
-  const exceptionList = [];
-  const project = {
+  let exceptionList = [];
+  let project = {
     mentee_id: 1,
     mentor_id: 1,
   };
@@ -198,20 +196,31 @@ export function countExpectedExpertiseMatching(req, res, next) {
         .sort({ stamp_login: -1 }).exec();
     })
     .then((mentorList) => {
-      mentorList.forEach((user) => {
-        if (isFitCareerFilter(user.career[0], req.body.career)) {
-          careerFilteredList.push(user);
-        }
-      });
-    })
-    .then(() => {
-      careerFilteredList.forEach((user) => {
-        user.expertise.forEach((expItem) => {
-          countResult[expItem.index]++;
+      return new Promise((resolve, reject) => {
+        let careerFilteredList = [];
+
+        mentorList.forEach((user) => {
+          if (isFitCareerFilter(user.career, req.body.career)) {
+            careerFilteredList.push(user);
+          }
         });
+
+        resolve(careerFilteredList);
       });
     })
-    .then(() => {
+    .then((careerFilteredList) => {
+      return new Promise((resolve, reject) => {
+        let countResult = [0, 0, 0, 0, 0, 0, 0];
+        careerFilteredList.forEach((user) => {
+          user.expertise.forEach((expItem) => {
+            countResult[expItem.index]++;
+          });
+        });
+
+        resolve(countResult);
+      });
+    })
+    .then((countResult) => {
       res.status(200).json(countResult);
       return next();
     })

@@ -74,7 +74,7 @@ let userSchema = new Schema({
     area: String,
     role: String,
     years: String,
-    educational_background: String,
+    education_background: String,
   },
   expertise: [expertiseSchema],
   personality: [personalitySchema],
