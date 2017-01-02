@@ -478,7 +478,7 @@ describe('/career', () => {
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
-        body.education_background.should.equal(data.education_background);
+        body.educational_background.should.equal(data.educational_background);
         done();
       })
       .catch((err) => {

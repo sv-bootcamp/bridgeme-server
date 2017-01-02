@@ -43,10 +43,10 @@ const experienceSchema = new Schema({
 });
 
 const careerSchema = new Schema({
-  area: String,
-  role: String,
-  years: String,
-  educational_background: String,
+  area: Number,
+  role: Number,
+  years: Number,
+  educational_background: Number,
 });
 
 const expertiseSchema = new Schema({
@@ -70,12 +70,7 @@ let userSchema = new Schema({
   education: [educationSchema],
   experience: [experienceSchema],
   work: [experienceSchema],
-  career: {
-    area: String,
-    role: String,
-    years: String,
-    education_background: String,
-  },
+  career: careerSchema,
   expertise: [expertiseSchema],
   personality: [personalitySchema],
   locale: String,
