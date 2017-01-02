@@ -1,7 +1,7 @@
 import * as mailingUtil from '../utils/mailing.util';
 import * as pushUtil from '../utils/push.util';
-import CareerData from '../config/json/career.data.js';
-import ExpertiseData from '../config/json/expertise.data.js';
+import * as CareerData from '../config/json/career.data.js';
+import * as ExpertiseData from '../config/json/expertise.data.js';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
 import mongoose from 'mongoose';
@@ -20,6 +20,24 @@ export const MATCH_STATUS = {
   PENDING: 2,
   REJECTED: 0,
 };
+
+export function getCareerData(req, res, next) {
+  return new Promise((resolve, reject) => {
+    res.statusCode(200).(CareerData);
+  })
+    .catch((err) => {
+      res.statusCode(400).({ err: err });
+    });
+}
+
+export function getExpertiseData(req, res, next) {
+  return new Promise((resolve, reject) => {
+    res.statusCode(200).(ExpertiseData);
+  })
+    .catch((err) => {
+      res.statusCode(400).({ err: err });
+    });
+}
 
 export function getMentorList(req, res, next) {
   let pendingList = [];
@@ -128,8 +146,8 @@ export function getMentorList(req, res, next) {
 }
 
 /*
- Compare the user's expertise information and the filter.
- So determine the user fits in filter.
+ * Compare the user's expertise information and the filter.
+ * So determine the user fits in filter.
  */
 function isFitExpertiseFilter(arr, val) {
   return arr.some((arrVal) => {
@@ -144,17 +162,17 @@ function isArrayContainsElement(arr, val) {
 }
 
 /*
-  Compare the user's career information and the filter.
-  So determine the user fits in filter.
+ * Compare the user's career information and the filter.
+ * So determine the user fits in filter.
  */
 function isFitCareerFilter(userCareer, filter) {
   if (userCareer === undefined) return false;
   else {
     // TODO: Compare the options with enum type, not a string comparision.
-    if (filter.area !== 'All' && userCareer.area !== filter.area) return false;
-    else if (filter.role !== 'All' && userCareer.role !== filter.role) return false;
-    else if (filter.years !== 'All' && userCareer.years !== filter.years) return false;
-    else if (filter.educational_background !== 'All'
+    if (filter.area !== 0 && userCareer.area !== filter.area) return false;
+    else if (filter.role !== 0 && userCareer.role !== filter.role) return false;
+    else if (filter.years !== 0 && userCareer.years !== filter.years) return false;
+    else if (filter.educational_background !== 0
       && userCareer.educational_background !== filter.educational_background)
       return false;
     else return true;
