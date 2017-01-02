@@ -8,14 +8,12 @@ export default {
     image: '',
   },
   career_data: {
-    career: [
-      {
+    career: {
         area: 'Design',
         role: 'Visual / UI',
         years: '0-2 years',
         education_background: "Bachelor's",
       },
-    ],
   },
   expertise_data: {
     expertise: [

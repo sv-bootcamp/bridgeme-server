@@ -22,7 +22,6 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
-  let exceptionList = [];
   let pendingList = [];
 
   let projectOption = {
@@ -55,6 +54,7 @@ export function getMentorList(req, res, next) {
     findConnection(matchOptions.option3, projectOption, 'mentee_id'),
   ])
     .then((results) => {
+      let exceptionList = [];
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
@@ -150,6 +150,7 @@ function isArrayContainsElement(arr, val) {
 function isFitCareerFilter(userCareer, filter) {
   if (userCareer === undefined) return false;
   else {
+    // TODO: Compare the options with enum type, not a string comparision.
     if (filter.area !== 'All' && userCareer.area !== filter.area) return false;
     else if (filter.role !== 'All' && userCareer.role !== filter.role) return false;
     else if (filter.years !== 'All' && userCareer.years !== filter.years) return false;
@@ -229,10 +230,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
     })
     .then((careerFilteredList) => {
       return new Promise((resolve, reject) => {
-        console.log('***');
-        console.log(careerFilteredList);
         let countResult = [0, 0, 0, 0, 0, 0, 0];
-
         careerFilteredList.forEach((user) => {
           user.expertise.forEach((expItem) => {
             countResult[expItem.index]++;
