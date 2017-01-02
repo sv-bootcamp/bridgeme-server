@@ -251,7 +251,17 @@ describe('Test Match API', () => {
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList`,
         form: {
-          initial: 'true',
+          expertise: [{
+              select: 'Get a new job',
+              index: 1,
+            },
+          ],
+          career: {
+            area: 'All',
+            role: 'All',
+            years: 'All',
+            education_background: 'All',
+          },
         },
         resolveWithFullResponse: true,
         json: true,
@@ -275,8 +285,8 @@ describe('Test Match API', () => {
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
           career: {
-            area: 'Design',
-            role: 'Visual/UI Designer',
+            area: 'All',
+            role: 'All',
             years: 'All',
             education_background: 'All',
           },

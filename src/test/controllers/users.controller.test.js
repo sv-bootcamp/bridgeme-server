@@ -473,8 +473,8 @@ describe('/career', () => {
     })
       .then((result) => {
         result.statusCode.should.equal(200);
-        const body = result.body[0];
-        const data = signupData.career_data.career[0];
+        const body = result.body;
+        const data = signupData.career_data.career;
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
