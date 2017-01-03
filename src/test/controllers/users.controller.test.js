@@ -363,7 +363,7 @@ describe('Test User API', () => {
 });
 
 describe('/editGeneral', () => {
-  it('request /editGeneral with session cookie.', (done) => {
+  it(': request /editGeneral with session cookie.', (done) => {
     let signUpData = signupData.general_data;
     signUpData.email = userData.USER_A_DATA.email;
     rp({
@@ -389,7 +389,7 @@ describe('/editGeneral', () => {
 });
 
 describe('/editCareer', () => {
-  it('request /editCareer with session cookie.', (done) => {
+  it(': request /editCareer with session cookie.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editCareer`,
@@ -413,7 +413,7 @@ describe('/editCareer', () => {
 });
 
 describe('/editExpertise', () => {
-  it('request /editExpertise with session cookie.', (done) => {
+  it(': request /editExpertise with session cookie.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editExpertise`,
@@ -437,7 +437,7 @@ describe('/editExpertise', () => {
 });
 
 describe('/editPersonality', () => {
-  it('request /editPersonality with session cookie.', (done) => {
+  it(': request /editPersonality with session cookie.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editPersonality`,
@@ -461,7 +461,7 @@ describe('/editPersonality', () => {
 });
 
 describe('/career', () => {
-  it('request /career with session cookie.', (done) => {
+  it(': request /career with session cookie.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/career`,
@@ -489,7 +489,7 @@ describe('/career', () => {
 });
 
 describe('/expertise', () => {
-  it('request /expertise with session cookie.', (done) => {
+  it(': request /expertise with session cookie.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/expertise`,
@@ -514,7 +514,7 @@ describe('/expertise', () => {
 });
 
 describe('/personality', () => {
-  it('request /personality with session cookie.', (done) => {
+  it(': request /personality with session cookie.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/personality`,
@@ -540,7 +540,7 @@ describe('/personality', () => {
 });
 
 describe('/editMentorMode', () => {
-  it('request /editMentorMode with invalid parameter.', (done) => {
+  it(': request /editMentorMode with invalid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -562,7 +562,7 @@ describe('/editMentorMode', () => {
       });
   });
 
-  it('request /editMentorMode with valid parameter.', (done) => {
+  it(': request /editMentorMode with valid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -586,7 +586,7 @@ describe('/editMentorMode', () => {
 });
 
 describe('/mentorMode', () => {
-  it('request /mentorMode with session cookie.', (done) => {
+  it(': request /mentorMode with session cookie.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/mentorMode`,
@@ -609,7 +609,7 @@ describe('/mentorMode', () => {
 });
 
 describe('/accessToken', () => {
-  it('request /accessToken to check validation of access token.', (done) => {
+  it(': request /accessToken to check validation of access token.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/accessToken`,
@@ -628,7 +628,7 @@ describe('/accessToken', () => {
         done();
       });
   });
-  it('request /accessToken to check validation of access token.', (done) => {
+  it(': request /accessToken to check validation of access token.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/accessToken`,
@@ -648,7 +648,7 @@ describe('/accessToken', () => {
       });
   });
 
-  it('request /accessToken to update access token.', (done) => {
+  it(': request /accessToken to update access token.', (done) => {
     rp({
       method: 'PUT',
       uri: `${API_BASE_URL}/accessToken`,
@@ -667,7 +667,7 @@ describe('/accessToken', () => {
         done();
       });
   });
-  it('request /accessToken to update access token.', (done) => {
+  it(': request /accessToken to update access token.', (done) => {
     rp({
       method: 'PUT',
       uri: `${API_BASE_URL}/accessToken`,

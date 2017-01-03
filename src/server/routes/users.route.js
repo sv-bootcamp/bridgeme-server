@@ -253,14 +253,12 @@ router.post('/editGeneral', apiProtector, user.editGeneralProfile);
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
- *         "career" : [
- *              {
- *                  "area" : "Design",
- *                  "role" : "Visual / UI",
- *                  "years" : "0-2 years",
- *                  "education_background" : "Bachelor's"
- *              }
- *         ],
+ *         "career": {
+ *           "area": 3,
+ *           "role": 1,
+ *           "years": 2,
+ *           "educational_background": 2
+ *         },
  *     }
  * @apiDescription {json} Success
  *     HTTP/1.1 200 OK
@@ -285,20 +283,7 @@ router.post('/editCareer', apiProtector, user.editCareer);
  *
  *  * @apiParamExample {json} Parameter Sample
  *     {
- *         "expertise" : [
- *              {
- *                  "select" : "Requirement",
- *                  "index" : 0
- *              },
- *              {
- *                  "select" : "Resume",
- *                  "index" : 1
- *              },
- *              {
- *                  "select" : "Portfolio",
- *                  "index" : 2
- *              }
- *         ],
+ *         "expertise" : [ 0, 1, 5 ]
  *     }
  * @apiDescription {json} Success
  *     HTTP/1.1 200 OK

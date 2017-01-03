@@ -14,7 +14,7 @@ let matchData;
 describe('Test Match API', () => {
 
   describe('User B request mentoring to User A.', () => {
-    it('Sign up with valid Facebook user B.', (done) => {
+    it(': Sign up with valid Facebook user B.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/users/signIn`,
@@ -38,7 +38,7 @@ describe('Test Match API', () => {
         });
     });
 
-    it('request mentoring to Invalid User.', (done) => {
+    it(': request mentoring to Invalid User.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/request`,
@@ -63,7 +63,7 @@ describe('Test Match API', () => {
         });
     });
 
-    it('User B request mentoring to User A', function (done) {
+    it(': User B request mentoring to User A', function (done) {
       //TODO issue :  this.timeout() doesn't work with arrow function.
       //For wating to send mail.
       this.timeout(10000);
@@ -92,7 +92,7 @@ describe('Test Match API', () => {
         });
     });
 
-    it('User B Retrieve activity page.', (done) => {
+    it(': User B Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -119,7 +119,7 @@ describe('Test Match API', () => {
   });
 
   describe('User A accept mentoring from User B.', () => {
-    it('Sign up with User A.', (done) => {
+    it(': Sign up with User A.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/users/signIn`,
@@ -141,7 +141,7 @@ describe('Test Match API', () => {
           done();
         });
     });
-    it('User A Retrieve activity page.', (done) => {
+    it(': User A Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -165,7 +165,7 @@ describe('Test Match API', () => {
           done();
         });
     });
-    it('User A accept request from User B.', (done) => {
+    it(': User A accept request from User B.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/response`,
@@ -192,7 +192,7 @@ describe('Test Match API', () => {
   });
 
   describe('User B check request status is changed.', () => {
-    it('Sign up with User B.', (done) => {
+    it(': Sign up with User B.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/users/signIn`,
@@ -215,7 +215,7 @@ describe('Test Match API', () => {
         });
     });
 
-    it('User B Retrieve activity page.', (done) => {
+    it(': User B Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/match/activity`,
@@ -242,20 +242,16 @@ describe('Test Match API', () => {
   });
 
   describe('/mentorList', () => {
-    it('request /mentorList without access_token.', (done) => {
+    it(': request /mentorList without access_token.', (done) => {
       unauthorizedAccessTest('POST', API_BASE_URL + '/match/mentorList', done);
     });
 
-    it('request /mentorList with access_token.', (done) => {
+    it(': request /mentorList with access_token.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList`,
         form: {
-          expertise: [{
-              select: 'Get a new job',
-              index: 1,
-            },
-          ],
+          expertise: [],
           career: {
             area: 'All',
             role: 'All',
@@ -274,22 +270,22 @@ describe('Test Match API', () => {
           done();
         })
         .catch((err) => {
-          console.log(err);
           should.fail();
           done();
         });
     });
 
-    it('request /mentorList/count', (done) => {
+    it(': request /mentorList/count', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
+          expertise: [],
           career: {
-            area: 'All',
-            role: 'All',
-            years: 'All',
-            education_background: 'All',
+            area: 0,
+            role: 0,
+            years: 0,
+            educational_background: 0,
           },
         },
         resolveWithFullResponse: true,
@@ -310,13 +306,13 @@ describe('Test Match API', () => {
   });
 
   describe('UnauthorizedAccess to API', () => {
-    it('request /activity without session coockie.', (done) => {
+    it(': request /activity without session coockie.', (done) => {
       unauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
     });
-    it('request /request without session coockie.', (done) => {
+    it(': request /request without session coockie.', (done) => {
       unauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
     });
-    it('request /response without session coockie.', (done) => {
+    it(': request /response without session coockie.', (done) => {
       unauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
     });
   });

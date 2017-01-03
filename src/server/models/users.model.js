@@ -49,11 +49,6 @@ const careerSchema = new Schema({
   educational_background: Number,
 });
 
-const expertiseSchema = new Schema({
-  select: String,
-  index: Number,
-});
-
 const personalitySchema = new Schema({
   option: String,
   score: Number,
@@ -71,7 +66,7 @@ let userSchema = new Schema({
   experience: [experienceSchema],
   work: [experienceSchema],
   career: careerSchema,
-  expertise: [expertiseSchema],
+  expertise: Array,
   personality: [personalitySchema],
   locale: String,
   age: Number,

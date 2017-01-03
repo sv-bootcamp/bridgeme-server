@@ -23,19 +23,19 @@ export const MATCH_STATUS = {
 
 export function getCareerData(req, res, next) {
   return new Promise((resolve, reject) => {
-    res.statusCode(200).(CareerData);
+    res.status(200).json(CareerData);
   })
     .catch((err) => {
-      res.statusCode(400).({ err: err });
+      res.status(400).json({ err: err });
     });
 }
 
 export function getExpertiseData(req, res, next) {
   return new Promise((resolve, reject) => {
-    res.statusCode(200).(ExpertiseData);
+    res.status(200).json(ExpertiseData);
   })
     .catch((err) => {
-      res.statusCode(400).({ err: err });
+      res.status(400).json({ err: err });
     });
 }
 
@@ -119,28 +119,35 @@ export function getMentorList(req, res, next) {
     })
     .then((careerFilteredList) => {
       return new Promise((resolve, reject) => {
-        let filteredList = {
-          full: [],
-          idList: [],
-        };
+        if (req.body.expertise === undefined) {
+          resolve(careerFilteredList.full);
+        } else if (req.body.expertise.length === 0) {
+          resolve(careerFilteredList.full);
+        } else {
+          let filteredList = {
+            full: [],
+            idList: [],
+          };
 
-        careerFilteredList.full.forEach((userItem) => {
-          userItem.expertise.forEach((userExpertise) => {
-            if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
-              && !isArrayContainsElement(filteredList.idList, userItem._id)) {
-              filteredList.full.push(userItem);
-              filteredList.idList.push(userItem._id);
-            }
+          careerFilteredList.full.forEach((userItem) => {
+            userItem.expertise.forEach((userExpertise) => {
+              if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
+                && !isArrayContainsElement(filteredList.idList, userItem._id)) {
+                filteredList.full.push(userItem);
+                filteredList.idList.push(userItem._id);
+              }
+            });
+            resolve(filteredList.full);
           });
-        });
-
-        resolve(filteredList.full);
+        }
       });
     })
     .then((filteredList) => {
+      console.log(filteredList);
       res.status(200).json(filteredList);
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err: err });
     });
 }
@@ -212,8 +219,6 @@ export function countExpectedExpertiseMatching(req, res, next) {
     .then((results) => {
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
-      console.log('*');
-      console.log(exceptionList);
 
       return User.find({
         _id: {
@@ -245,7 +250,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
     .then((careerFilteredList) => {
       return new Promise((resolve, reject) => {
         let countResult = [0, 0, 0, 0, 0, 0, 0];
-        careerFilteredList.forEach((user) => {
+        careerFilteredList.full.forEach((user) => {
           user.expertise.forEach((expItem) => {
             countResult[expItem.index]++;
           });

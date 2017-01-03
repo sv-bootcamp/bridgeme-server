@@ -9,10 +9,10 @@ export default {
   },
   career_data: {
     career: {
-        area: 'Design',
-        role: 'Visual / UI',
-        years: '0-2 years',
-        education_background: "Bachelor's",
+        area: 1,
+        role: 1,
+        years: 2,
+        educational_background: 2,
       },
   },
   expertise_data: {
