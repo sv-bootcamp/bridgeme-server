@@ -87,6 +87,7 @@ export function getMentorList(req, res, next) {
           full: [],
           idList: [],
         };
+
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
             careerFilteredList.full.push(userItem);
@@ -99,22 +100,28 @@ export function getMentorList(req, res, next) {
     })
     .then((careerFilteredList) => {
       return new Promise((resolve, reject) => {
-        let filteredList = {
-          full: [],
-          idList: [],
-        };
+        if (req.body.expertise === undefined) {
+          resolve(careerFilteredList.full);
+        } else if (req.body.expertise.length === 0) {
+          resolve(careerFilteredList.full);
+        } else {
+          let filteredList = {
+            full: [],
+            idList: [],
+          };
 
-        careerFilteredList.full.forEach((userItem) => {
-          userItem.expertise.forEach((userExpertise) => {
-            if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
-              && !isArrayContainsElement(filteredList.idList, userItem._id)) {
-              filteredList.full.push(userItem);
-              filteredList.idList.push(userItem._id);
-            }
+          careerFilteredList.full.forEach((userItem) => {
+            userItem.expertise.forEach((userExpertise) => {
+              if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
+                && !isArrayContainsElement(filteredList.idList, userItem._id)) {
+                filteredList.full.push(userItem);
+                filteredList.idList.push(userItem._id);
+              }
+            });
           });
-        });
 
-        resolve(filteredList.full);
+          resolve(filteredList.full);
+        }
       });
     })
     .then((filteredList) => {
