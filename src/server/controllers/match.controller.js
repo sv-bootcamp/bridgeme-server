@@ -123,7 +123,7 @@ export function getMentorList(req, res, next) {
 
           careerFilteredList.full.forEach((userItem) => {
             userItem.expertise.forEach((userExpertise) => {
-              if (isFitExpertiseFilter(req.body.expertise, userExpertise.select)
+              if (isArrayContainsElement(req.body.expertise, userExpertise)
                 && !isArrayContainsElement(filteredList.idList, userItem._id)) {
                 filteredList.full.push(userItem);
                 filteredList.idList.push(userItem._id);
@@ -141,16 +141,6 @@ export function getMentorList(req, res, next) {
     .catch((err) => {
       res.status(400).json({ err: err });
     });
-}
-
-/*
- * Compare the user's expertise information and the filter.
- * So determine the user fits in filter.
- */
-function isFitExpertiseFilter(arr, val) {
-  return arr.some((arrVal) => {
-    return val === arrVal.select;
-  });
 }
 
 function isArrayContainsElement(arr, val) {

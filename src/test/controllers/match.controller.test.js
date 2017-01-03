@@ -1,8 +1,8 @@
 import '../../server/models/users.model';
+import * as CareerData from '../../server/config/json/career.data.js';
+import * as ExpertiseData from '../../server/config/json/expertise.data.js';
 import should from 'should';
-import signupData from '../fixtures/signupData';
 import rp from 'request-promise';
-import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
 
 /*
@@ -36,6 +36,34 @@ describe('Test Match API', () => {
         })
         .catch((err) => {
           should.fail(err);
+          done();
+        });
+    });
+
+    it(': Request mentorList without expertise option.', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList`,
+        form: {
+          career: {
+            area: 0,
+            role: 0,
+            years: 0,
+            education_background: 0,
+          },
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err.message);
           done();
         });
     });
@@ -99,7 +127,55 @@ describe('Test Match API', () => {
     });
   });
 
+  describe('/getCareerData', () => {
+    it(': Fetch the career data for filter.', (done) => {
+      rp({
+        method: 'GET',
+        uri: `${API_BASE_URL}/match/getCareerData`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.body.CareerData.area.length.should.equal(CareerData.CareerData.area.length);
+          result.body.CareerData.role.length.should.equal(CareerData.CareerData.role.length);
+          result.body.CareerData.years.length.should.equal(CareerData.CareerData.years.length);
+          result.body.CareerData.educational_background.length.should
+            .equal(CareerData.CareerData.educational_background.length);
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err);
+          done();
+        });
+    });
+  });
 
+  describe('/getExpertiseData', () => {
+    it(': Fetch the expertise data for filter.', (done) => {
+      rp({
+        method: 'GET',
+        uri: `${API_BASE_URL}/match/getExpertiseData`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.body.ExpertiseData.length.should.equal(ExpertiseData.ExpertiseData.length);
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err);
+          done();
+        });
+    });
+  });
 
   describe('/request', () => {
     it(': request mentoring to Invalid User.', (done) => {
@@ -321,7 +397,7 @@ describe('Test Match API', () => {
   });
 });
 
-function unauthorizedAccessTest (method, uri, done) {
+function unauthorizedAccessTest(method, uri, done) {
   rp({
     method: method,
     uri: uri,

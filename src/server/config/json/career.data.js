@@ -2,6 +2,44 @@
  Data for career filter. If index is 0, it means 'All'.
  */
 export const CareerData = {
+  area: [
+    {
+      index: 1,
+      content: 'Software Engineering',
+    },
+    {
+      index: 2,
+      content: 'Design',
+    },
+    {
+      index: 3,
+      content: 'Product Management',
+    },
+    {
+      index: 4,
+      content: 'Data Science',
+    },
+    {
+      index: 5,
+      content: 'Sales',
+    },
+    {
+      index: 6,
+      content: 'Marketing',
+    },
+    {
+      index: 7,
+      content: 'Recruiting / People Ops',
+    },
+    {
+      index: 8,
+      content: 'Finance / Operations',
+    },
+    {
+      index: 9,
+      content: 'Other',
+    },
+  ],
   role: [
     {
       index: 1,
@@ -279,44 +317,6 @@ export const CareerData = {
     {
       index: 5,
       content: '6+ years',
-    },
-  ],
-  area: [
-    {
-      index: 1,
-      content: 'Software Engineering',
-    },
-    {
-      index: 2,
-      content: 'Design',
-    },
-    {
-      index: 3,
-      content: 'Product Management',
-    },
-    {
-      index: 4,
-      content: 'Data Science',
-    },
-    {
-      index: 5,
-      content: 'Sales',
-    },
-    {
-      index: 6,
-      content: 'Marketing',
-    },
-    {
-      index: 7,
-      content: 'Recruiting / People Ops',
-    },
-    {
-      index: 8,
-      content: 'Finance / Operations',
-    },
-    {
-      index: 9,
-      content: 'Other',
     },
   ],
   educational_background: [

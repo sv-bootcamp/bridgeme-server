@@ -1,7 +1,7 @@
 /*
  Data for expertise filter.
  */
-export const expertiseData = [
+export const ExpertiseData = [
   {
     index: 1,
     content: 'Study abroad',
