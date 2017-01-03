@@ -68,7 +68,36 @@ describe('Test Match API', () => {
         });
     });
 
-    it(': Request mentorList with access_token.', (done) => {
+    it(': Request mentorList with wrong parameter format.', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList`,
+        form: {
+          expertise: [],
+          career: {
+            area: 'All',
+            role: 'All',
+            years: 'All',
+            education_background: 'All',
+          },
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          should.fail();
+          done();
+        })
+        .catch((err) => {
+          err.statusCode.should.equal(400);
+          done();
+        });
+    });
+
+    it(': Request mentorList.', (done) => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList`,
