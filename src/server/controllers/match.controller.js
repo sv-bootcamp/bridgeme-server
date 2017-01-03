@@ -143,11 +143,9 @@ export function getMentorList(req, res, next) {
       });
     })
     .then((filteredList) => {
-      console.log(filteredList);
       res.status(200).json(filteredList);
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).json({ err: err });
     });
 }
