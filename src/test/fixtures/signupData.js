@@ -7,13 +7,21 @@ export default {
     about: 'Hello',
     image: '',
   },
-  career_data: {
+  career_data1: {
     career: {
         area: 1,
         role: 1,
         years: 2,
         educational_background: 2,
       },
+  },
+  career_data2: {
+    career: {
+      area: 1,
+      role: 2,
+      years: 3,
+      educational_background: 2,
+    },
   },
   expertise_data: {
     expertise: [

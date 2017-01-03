@@ -30,10 +30,6 @@ export function getExpertiseData(req, res, next) {
   res.status(200).json(ExpertiseData);
 }
 
-// export function getLatestFilter(req, res, next) {
-//
-// }
-
 export function getMentorList(req, res, next) {
   let pendingList = [];
 

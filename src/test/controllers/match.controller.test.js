@@ -1,6 +1,8 @@
-import should from 'should';
 import '../../server/models/users.model';
+import should from 'should';
+import signupData from '../fixtures/signupData';
 import rp from 'request-promise';
+import userCallback from '../../server/config/json/user.callback';
 import userData from '../fixtures/userData';
 
 /*
@@ -13,7 +15,7 @@ let matchData;
 
 describe('Test Match API', () => {
 
-  describe('User B request mentoring to User A.', () => {
+  describe('/mentorList', () => {
     it(': Sign up with valid Facebook user B.', (done) => {
       rp({
         method: 'POST',
@@ -38,6 +40,68 @@ describe('Test Match API', () => {
         });
     });
 
+    it(': Request mentorList with access_token.', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList`,
+        form: {
+          expertise: [],
+          career: {
+            area: 0,
+            role: 0,
+            years: 0,
+            education_background: 0,
+          },
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err.message);
+          done();
+        });
+    });
+
+    it(': Request the list of expected number of mentor.', (done) => {
+      rp({
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList/count`,
+        form: {
+          expertise: [],
+          career: {
+            area: 0,
+            role: 0,
+            years: 0,
+            educational_background: 0,
+          },
+        },
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail();
+          done();
+        });
+    });
+  });
+
+
+
+  describe('/request', () => {
     it(': request mentoring to Invalid User.', (done) => {
       rp({
         method: 'POST',
@@ -118,7 +182,7 @@ describe('Test Match API', () => {
     });
   });
 
-  describe('User A accept mentoring from User B.', () => {
+  describe('/response', () => {
     it(': Sign up with User A.', (done) => {
       rp({
         method: 'POST',
@@ -141,6 +205,7 @@ describe('Test Match API', () => {
           done();
         });
     });
+
     it(': User A Retrieve activity page.', (done) => {
       rp({
         method: 'GET',
@@ -165,6 +230,7 @@ describe('Test Match API', () => {
           done();
         });
     });
+
     it(': User A accept request from User B.', (done) => {
       rp({
         method: 'POST',
@@ -188,10 +254,9 @@ describe('Test Match API', () => {
           done();
         });
     });
-
   });
 
-  describe('User B check request status is changed.', () => {
+  describe('/activity', () => {
     it(': Sign up with User B.', (done) => {
       rp({
         method: 'POST',
@@ -241,86 +306,22 @@ describe('Test Match API', () => {
     });
   });
 
-  describe('/mentorList', () => {
-    it(': request /mentorList without access_token.', (done) => {
-      unauthorizedAccessTest('POST', API_BASE_URL + '/match/mentorList', done);
-    });
-
-    it(': request /mentorList with access_token.', (done) => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/match/mentorList`,
-        form: {
-          expertise: [],
-          career: {
-            area: 0,
-            role: 0,
-            years: 0,
-            education_background: 0,
-          },
-        },
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          console.log(result);
-          result.statusCode.should.equal(200);
-          done();
-        })
-        .catch((err) => {
-          ;
-          should.fail();
-          done();
-        });
-    });
-
-    it(': request /mentorList/count', (done) => {
-      rp({
-        method: 'POST',
-        uri: `${API_BASE_URL}/match/mentorList/count`,
-        form: {
-          expertise: [],
-          career: {
-            area: 0,
-            role: 0,
-            years: 0,
-            educational_background: 0,
-          },
-        },
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.statusCode.should.equal(200);
-          done();
-        })
-        .catch((err) => {
-          should.fail();
-          done();
-        });
-    });
-  });
-
   describe('UnauthorizedAccess to API', () => {
     it(': request /activity without session coockie.', (done) => {
       unauthorizedAccessTest('GET', `${API_BASE_URL}/match/activity`, done);
     });
+
     it(': request /request without session coockie.', (done) => {
       unauthorizedAccessTest('POST', `${API_BASE_URL}/match/request`, done);
     });
+
     it(': request /response without session coockie.', (done) => {
       unauthorizedAccessTest('POST', `${API_BASE_URL}/match/response`, done);
     });
   });
 });
 
-function unauthorizedAccessTest(method, uri, done) {
+function unauthorizedAccessTest (method, uri, done) {
   rp({
     method: method,
     uri: uri,
@@ -328,7 +329,7 @@ function unauthorizedAccessTest(method, uri, done) {
     json: true,
   })
     .then((result) => {
-      should.fail('status code is not 401');
+      should.fail('Status Code should be 401');
       done();
     })
     .catch((err) => {

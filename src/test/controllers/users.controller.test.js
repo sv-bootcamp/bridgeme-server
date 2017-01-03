@@ -393,7 +393,7 @@ describe('/editCareer', () => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editCareer`,
-      form: signupData.career_data,
+      form: signupData.career_data1,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -474,7 +474,7 @@ describe('/career', () => {
       .then((result) => {
         result.statusCode.should.equal(200);
         const body = result.body;
-        const data = signupData.career_data.career;
+        const data = signupData.career_data1.career;
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
