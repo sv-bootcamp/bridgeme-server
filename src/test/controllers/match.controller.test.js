@@ -253,10 +253,10 @@ describe('Test Match API', () => {
         form: {
           expertise: [],
           career: {
-            area: 'All',
-            role: 'All',
-            years: 'All',
-            education_background: 'All',
+            area: 0,
+            role: 0,
+            years: 0,
+            education_background: 0,
           },
         },
         resolveWithFullResponse: true,
@@ -266,10 +266,12 @@ describe('Test Match API', () => {
         },
       })
         .then((result) => {
+          console.log(result);
           result.statusCode.should.equal(200);
           done();
         })
         .catch((err) => {
+          ;
           should.fail();
           done();
         });

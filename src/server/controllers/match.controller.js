@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 
 const ObjectId = mongoose.Types.ObjectId;
 
+const Filter = mongoose.model('filter');
 const Match = mongoose.model('match');
 const User = mongoose.model('user');
 
@@ -22,22 +23,16 @@ export const MATCH_STATUS = {
 };
 
 export function getCareerData(req, res, next) {
-  return new Promise((resolve, reject) => {
-    res.status(200).json(CareerData);
-  })
-    .catch((err) => {
-      res.status(400).json({ err: err });
-    });
+  res.status(200).json(CareerData);
 }
 
 export function getExpertiseData(req, res, next) {
-  return new Promise((resolve, reject) => {
-    res.status(200).json(ExpertiseData);
-  })
-    .catch((err) => {
-      res.status(400).json({ err: err });
-    });
+  res.status(200).json(ExpertiseData);
 }
+
+// export function getLatestFilter(req, res, next) {
+//
+// }
 
 export function getMentorList(req, res, next) {
   let pendingList = [];
@@ -70,6 +65,7 @@ export function getMentorList(req, res, next) {
     findConnection(matchOptions.option1, projectOption, localField.mentee),
     findConnection(matchOptions.option2, projectOption, localField.mentor),
     findConnection(matchOptions.option3, projectOption, 'mentee_id'),
+    saveFilter(req.user._id, req.body.expertise, req.body.career),
   ])
     .then((results) => {
       let exceptionList = [];
@@ -137,8 +133,9 @@ export function getMentorList(req, res, next) {
                 filteredList.idList.push(userItem._id);
               }
             });
-            resolve(filteredList.full);
           });
+
+          resolve(filteredList.full);
         }
       });
     })
@@ -283,6 +280,34 @@ function findConnection(matchOption, projectOption, localField) {
     },
   ]).exec();
 }
+
+function saveFilter(userId, expertise, career) {
+  return new Promise((resolve, reject) => {
+    Filter.update({
+        user_id: userId,
+        isLatest: true,
+      },
+      {
+        isLatest: false,
+      }).exec()
+      .then((result) => {
+        let filterData = {
+          expertise: expertise,
+          career: career,
+          isLatest: true,
+        };
+
+        return Filter(filterData).save();
+      })
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((err)=> {
+        reject(err);
+      });
+  });
+}
+
 
 // The mentee sent request to Mentor
 export function requestMentoring(req, res, next) {

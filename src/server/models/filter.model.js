@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 /*
- * Define the schema model for filter usage history
+ * Define the schema model for filter search history
  */
 
 const Schema = mongoose.Schema;
@@ -15,6 +15,7 @@ let filterSchema = new Schema({
     years: Number,
     education_background: Number,
   },
+  isLatest: Boolean,
   date: {
     type: Date,
     default: Date.now,
