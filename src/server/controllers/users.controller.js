@@ -66,6 +66,15 @@ export function getProfileById(req, res, next) {
     .then((matchAsMentor) => {
       userProfile.relation.asMentor =
         matchAsMentor ? matchAsMentor.status : matchController.MATCH_STATUS.REJECTED;
+      return isBookmarked(req.user._id, req.params._id);
+    })
+    .then((isBookmarked) => {
+      if (isBookmarked) {
+        userProfile.bookmarked = true;
+      } else {
+        userProfile.bookmarked = false;
+      }
+
       res.status(200).json(userProfile);
     })
     .catch((err) => {
@@ -631,10 +640,11 @@ export function getBookmark(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {
       let bookmarkList = user.bookmark;
-      // bookmarkList = bookmarkList.map(value => value.id);
-      // console.log(bookmarkList);
-      //JSON.parse(JSON.stringify(bookmarkList))
-      return User.find({ _id: { $nin: bookmarkList } }).exec();
+      return User.find({
+        _id: {
+          $in: bookmarkList,
+        },
+      }, { password: 0 }).exec();
     })
     .then((list) => {
       res.status(200).json(list);
@@ -642,6 +652,23 @@ export function getBookmark(req, res, next) {
     .catch((err) => {
       res.status(400).json(err);
     });
+}
+
+function isBookmarked(me, userId) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: me }).exec()
+      .then((me) => {
+        const bookmarkList = me.bookmark !== undefined ? me.bookmark : [];
+        if (bookmarkList.includes(userId)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 export function signOut(req, res, next) {

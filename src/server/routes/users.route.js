@@ -381,6 +381,26 @@ router.post('/editPersonality', apiProtector, user.editPersonality);
  */
 router.post('/editMentorMode', apiProtector, user.setMentoringRequestStatus);
 
+/**
+ * @api {post} /users/setRequestStatus Request Edit mentorMode
+ * @apiName setRequestStatus
+ * @apiGroup User
+ *
+ * @apiParam {String} id user for bookmark on.
+ *
+ */
+router.post('/bookmarkOn', apiProtector, user.activeBookmark);
+
+/**
+ * @api {post} /users/setRequestStatus Request Edit mentorMode
+ * @apiName setRequestStatus
+ * @apiGroup User
+ *
+ * @apiParam {String} id user for bookmark off.
+ *
+ */
+router.post('/bookmarkOff', apiProtector, user.inActiveBookmark);
+
 //GET method
 
 /**
@@ -558,6 +578,32 @@ router.get('/personality', apiProtector, user.getPersonalityInfo);
  */
 router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
 
+/**
+ * @api {get} /users/bookmark Request bookmark list
+ * @apiName getRequestStatus
+ * @apiGroup User
+ *
+ * @apiSuccessExample {json} Success
+ *      HTTP/1.1 200 OK
+ *     {
+ *       {
+ *         Marked User1's Info
+ *       },
+ *       {
+ *         Marked User2's Info
+ *       },
+ *       {
+ *         Marked User3's Info
+ *       },....
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
 router.get('/bookmark', apiProtector, user.getBookmark);
 
 /**

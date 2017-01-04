@@ -136,19 +136,20 @@ export function countExpectedExpertiseMatching(req, res, next) {
 
 function getInitialMentorList(userId) {
   return new Promise((resolve, reject) => {
-    const exceptList = [];
+    const connectedList = [];
     const pendingList = [];
     const project = {
       mentee_id: 1,
       mentor_id: 1,
     };
+    let bookmarkList = [];
     let match = {
       mentor_id: ObjectId(userId),
     };
 
     findConnection(match, project, 'mentee_id')
       .then((menteeList) => {
-        menteeList.forEach(user => exceptList.push(user.mentee_id));
+        menteeList.forEach(user => connectedList.push(user.mentee_id));
         match = {
           mentee_id: ObjectId(userId),
           status: MATCH_STATUS.ACCEPTED,
@@ -156,7 +157,7 @@ function getInitialMentorList(userId) {
         return findConnection(match, project, 'mentor_id');
       })
       .then((mentorList) => {
-        mentorList.forEach(user => exceptList.push(user.mentor_id));
+        mentorList.forEach(user => connectedList.push(user.mentor_id));
         match = {
           mentee_id: ObjectId(userId),
           status: MATCH_STATUS.PENDING,
@@ -165,11 +166,18 @@ function getInitialMentorList(userId) {
       })
       .then((pendingStatus) => {
         pendingStatus.forEach(user => pendingList.push(user.mentor_id.toString()));
+        return User.findOne({ _id: userId }).exec();
+      })
+      .then((me) => {
+        if (me.bookmark !== undefined) {
+          bookmarkList = me.bookmark;
+        }
+
         return User.find(
           {
             _id: {
               $ne: userId,
-              $nin: exceptList,
+              $nin: connectedList,
             },
             mentorMode: {
               $ne: false,
@@ -178,9 +186,13 @@ function getInitialMentorList(userId) {
           .sort({ stamp_login: -1 }).exec();
       })
       .then((user) => {
-        const userData = JSON.parse(JSON.stringify(user));
         return new Promise((resolve) => {
+          const userData = JSON.parse(JSON.stringify(user));
           userData.forEach(item => {
+            if (bookmarkList.includes(item._id.toString())) {
+              item.bookmarked = true;
+            }
+
             if (pendingList.includes(item._id.toString())) {
               item.pending = true;
             }
@@ -192,6 +204,7 @@ function getInitialMentorList(userId) {
         resolve(user);
       })
       .catch((err) => {
+        console.log(err);
         reject({ err_point: userCallback.ERR_MONGOOSE, err: err });
       });
   });
