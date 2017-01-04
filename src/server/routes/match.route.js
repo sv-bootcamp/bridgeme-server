@@ -11,15 +11,10 @@ const router = express.Router();
 
 //POST method
 
-/*
+/**
  * @api {post} /match/mentorList Request Mentor's list with career/expertise filter
  * @apiName getMentorList
  * @apiGroup User
- *
- * @apiParam {json} Parameter Sample when you request list with no filter.
- *     {
- *       initial: true
- *     }
  *
  * @apiParam {json} Parameter Sample when you request list with filters.
  *     {
