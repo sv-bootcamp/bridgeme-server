@@ -24,4 +24,4 @@ let matchSchema = new Schema({
   contents: String,
 });
 
-export default mongoose.model('match', matchSchema);
+export default matchSchema;

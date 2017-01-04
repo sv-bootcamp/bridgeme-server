@@ -34,6 +34,4 @@ surveySchema.set('toJSON', {
   virtuals: true,  // Set all virtuals show up in the console.log output.
 });
 
-export default  surveySchema;
-
-export default mongoose.model('survey', surveySchema);
+export default surveySchema;

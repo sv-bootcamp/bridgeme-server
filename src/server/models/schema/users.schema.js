@@ -98,4 +98,4 @@ let userSchema = new Schema({
   },
 });
 
-export default mongoose.model('user', userSchema);
+export default userSchema;

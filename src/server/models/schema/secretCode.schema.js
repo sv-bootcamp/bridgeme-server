@@ -23,4 +23,4 @@ secretCodeSchema.set('toJSON', {
   virtuals: true,  // Set all virtuals show up in the console.log output.
 });
 
-export default mongoose.model('secretCode', secretCodeSchema);
+export default secretCodeSchema;

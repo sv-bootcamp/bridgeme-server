@@ -31,4 +31,4 @@ filterSchema.set('toJSON', {
   virtuals: true,
 });
 
-export default mongoose.model('filter', filterSchema);
+export default filterSchema;
