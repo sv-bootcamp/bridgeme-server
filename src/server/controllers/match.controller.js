@@ -54,8 +54,6 @@ export function getMentorList(req, res, next) {
     findConnection(matchOptions.option3, projectOption, localField.mentee),
   ])
     .then((results) => {
-      let exceptionList = [];
-
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
