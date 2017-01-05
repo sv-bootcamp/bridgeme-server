@@ -55,14 +55,14 @@ export function getMentorList(req, res, next) {
   ])
     .then((results) => {
       let exceptionList = [];
-      
+
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
       if (results[3].bookmark !== undefined) {
-        bookmarkList = me.bookmark;
+        bookmarkList = results[3].bookmark;
       }
-  
+
       return User.find({
         _id: {
           $ne: req.user._id,
@@ -137,6 +137,7 @@ export function getMentorList(req, res, next) {
       res.status(200).json(filteredList);
     })
     .catch((err) => {
+      console.log(err);
       res.status(400).json({ err: err });
     });
 }
