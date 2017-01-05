@@ -1,106 +1,45 @@
 import mongoose from 'mongoose';
+import userCallback from '../config/json/user.callback';
+import userSchema from './schema/users.schema';
 
-/*
- * Define the schema model for user.
- */
-const Schema = mongoose.Schema;
+const staticFunc = {
+  findById: function (_id)  {
+    return this.findOne({ _id: _id }).exec();
+  },
 
-let concentrationSchema = new Schema({
-  name: String,
-});
+  strictFindById: function (_id) {
+    return this.findOne({ _id: _id }).exec()
+    .then((existingUser) => {
+        if (existingUser) {
+          return existingUser;
+        }
 
-let educationSchema = new Schema({
-  school: {
-    name: String,
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      });
   },
-  concentration: [concentrationSchema],
-  degree: {
-    name: String,
-  },
-  type: String,
-  location: {
-    name: String,
-  },
-  start_date: String,
-  end_date: String,
-  year: {
-    name: String,
-  },
-});
 
-const experienceSchema = new Schema({
-  employer: {
-    name: String,
+  findByEmail: function (email) {
+    return this.findOne({ email: email }).exec();
   },
-  location: {
-    name: String,
-  },
-  position: {
-    name: String,
-  },
-  start_date: String,
-  end_date: String,
-});
 
-const careerSchema = new Schema({
-  area: String,
-  role: String,
-  years: String,
-  educational_background: String,
-});
+  strictFindByEmail: function (email) {
+    return this.findOne({ email: email }).exec()
+      .then((existingUser) => {
+        if (existingUser) {
+          return existingUser;
+        }
 
-const expertiseSchema = new Schema({
-  select: String,
-  index: Number,
-});
+        throw new Error(userCallback.ERR_USER_NOT_FOUND);
+      });
+  },
 
-const personalitySchema = new Schema({
-  option: String,
-  score: Number,
-});
+  updateOne: function (_id, options) {
+    return this.update({ _id: _id }, {
+      $set: options,
+    }).exec();
+  },
+};
 
-let userSchema = new Schema({
-  email: { type: String, unique: true },
-  //Unique user id from platform.
-  platform_id: String,
-  //Which platform user is using.  1:Facebook 2: LinkedIn
-  platform_type: Number,
-  password: String,
-  name: String,
-  education: [educationSchema],
-  experience: [experienceSchema],
-  work: [experienceSchema],
-  career: {
-    area: String,
-    role: String,
-    years: String,
-    education_background: String,
-  },
-  expertise: [expertiseSchema],
-  personality: [personalitySchema],
-  locale: String,
-  age: Number,
-  location: String,
-  field: String,
-  region: String,
-  skills: String,
-  company: String,
-  timezone: Number,
-  profile_picture_small: String,
-  profile_picture: String,
-  profile_picture_large: String,
-  job_position: String,
-  about: String,
-  languages: String,
-  mentorMode: Boolean,
-  deviceToken: Array,
-  reg_date: {
-    type: Date,
-    default: Date.now,
-  },
-  stamp_login: {
-    type: Date,
-  },
-});
+userSchema.statics = staticFunc;
 
 export default mongoose.model('user', userSchema);

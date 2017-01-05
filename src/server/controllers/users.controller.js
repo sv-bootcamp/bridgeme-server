@@ -39,7 +39,7 @@ const FB_GRAPH_CRAWL_PARAMS = 'name,email,locale,timezone,education,work,locatio
 
 // Return my profile.
 export function getMyProfile(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.findById(req.user._id)
     .then((myProfile) => {
       res.status(200).json(myProfile);
     })
@@ -51,8 +51,7 @@ export function getMyProfile(req, res, next) {
 // Return profile by _id.
 export function getProfileById(req, res, next) {
   let userProfile = {};
-
-  User.findOne({ _id: req.params._id }).exec()
+  User.findById(req.params._id)
     .then((profile) => {
       userProfile = JSON.parse(JSON.stringify(profile));
       return Match.findOne({ mentor_id: userProfile._id, mentee_id: req.user._id }).exec();
@@ -91,7 +90,8 @@ export function localSignUp(req, res, next) {
   validateEmail(registrationData.email)
     .then((result) => {
       if (result) {
-        return User.findOne({ email: registrationData.email }).exec();
+
+        return User.findByEmail(registrationData.email);
       } else {
         throw new Error(userCallback.ERR_INVALID_EMAIL_FORMAT);
       }
@@ -127,7 +127,7 @@ export function localSignIn(req, res, next) {
   cipher.update(req.body.email, 'ascii', 'hex');
   let cryptoPassword = cipher.final('hex');
 
-  User.findOne({ email: req.body.email }).exec()
+  User.findByEmail(req.body.email)
     .then((existingUser) => {
       if (!existingUser) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
@@ -160,7 +160,7 @@ export function localSignIn(req, res, next) {
 
 export function requestSecretCode(req, res, next) {
   if (req.body.email) {
-    User.findOne({ email: req.body.email }).exec()
+    User.findByEmail(req.body.email)
       .then((user) => {
         if (!user) {
           throw new Error(userCallback.ERR_USER_NOT_FOUND);
@@ -201,7 +201,7 @@ export function resetPassword(req, res, next) {
   cipher.update(req.body.email, 'ascii', 'hex');
   let crytoPassword = cipher.final('hex');
 
-  User.findOne({ email: req.body.email }).exec()
+  User.findByEmail(req.body.email)
     .then((user) => {
       if (!user) {
         throw new Error(userCallback.ERR_USER_NOT_FOUND);
@@ -324,7 +324,7 @@ function stampUser(user) {
 
 function stampDeviceToken(token, user) {
   return new Promise((resolve, reject) => {
-    User.findOne({ _id: user._id }).exec()
+    User.findById(user._id)
       .then((user) => {
         if (user.deviceToken.includes(token) || token === null) {
           resolve(user);
@@ -410,7 +410,8 @@ export function editGeneralProfile(req, res, next) {
     .then((isValid) => {
       AWS.config.accessKeyId = AWS_ACCESS_KEY_ID;
       AWS.config.secretAccessKey = AWS_SECRET_ACCESS_KEY;
-      return User.findOne({ _id: req.user._id }).exec();
+
+      return User.findById(req.user._id);
     })
     .then((user) => {
       user.name = req.body.name;
@@ -495,11 +496,7 @@ function updateProfile(req, imageKey) {
 }
 
 export function editCareer(req, res, next) {
-  User.update({ _id: req.user._id }, {
-    $set: {
-      career: req.body.career,
-    },
-  }).exec()
+  User.updateOne(req.user._id, { career: req.body.career })
     .then((data) => {
       res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
     })
@@ -509,11 +506,7 @@ export function editCareer(req, res, next) {
 }
 
 export function editExpertise(req, res, next) {
-  User.update({ _id: req.user._id }, {
-    $set: {
-      expertise: req.body.expertise,
-    },
-  }).exec()
+  User.updateOne(req.user._id, { expertise: req.body.expertise })
     .then((data) => {
       res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
     })
@@ -537,7 +530,7 @@ export function editPersonality(req, res, next) {
 }
 
 export function getCareerInfo(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.strictFindById(req.user._id)
     .then((user) => {
       res.status(200).json(user.career);
     })
@@ -547,7 +540,7 @@ export function getCareerInfo(req, res, next) {
 }
 
 export function getExpertiseInfo(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.findById(req.user._id)
     .then((user) => {
       res.status(200).json(user.expertise);
     })
@@ -557,7 +550,7 @@ export function getExpertiseInfo(req, res, next) {
 }
 
 export function getPersonalityInfo(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.findById(req.user._id)
     .then((user) => {
       res.status(200).json(user.personality);
     })
@@ -568,24 +561,20 @@ export function getPersonalityInfo(req, res, next) {
 
 export function setMentoringRequestStatus(req, res, next) {
   if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
-    User.update({ _id: req.user._id }, {
-      $set: {
-        mentorMode: req.body.mentorMode,
-      },
-    }).exec()
-      .then((update) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
+    User.updateOne(req.user._id, { mentorMode: req.body.mentorMode })
+    .then((update) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
   } else {
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
   }
 }
 
 export function getMentoringRequestStatus(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.findById(req.user._id)
     .then((user) => {
       if (user.mentorMode == null) {
         res.status(200).json(true);
@@ -599,7 +588,7 @@ export function getMentoringRequestStatus(req, res, next) {
 }
 
 export function signOut(req, res, next) {
-  User.findOne({ _id: req.user._id }).exec()
+  User.findById(req.user._id)
     .then((user) => {
       const index = user.deviceToken.indexOf(req.body.deviceToken);
       user.deviceToken.splice(index, 1);
@@ -612,3 +601,4 @@ export function signOut(req, res, next) {
       res.status(400).json(err);
     });
 }
+
