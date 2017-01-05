@@ -261,6 +261,7 @@ describe('Test User API', () => {
         json: true,
       })
         .then((result) => {
+          userData.USER_E_DATA = result.body.user;
           result.statusCode.should.equal(200);
           done();
         })
@@ -598,6 +599,100 @@ describe('/mentorMode', () => {
       .then((result) => {
         result.statusCode.should.equal(200);
         result.body.result.should.equal(mentorMode);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmarkOn', () => {
+  it('request /bookmarkOn with session cookie.', (done) => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/bookmarkOn`,
+      form: { id: userData.USER_E_DATA._id },
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_ON);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmark', () => {
+  it('request /bookmark with session cookie.', (done) => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/bookmark`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body[0]._id.should.equal(userData.USER_E_DATA._id);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmarkOff', () => {
+  it('request /bookmarkOff with session cookie.', (done) => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/bookmarkOff`,
+      form: { id: userData.USER_E_DATA._id },
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_OFF);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmark', () => {
+  it('request /bookmark with session cookie.', (done) => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/bookmark`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.length.should.equal(0);
         done();
       })
       .catch((err) => {
