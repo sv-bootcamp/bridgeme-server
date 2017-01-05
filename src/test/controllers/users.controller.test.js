@@ -82,7 +82,6 @@ describe('Test User API', () => {
         .catch((err) => {
           should.fail();
           done();
-
         });
     });
 
@@ -393,7 +392,7 @@ describe('/editCareer', () => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editCareer`,
-      form: signupData.career_data1,
+      form: signupData.career_data,
       resolveWithFullResponse: true,
       json: true,
       headers: {
@@ -474,7 +473,7 @@ describe('/career', () => {
       .then((result) => {
         result.statusCode.should.equal(200);
         const body = result.body;
-        const data = signupData.career_data1.career;
+        const data = signupData.career_data.career;
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
@@ -503,7 +502,7 @@ describe('/expertise', () => {
         result.statusCode.should.equal(200);
         const body = result.body;
         const data = signupData.expertise_data.expertise;
-        body[0].select.should.equal(data[0].select);
+        body[0].should.equal(data[0]);
         done();
       })
       .catch((err) => {

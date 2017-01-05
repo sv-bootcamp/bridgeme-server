@@ -18,21 +18,12 @@ const router = express.Router();
  *
  * @apiParam {json} Parameter Sample when you request list with filters.
  *     {
- *       "expertise" : [
- *         {
- *           "select" : "Get a new job",
- *           "index" : 1
- *         },
- *         {
- *           "select": "Career change",
- *           "index": 4
- *         }
- *       ],
+ *       "expertise" : [ 1, 4 ],
  *       "career" : {
- *         "area" : "Design",
- *         "role" : "Visual/UI Designer",
- *         "years" : "All",
- *         "educational_background" : "All"
+ *         "area" : 1,
+ *         "role" : 3,
+ *         "years" : 1,
+ *         "educational_background" : 4
  *       }
  *     }
  *
@@ -69,10 +60,10 @@ router.post('/mentorList', apiProtector, match.getMentorList);
  * @apiParamExample {json} Parameter Sample
  *     {
  *       "career": {
- *         "area": "Design",
- *         "role": "Visual/UI Designer",
- *         "years": "All",
- *         "educational_background": "All"
+ *         "area": 1,
+ *         "role": 2,
+ *         "years": 3,
+ *         "educational_background": 2
  *       }
  *     }
  *
@@ -85,12 +76,7 @@ router.post('/mentorList', apiProtector, match.getMentorList);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "career": {
- *         "area": "Design",
- *         "role": "Visual/UI Designer",
- *         "years": "All",
- *         "educational_background": "All"
- *       }
+ *       "err_point": "Authentication Fail"
  *     }
  *
  */

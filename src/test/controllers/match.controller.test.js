@@ -2,6 +2,7 @@ import '../../server/models/users.model';
 import * as CareerData from '../../server/config/json/career.data.js';
 import * as ExpertiseData from '../../server/config/json/expertise.data.js';
 import should from 'should';
+import signupData from '../fixtures/signupData';
 import rp from 'request-promise';
 import userData from '../fixtures/userData';
 
@@ -14,6 +15,55 @@ const API_BASE_URL = `http://localhost:${process.env.PORT}`;
 let matchData;
 
 describe('Test Match API', () => {
+  describe('/getCareerData', (done) => {
+    it(': Fetch the career data for filter.', (done) => {
+      rp({
+        method: 'GET',
+        uri: `${API_BASE_URL}/match/getCareerData`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.body.CareerData.area.length.should.equal(CareerData.CareerData.area.length);
+          result.body.CareerData.role.length.should.equal(CareerData.CareerData.role.length);
+          result.body.CareerData.years.length.should.equal(CareerData.CareerData.years.length);
+          result.body.CareerData.educational_background.length.should
+            .equal(CareerData.CareerData.educational_background.length);
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err);
+          done();
+        });
+    });
+  });
+
+  describe('/getExpertiseData', (done) => {
+    it(': Fetch the expertise data for filter.', (done) => {
+      rp({
+        method: 'GET',
+        uri: `${API_BASE_URL}/match/getExpertiseData`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          access_token: userData.USER_A_DATA.access_token,
+        },
+      })
+        .then((result) => {
+          result.body.ExpertiseData.length.should.equal(ExpertiseData.ExpertiseData.length);
+          result.statusCode.should.equal(200);
+          done();
+        })
+        .catch((err) => {
+          should.fail(err);
+          done();
+        });
+    });
+  });
 
   describe('/mentorList', () => {
     it(': Sign up with valid Facebook user B.', (done) => {
@@ -44,14 +94,7 @@ describe('Test Match API', () => {
       rp({
         method: 'POST',
         uri: `${API_BASE_URL}/match/mentorList`,
-        form: {
-          career: {
-            area: 0,
-            role: 0,
-            years: 0,
-            education_background: 0,
-          },
-        },
+        form: signupData.career_data_all,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -103,12 +146,7 @@ describe('Test Match API', () => {
         uri: `${API_BASE_URL}/match/mentorList`,
         form: {
           expertise: [],
-          career: {
-            area: 0,
-            role: 0,
-            years: 0,
-            education_background: 0,
-          },
+          career: signupData.career_data_all.career,
         },
         resolveWithFullResponse: true,
         json: true,
@@ -132,12 +170,7 @@ describe('Test Match API', () => {
         uri: `${API_BASE_URL}/match/mentorList/count`,
         form: {
           expertise: [],
-          career: {
-            area: 0,
-            role: 0,
-            years: 0,
-            educational_background: 0,
-          },
+          career: signupData.career_data_all.career,
         },
         resolveWithFullResponse: true,
         json: true,
@@ -156,51 +189,24 @@ describe('Test Match API', () => {
     });
   });
 
-  describe('/getCareerData', () => {
-    it(': Fetch the career data for filter.', (done) => {
+  describe('/mentorList/count', () => {
+    it(': Count a number of expected mentor.', (done) => {
       rp({
-        method: 'GET',
-        uri: `${API_BASE_URL}/match/getCareerData`,
-        resolveWithFullResponse: true,
+        method: 'POST',
+        uri: `${API_BASE_URL}/match/mentorList/count`,
+        form: signupData.career_data_all,
+        resolvedWithFullResponse: true,
         json: true,
         headers: {
-          access_token: userData.USER_A_DATA.access_token,
+          access_token: userData.USER_B_DATA.access_token,
         },
       })
         .then((result) => {
-          result.body.CareerData.area.length.should.equal(CareerData.CareerData.area.length);
-          result.body.CareerData.role.length.should.equal(CareerData.CareerData.role.length);
-          result.body.CareerData.years.length.should.equal(CareerData.CareerData.years.length);
-          result.body.CareerData.educational_background.length.should
-            .equal(CareerData.CareerData.educational_background.length);
-          result.statusCode.should.equal(200);
-          done();
-        })
-        .catch((err) => {
-          should.fail(err);
-          done();
-        });
-    });
-  });
 
-  describe('/getExpertiseData', () => {
-    it(': Fetch the expertise data for filter.', (done) => {
-      rp({
-        method: 'GET',
-        uri: `${API_BASE_URL}/match/getExpertiseData`,
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.body.ExpertiseData.length.should.equal(ExpertiseData.ExpertiseData.length);
-          result.statusCode.should.equal(200);
           done();
         })
         .catch((err) => {
-          should.fail(err);
+
           done();
         });
     });

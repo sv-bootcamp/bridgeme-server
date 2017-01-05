@@ -60,7 +60,7 @@ export function getMentorList(req, res, next) {
   Promise.all([
     findConnection(matchOptions.option1, projectOption, localField.mentee),
     findConnection(matchOptions.option2, projectOption, localField.mentor),
-    findConnection(matchOptions.option3, projectOption, 'mentee_id'),
+    findConnection(matchOptions.option3, projectOption, localField.mentee),
     saveFilter(req.user._id, req.body.expertise, req.body.career),
   ])
     .then((results) => {
@@ -234,7 +234,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
         let countResult = [0, 0, 0, 0, 0, 0, 0];
         careerFilteredList.full.forEach((user) => {
           user.expertise.forEach((expItem) => {
-            countResult[expItem.index]++;
+            countResult[expItem - 1]++;
           });
         });
 
@@ -243,7 +243,6 @@ export function countExpectedExpertiseMatching(req, res, next) {
     })
     .then((countResult) => {
       res.status(200).json(countResult);
-      return next();
     })
     .catch((err) => {
       res.status(400).json({ err: err });

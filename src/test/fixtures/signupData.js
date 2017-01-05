@@ -7,7 +7,7 @@ export default {
     about: 'Hello',
     image: '',
   },
-  career_data1: {
+  career_data: {
     career: {
         area: 1,
         role: 1,
@@ -15,26 +15,16 @@ export default {
         educational_background: 2,
       },
   },
-  career_data2: {
+  career_data_all: {
     career: {
-      area: 1,
-      role: 2,
-      years: 3,
-      educational_background: 2,
+      area: 0,
+      role: 0,
+      years: 0,
+      educational_background: 0,
     },
   },
   expertise_data: {
-    expertise: [
-      {
-        select: 'Requirement',
-      },
-      {
-        select: 'Resume',
-      },
-      {
-        select: 'Portfolio',
-      },
-    ],
+    expertise: [ 1, 2, 3, 4, 5, ],
   },
   personality_data: {
     personality: [

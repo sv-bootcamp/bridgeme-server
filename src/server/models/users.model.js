@@ -66,7 +66,7 @@ let userSchema = new Schema({
   experience: [experienceSchema],
   work: [experienceSchema],
   career: careerSchema,
-  expertise: Array,
+  expertise: [Number],
   personality: [personalitySchema],
   locale: String,
   age: Number,
@@ -83,7 +83,7 @@ let userSchema = new Schema({
   about: String,
   languages: String,
   mentorMode: Boolean,
-  deviceToken: Array,
+  deviceToken: [String],
   reg_date: {
     type: Date,
     default: Date.now,
