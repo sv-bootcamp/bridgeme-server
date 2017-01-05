@@ -496,11 +496,7 @@ function updateProfile(req, imageKey) {
 }
 
 export function editCareer(req, res, next) {
-  User.update({ _id: req.user._id }, {
-    $set: {
-      career: req.body.career,
-    },
-  }).exec()
+  User.updateOne(req.user._id, { career: req.body.career })
     .then((data) => {
       res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
     })
@@ -510,11 +506,7 @@ export function editCareer(req, res, next) {
 }
 
 export function editExpertise(req, res, next) {
-  User.update({ _id: req.user._id }, {
-    $set: {
-      expertise: req.body.expertise,
-    },
-  }).exec()
+  User.updateOne(req.user._id, { expertise: req.body.expertise })
     .then((data) => {
       res.status(200).json({ msg: userCallback.SUCCESS_EDIT });
     })
@@ -538,7 +530,7 @@ export function editPersonality(req, res, next) {
 }
 
 export function getCareerInfo(req, res, next) {
-  User.findById(req.user._id)
+  User.strictFindById(req.user._id)
     .then((user) => {
       res.status(200).json(user.career);
     })
@@ -569,17 +561,13 @@ export function getPersonalityInfo(req, res, next) {
 
 export function setMentoringRequestStatus(req, res, next) {
   if (req.body.mentorMode === 'true' || req.body.mentorMode === 'false') {
-    User.update({ _id: req.user._id }, {
-      $set: {
-        mentorMode: req.body.mentorMode,
-      },
-    }).exec()
-      .then((update) => {
-        res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
+    User.updateOne(req.user._id, { mentorMode: req.body.mentorMode })
+    .then((update) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_UPDATE });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
   } else {
     res.status(400).json({ err_point: userCallback.ERR_INVALID_PARAMS });
   }

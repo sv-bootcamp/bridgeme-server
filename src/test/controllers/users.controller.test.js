@@ -363,7 +363,7 @@ describe('Test User API', () => {
 });
 
 describe('/editGeneral', () => {
-  it('request /editGeneral with session cookie.', (done) => {
+  it('request /editGeneral with access_token.', (done) => {
     let signUpData = signupData.general_data;
     signUpData.email = userData.USER_A_DATA.email;
     rp({
@@ -389,7 +389,7 @@ describe('/editGeneral', () => {
 });
 
 describe('/editCareer', () => {
-  it('request /editCareer with session cookie.', (done) => {
+  it('request /editCareer with access_token.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editCareer`,
@@ -413,7 +413,7 @@ describe('/editCareer', () => {
 });
 
 describe('/editExpertise', () => {
-  it('request /editExpertise with session cookie.', (done) => {
+  it('request /editExpertise with access_token.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editExpertise`,
@@ -437,7 +437,7 @@ describe('/editExpertise', () => {
 });
 
 describe('/editPersonality', () => {
-  it('request /editPersonality with session cookie.', (done) => {
+  it('request /editPersonality with access_token.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editPersonality`,
@@ -461,7 +461,7 @@ describe('/editPersonality', () => {
 });
 
 describe('/career', () => {
-  it('request /career with session cookie.', (done) => {
+  it('request /career with access_token.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/career`,
@@ -475,6 +475,7 @@ describe('/career', () => {
         result.statusCode.should.equal(200);
         const body = result.body[0];
         const data = signupData.career_data.career;
+        console.log(result.body,data);
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
@@ -482,6 +483,7 @@ describe('/career', () => {
         done();
       })
       .catch((err) => {
+      console.log(err)
         should.fail();
         done();
       });
@@ -489,7 +491,7 @@ describe('/career', () => {
 });
 
 describe('/expertise', () => {
-  it('request /expertise with session cookie.', (done) => {
+  it('request /expertise with access_token.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/expertise`,
@@ -514,7 +516,7 @@ describe('/expertise', () => {
 });
 
 describe('/personality', () => {
-  it('request /personality with session cookie.', (done) => {
+  it('request /personality with access_token.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/personality`,
@@ -586,7 +588,7 @@ describe('/editMentorMode', () => {
 });
 
 describe('/mentorMode', () => {
-  it('request /mentorMode with session cookie.', (done) => {
+  it('request /mentorMode with access_token.', (done) => {
     rp({
       method: 'GET',
       uri: `${API_BASE_URL}/mentorMode`,
