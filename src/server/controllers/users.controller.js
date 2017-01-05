@@ -66,6 +66,15 @@ export function getProfileById(req, res, next) {
     .then((matchAsMentor) => {
       userProfile.relation.asMentor =
         matchAsMentor ? matchAsMentor.status : matchController.MATCH_STATUS.REJECTED;
+      return isBookmarked(req.user._id, req.params._id);
+    })
+    .then((isBookmarked) => {
+      if (isBookmarked) {
+        userProfile.bookmarked = true;
+      } else {
+        userProfile.bookmarked = false;
+      }
+
       res.status(200).json(userProfile);
     })
     .catch((err) => {
@@ -596,6 +605,70 @@ export function getMentoringRequestStatus(req, res, next) {
     .catch((err) => {
       res.status(400).json(err);
     });
+}
+
+export function bookmarkOn(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      user.bookmark.push(req.body.id);
+      return user.save();
+    })
+    .then((user) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_BOOKMARK_ON });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+export function bookmarkOff(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      const index = user.bookmark.indexOf(req.body.id);
+      user.bookmark.splice(index, 1);
+      return user.save();
+    })
+    .then((user) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_BOOKMARK_OFF });
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+export function getBookmark(req, res, next) {
+  User.findOne({ _id: req.user._id }).exec()
+    .then((user) => {
+      let bookmarkList = user.bookmark;
+      return User.find({
+        _id: {
+          $in: bookmarkList,
+        },
+      }, { password: 0 }).exec();
+    })
+    .then((list) => {
+      res.status(200).json(list);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+}
+
+function isBookmarked(userId, targetId) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: userId }).exec()
+      .then((me) => {
+        const bookmarkList = me.bookmark !== undefined ? me.bookmark : [];
+        if (bookmarkList.includes(targetId)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 export function signOut(req, res, next) {

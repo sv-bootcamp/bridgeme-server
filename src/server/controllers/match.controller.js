@@ -20,6 +20,7 @@ export const MATCH_STATUS = {
 };
 
 export function getMentorList(req, res, next) {
+  let bookmarkList = [];
   let pendingList = [];
 
   let projectOption = {
@@ -49,7 +50,8 @@ export function getMentorList(req, res, next) {
   Promise.all([
     findConnection(matchOptions.option1, projectOption, localField.mentee),
     findConnection(matchOptions.option2, projectOption, localField.mentor),
-    findConnection(matchOptions.option3, projectOption, 'mentee_id'),
+    findConnection(matchOptions.option3, projectOption, localField.mentee),
+    User.findOne({ _id: req.user._id }).exec(),
   ])
     .then((results) => {
       let exceptionList = [];
@@ -57,6 +59,9 @@ export function getMentorList(req, res, next) {
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
+      if (results[3].bookmark !== undefined) {
+        bookmarkList = results[3].bookmark;
+      }
 
       return User.find({
         _id: {
@@ -73,6 +78,10 @@ export function getMentorList(req, res, next) {
       return new Promise((resolve, reject) => {
         let userData = JSON.parse(JSON.stringify(userList));
         userData.forEach((item) => {
+          if (bookmarkList.includes(item._id.toString())) {
+            item.bookmarked = true;
+          }
+
           if (pendingList.includes(item._id.toString())) {
             item.pending = true;
           }
