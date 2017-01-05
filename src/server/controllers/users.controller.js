@@ -607,29 +607,29 @@ export function getMentoringRequestStatus(req, res, next) {
     });
 }
 
-export function activeBookmark(req, res, next) {
+export function bookmarkOn(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {
       user.bookmark.push(req.body.id);
-      user.save();
+      return user.save();
     })
-    .then(() => {
-      res.status(200).json({ msg: userCallback.SUCCESS_ACTIVE_BOOKMARK });
+    .then((user) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_BOOKMARK_ON });
     })
     .catch((err) => {
       res.status(400).json(err);
     });
 }
 
-export function inActiveBookmark(req, res, next) {
+export function bookmarkOff(req, res, next) {
   User.findOne({ _id: req.user._id }).exec()
     .then((user) => {
       const index = user.bookmark.indexOf(req.body.id);
       user.bookmark.splice(index, 1);
-      user.save();
+      return user.save();
     })
-    .then(() => {
-      res.status(200).json({ msg: userCallback.SUCCESS_INACTIVE_BOOKMARK });
+    .then((user) => {
+      res.status(200).json({ msg: userCallback.SUCCESS_BOOKMARK_OFF });
     })
     .catch((err) => {
       res.status(400).json(err);
@@ -654,12 +654,12 @@ export function getBookmark(req, res, next) {
     });
 }
 
-function isBookmarked(me, userId) {
+function isBookmarked(userId, targetId) {
   return new Promise((resolve, reject) => {
-    User.findOne({ _id: me }).exec()
+    User.findOne({ _id: userId }).exec()
       .then((me) => {
         const bookmarkList = me.bookmark !== undefined ? me.bookmark : [];
-        if (bookmarkList.includes(userId)) {
+        if (bookmarkList.includes(targetId)) {
           resolve(true);
         } else {
           resolve(false);

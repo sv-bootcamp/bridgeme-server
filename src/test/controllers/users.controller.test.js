@@ -623,7 +623,7 @@ describe('/bookmarkOn', () => {
     })
       .then((result) => {
         result.statusCode.should.equal(200);
-        result.body.msg.should.equal(userCallback.SUCCESS_ACTIVE_BOOKMARK);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_ON);
         done();
       })
       .catch((err) => {
@@ -670,7 +670,7 @@ describe('/bookmarkOff', () => {
     })
       .then((result) => {
         result.statusCode.should.equal(200);
-        result.body.msg.should.equal(userCallback.SUCCESS_INACTIVE_BOOKMARK);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_OFF);
         done();
       })
       .catch((err) => {

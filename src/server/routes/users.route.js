@@ -372,8 +372,8 @@ router.post('/editExpertise', apiProtector, user.editExpertise);
 router.post('/editPersonality', apiProtector, user.editPersonality);
 
 /**
- * @api {post} /users/setRequestStatus Request Edit mentorMode
- * @apiName setRequestStatus
+ * @api {post} /users/editMentorMode Request Edit mentorMode
+ * @apiName editMentorMode
  * @apiGroup User
  *
  * @apiParam {Boolean} mentorMode Flag for requestGet.
@@ -382,24 +382,24 @@ router.post('/editPersonality', apiProtector, user.editPersonality);
 router.post('/editMentorMode', apiProtector, user.setMentoringRequestStatus);
 
 /**
- * @api {post} /users/setRequestStatus Request Edit mentorMode
- * @apiName setRequestStatus
+ * @api {post} /users/bookmarkOn Request Bookmark On
+ * @apiName bookmarkOn
  * @apiGroup User
  *
  * @apiParam {String} id user for bookmark on.
  *
  */
-router.post('/bookmarkOn', apiProtector, user.activeBookmark);
+router.post('/bookmarkOn', apiProtector, user.bookmarkOn);
 
 /**
- * @api {post} /users/setRequestStatus Request Edit mentorMode
- * @apiName setRequestStatus
+ * @api {post} /users/bookmarkOff Request Bookmark Off
+ * @apiName bookmarkOff
  * @apiGroup User
  *
  * @apiParam {String} id user for bookmark off.
  *
  */
-router.post('/bookmarkOff', apiProtector, user.inActiveBookmark);
+router.post('/bookmarkOff', apiProtector, user.bookmarkOff);
 
 //GET method
 
@@ -585,7 +585,7 @@ router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
  *
  * @apiSuccessExample {json} Success
  *      HTTP/1.1 200 OK
- *     {
+ *     {[
  *       {
  *         Marked User1's Info
  *       },
@@ -595,7 +595,7 @@ router.get('/mentorMode', apiProtector, user.getMentoringRequestStatus);
  *       {
  *         Marked User3's Info
  *       },....
- *     }
+ *     ]}
  *
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
