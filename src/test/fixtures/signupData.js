@@ -24,7 +24,7 @@ export default {
     },
   },
   expertise_data: {
-    expertise: [ 1, 2, 3, 4, 5, ],
+    expertise: [1, 2, 3, 4, 5,],
   },
   personality_data: {
     personality: [
