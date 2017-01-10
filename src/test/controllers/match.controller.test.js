@@ -1,6 +1,5 @@
 import '../../server/models/users.model';
-import * as CareerData from '../../server/config/json/career.data.js';
-import * as ExpertiseData from '../../server/config/json/expertise.data.js';
+import * as FilterData from '../../server/config/json/filter.data.js';
 import should from 'should';
 import signupData from '../fixtures/signupData';
 import rp from 'request-promise';
@@ -15,11 +14,11 @@ const API_BASE_URL = `http://localhost:${process.env.PORT}`;
 let matchData;
 
 describe('Test Match API', () => {
-  describe('/getCareerData', (done) => {
-    it(': Fetch the career data for filter.', (done) => {
+  describe('/filterData', (done) => {
+    it(': Fetch the filter data for filter.', (done) => {
       rp({
         method: 'GET',
-        uri: `${API_BASE_URL}/match/getCareerData`,
+        uri: `${API_BASE_URL}/match/filterData`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -27,34 +26,18 @@ describe('Test Match API', () => {
         },
       })
         .then((result) => {
-          result.body.CareerData.area.length.should.equal(CareerData.CareerData.area.length);
-          result.body.CareerData.role.length.should.equal(CareerData.CareerData.role.length);
-          result.body.CareerData.years.length.should.equal(CareerData.CareerData.years.length);
-          result.body.CareerData.educational_background.length.should
-            .equal(CareerData.CareerData.educational_background.length);
-          result.statusCode.should.equal(200);
-          done();
-        })
-        .catch((err) => {
-          should.fail(err);
-          done();
-        });
-    });
-  });
+          result.body.FilterData.career.area.length.should
+            .equal(FilterData.FilterData.career.area.length);
+          result.body.FilterData.career.role.length.should
+            .equal(FilterData.FilterData.career.role.length);
+          result.body.FilterData.career.years.length.should
+            .equal(FilterData.FilterData.career.years.length);
+          result.body.FilterData.career.educational_background.length.should
+            .equal(FilterData.FilterData.career.educational_background.length);
 
-  describe('/getExpertiseData', (done) => {
-    it(': Fetch the expertise data for filter.', (done) => {
-      rp({
-        method: 'GET',
-        uri: `${API_BASE_URL}/match/getExpertiseData`,
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          access_token: userData.USER_A_DATA.access_token,
-        },
-      })
-        .then((result) => {
-          result.body.ExpertiseData.length.should.equal(ExpertiseData.ExpertiseData.length);
+          result.body.FilterData.expertise.length.should
+            .equal(FilterData.FilterData.expertise.length);
+
           result.statusCode.should.equal(200);
           done();
         })

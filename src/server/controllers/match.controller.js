@@ -1,7 +1,6 @@
 import * as mailingUtil from '../utils/mailing.util';
 import * as pushUtil from '../utils/push.util';
-import * as CareerData from '../config/json/career.data.js';
-import * as ExpertiseData from '../config/json/expertise.data.js';
+import * as FilterData from '../config/json/filter.data.js';
 import mailStrings from '../config/json/mail.strings';
 import matchCallback from '../config/json/match.callback';
 import mongoose from 'mongoose';
@@ -22,12 +21,18 @@ export const MATCH_STATUS = {
   REJECTED: 0,
 };
 
-export function getCareerData(req, res, next) {
-  res.status(200).json(CareerData);
+export function getfilterData(req, res, next) {
+  res.status(200).json(FilterData);
 }
 
-export function getExpertiseData(req, res, next) {
-  res.status(200).json(ExpertiseData);
+export function getFilter(req, res, next) {
+  Filter.findOne({ user_id: req.user._id, isLatest: true }).exec()
+    .then((filterItem) => {
+      res.status(200).json(filterItem);
+    })
+    .catch((err) => {
+      res.status(400).json({ err: err });
+    });
 }
 
 export function getMentorList(req, res, next) {
@@ -40,14 +45,14 @@ export function getMentorList(req, res, next) {
   };
 
   let matchOptions = {
-    option1: {
+    MATCH_AS_MENTOR: {
       mentor_id: ObjectId(req.user._id),
     },
-    option2: {
+    MATCH_AS_ACCEPTED_MENTEE: {
       mentee_id: ObjectId(req.user._id),
       status: MATCH_STATUS.ACCEPTED,
     },
-    option3: {
+    MATCH_AS_PENDING_MENTEE: {
       mentee_id: ObjectId(req.user._id),
       status: MATCH_STATUS.PENDING,
     },
@@ -59,9 +64,9 @@ export function getMentorList(req, res, next) {
   };
 
   Promise.all([
-    findConnection(matchOptions.option1, projectOption, localField.mentee),
-    findConnection(matchOptions.option2, projectOption, localField.mentor),
-    findConnection(matchOptions.option3, projectOption, localField.mentee),
+    findConnection(matchOptions.MATCH_AS_MENTOR, projectOption, localField.mentee),
+    findConnection(matchOptions.MATCH_AS_ACCEPTED_MENTEE, projectOption, localField.mentor),
+    findConnection(matchOptions.MATCH_AS_PENDING_MENTEE, projectOption, localField.mentee),
     saveFilter(req.user._id, req.body.expertise, req.body.career),
     User.findOne({ _id: req.user._id }).exec(),
   ])
@@ -71,8 +76,9 @@ export function getMentorList(req, res, next) {
       results[0].forEach(user => exceptionList.push(user.mentee_id));
       results[1].forEach(user => exceptionList.push(user.mentor_id));
       results[2].forEach(user => pendingList.push(user.mentor_id.toString()));
-      if (results[3].bookmark !== undefined) {
-        bookmarkList = results[3].bookmark;
+
+      if (results[4].bookmark !== undefined) {
+        bookmarkList = results[4].bookmark;
       }
 
       return User.find({
@@ -123,8 +129,10 @@ export function getMentorList(req, res, next) {
       return new Promise((resolve, reject) => {
         if (req.body.expertise === undefined) {
           resolve(careerFilteredList.full);
-        } else if (req.body.expertise.length === 0) {
+
+        } else if (req.body.expertise.length === 0 || req.body.expertise.length === 7) {
           resolve(careerFilteredList.full);
+
         } else {
           let filteredList = {
             full: [],
@@ -138,6 +146,7 @@ export function getMentorList(req, res, next) {
                 filteredList.full.push(userItem);
                 filteredList.idList.push(userItem._id);
               }
+
             });
           });
 
@@ -185,16 +194,12 @@ export function countExpectedExpertiseMatching(req, res, next) {
   };
 
   let matchOptions = {
-    option1: {
+    MATCH_AS_MENTOR: {
       mentor_id: ObjectId(req.user._id),
     },
-    option2: {
+    MATCH_AS_ACCEPTED_MENTEE: {
       mentee_id: ObjectId(req.user._id),
       status: MATCH_STATUS.ACCEPTED,
-    },
-    option3: {
-      mentee_id: ObjectId(req.user._id),
-      status: MATCH_STATUS.PENDING,
     },
   };
 
@@ -204,8 +209,8 @@ export function countExpectedExpertiseMatching(req, res, next) {
   };
 
   Promise.all([
-    findConnection(matchOptions.option1, projectOption, localField.mentee),
-    findConnection(matchOptions.option2, projectOption, localField.mentor),
+    findConnection(matchOptions.MATCH_AS_MENTOR, projectOption, localField.mentee),
+    findConnection(matchOptions.MATCH_AS_ACCEPTED_MENTEE, projectOption, localField.mentor),
   ])
     .then((results) => {
       results[0].forEach(user => exceptionList.push(user.mentee_id));
@@ -228,6 +233,7 @@ export function countExpectedExpertiseMatching(req, res, next) {
           full: [],
           idList: [],
         };
+
         initialUserList.forEach((userItem) => {
           if (isFitCareerFilter(userItem.career, req.body.career)) {
             careerFilteredList.full.push(userItem);
