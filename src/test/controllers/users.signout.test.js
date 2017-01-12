@@ -6,7 +6,7 @@ describe('Test User API', function () {
     it(': Sign out', done => {
       rp({
         method: 'POST',
-        uri: 'http://localhost:8000/users/signOut',
+        uri: `http://localhost:${process.env.PORT}/users/signOut`,
         resolveWithFullResponse: true,
         form: {
           deviceToken: 'a',

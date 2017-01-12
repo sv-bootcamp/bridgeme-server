@@ -9,7 +9,7 @@ import userData from '../fixtures/userData';
  * Test for User API
  */
 
-const API_BASE_URL = 'http://localhost:8000/users';
+const API_BASE_URL = `http://localhost:${process.env.PORT}/users`;
 let mentorMode = true;
 
 describe('Test User API', () => {
@@ -262,6 +262,7 @@ describe('Test User API', () => {
         json: true,
       })
         .then((result) => {
+          userData.USER_E_DATA = result.body.user;
           result.statusCode.should.equal(200);
           done();
         })
@@ -362,6 +363,32 @@ describe('Test User API', () => {
   });
 });
 
+describe('/editGeneral', () => {
+  it('request /editGeneral with session cookie.', (done) => {
+    let signUpData = signupData.general_data;
+    signUpData.email = userData.USER_A_DATA.email;
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/editGeneral`,
+      form: signUpData,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_UPDATE_WITHOUT_IMAGE);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
 describe('/editCareer', () => {
   it('request /editCareer with session cookie.', (done) => {
     rp({
@@ -447,8 +474,8 @@ describe('/career', () => {
     })
       .then((result) => {
         result.statusCode.should.equal(200);
-        const body = result.body[0];
-        const data = signupData.career_data.career[0];
+        const body = result.body;
+        const data = signupData.career_data.career;
         body.area.should.equal(data.area);
         body.role.should.equal(data.role);
         body.years.should.equal(data.years);
@@ -513,8 +540,8 @@ describe('/personality', () => {
   });
 });
 
-describe('/setRequestStatus', () => {
-  it('request /setRequestStatus with invalid parameter.', (done) => {
+describe('/editMentorMode', () => {
+  it('request /editMentorMode with invalid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -536,7 +563,7 @@ describe('/setRequestStatus', () => {
       });
   });
 
-  it('request /setRequestStatus with valid parameter.', (done) => {
+  it('request /editMentorMode with valid parameter.', (done) => {
     rp({
       method: 'POST',
       uri: `${API_BASE_URL}/editMentorMode`,
@@ -559,7 +586,7 @@ describe('/setRequestStatus', () => {
   });
 });
 
-describe('/getRequestStatus', () => {
+describe('/mentorMode', () => {
   it('request /mentorMode with session cookie.', (done) => {
     rp({
       method: 'GET',
@@ -573,6 +600,100 @@ describe('/getRequestStatus', () => {
       .then((result) => {
         result.statusCode.should.equal(200);
         result.body.result.should.equal(mentorMode);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmarkOn', () => {
+  it('request /bookmarkOn with session cookie.', (done) => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/bookmarkOn`,
+      form: { id: userData.USER_E_DATA._id },
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_ON);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmark', () => {
+  it('request /bookmark with session cookie.', (done) => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/bookmark`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body[0]._id.should.equal(userData.USER_E_DATA._id);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmarkOff', () => {
+  it('request /bookmarkOff with session cookie.', (done) => {
+    rp({
+      method: 'POST',
+      uri: `${API_BASE_URL}/bookmarkOff`,
+      form: { id: userData.USER_E_DATA._id },
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.msg.should.equal(userCallback.SUCCESS_BOOKMARK_OFF);
+        done();
+      })
+      .catch((err) => {
+        should.fail();
+        done();
+      });
+  });
+});
+
+describe('/bookmark', () => {
+  it('request /bookmark with session cookie.', (done) => {
+    rp({
+      method: 'GET',
+      uri: `${API_BASE_URL}/bookmark`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        access_token: userData.USER_A_DATA.access_token,
+      },
+    })
+      .then((result) => {
+        result.statusCode.should.equal(200);
+        result.body.length.should.equal(0);
         done();
       })
       .catch((err) => {

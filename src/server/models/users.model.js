@@ -46,7 +46,7 @@ const careerSchema = new Schema({
   area: String,
   role: String,
   years: String,
-  education_background: String,
+  educational_background: String,
 });
 
 const expertiseSchema = new Schema({
@@ -70,7 +70,12 @@ let userSchema = new Schema({
   education: [educationSchema],
   experience: [experienceSchema],
   work: [experienceSchema],
-  career: [careerSchema],
+  career: {
+    area: String,
+    role: String,
+    years: String,
+    education_background: String,
+  },
   expertise: [expertiseSchema],
   personality: [personalitySchema],
   locale: String,
@@ -89,6 +94,7 @@ let userSchema = new Schema({
   languages: String,
   mentorMode: Boolean,
   deviceToken: Array,
+  bookmark: Array,
   reg_date: {
     type: Date,
     default: Date.now,
