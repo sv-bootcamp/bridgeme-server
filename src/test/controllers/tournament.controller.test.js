@@ -10,7 +10,7 @@ import userData from '../fixtures/userData';
 const API_BASE_URL = `http://localhost:${process.env.PORT}/tournament`;
 
 describe('Test Tournament API', () => {
-  
+
   describe('/list/:area', () => {
     it('request /list/:id with invalid area.', (done) => {
       rp({
@@ -32,7 +32,7 @@ describe('Test Tournament API', () => {
           done();
         });
     });
-    
+
     it('request /list/:id with valid All area.', (done) => {
       rp({
         method: 'GET',
@@ -53,7 +53,7 @@ describe('Test Tournament API', () => {
           done();
         });
     });
-  
+
     it('request /list/:id with valid Design area.', (done) => {
       rp({
         method: 'GET',

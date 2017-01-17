@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 /*
- * Methods about mentoring request, accept or reject
+ * Methods for getting tournament list.
  */
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -18,12 +18,12 @@ export function getTournamentList(req, res, next) {
       mentee_id: ObjectId(req.user._id),
     },
   };
-  
+
   const projectOption = {
     mentee_id: 1,
     mentor_id: 1,
   };
-  
+
   const localField = {
     mentee: 'mentee_id',
     mentor: 'mentor_id',
@@ -33,34 +33,27 @@ export function getTournamentList(req, res, next) {
     findConnection(matchOptions.MATCH_AS_MENTOR, projectOption, localField.mentee),
     findConnection(matchOptions.MATCH_AS_MENTEE, projectOption, localField.mentor),
   ])
-    .then((results) => {
-      let exceptionList = [];
-
-      results[0].forEach(user => exceptionList.push(user.mentee_id));
-      results[1].forEach(user => exceptionList.push(user.mentor_id));
+    .then((exceptionList) => {
+      let defaultFindOption = {
+        _id: {
+          $ne: req.user._id,
+          $nin: exceptionList[0],
+          $nin: exceptionList[1],
+        },
+        mentorMode: {
+          $ne: false,
+        },
+      };
 
       if (req.params.area === 'All') {
-        return User.find({
-          _id: {
-            $ne: req.user._id,
-            $nin: exceptionList,
-          },
-          mentorMode: {
-            $ne: false,
-          },
-        })
+        return User.find(defaultFindOption, { password: 0 })
           .sort({ stamp_login: -1 }).exec();
       } else {
         return User.find({
-          _id: {
-            $ne: req.user._id,
-            $nin: exceptionList,
-          },
-          mentorMode: {
-            $ne: false,
-          },
-          "career.area": req.params.area,
-        })
+          _id: defaultFindOption._id,
+          mentorMode: defaultFindOption.mentorMode,
+          'career.area': req.params.area,
+        }, { password: 0 })
           .sort({ stamp_login: -1 }).exec();
       }
     })
