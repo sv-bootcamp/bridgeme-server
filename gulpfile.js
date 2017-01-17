@@ -29,6 +29,7 @@ gulp.task('test', ['pre-test'], () => {
     'dist-test/test/utils.js',
     'dist-test/test/controllers/users.controller.test.js',
     'dist-test/test/controllers/survey.controller.test.js',
+    'dist-test/test/controllers/tournament.controller.test.js',
     'dist-test/test/controllers/match.controller.test.js',
     'dist-test/test/controllers/users.signout.test.js',])
     .pipe(mocha())
