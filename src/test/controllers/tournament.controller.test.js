@@ -33,7 +33,7 @@ describe('Test Tournament API', () => {
         });
     });
 
-    it('request /list/:id with valid All area.', (done) => {
+    it('request /list/:area with valid All area.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/list/All`,
@@ -54,7 +54,7 @@ describe('Test Tournament API', () => {
         });
     });
 
-    it('request /list/:id with valid Design area.', (done) => {
+    it('request /list/:area with valid Design area.', (done) => {
       rp({
         method: 'GET',
         uri: `${API_BASE_URL}/list/Design`,

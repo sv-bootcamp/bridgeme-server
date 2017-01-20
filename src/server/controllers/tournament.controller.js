@@ -34,7 +34,7 @@ export function getTournamentList(req, res, next) {
     findConnection(matchOptions.MATCH_AS_MENTEE, projectOption, localField.mentor),
   ])
     .then((exceptionList) => {
-      let defaultFindOption = {
+      const defaultFindOption = {
         _id: {
           $ne: req.user._id,
           $nin: exceptionList[0],
@@ -61,21 +61,22 @@ export function getTournamentList(req, res, next) {
       res.status(200).json(userList);
     })
     .catch((err) => {
-      res.status(400).json({ err: err });
+      res.status(400).json({ err });
     });
 }
 
 function findConnection(matchOption, projectOption, localField) {
-  return Match.aggregate([{
-    $match: matchOption,
-  },
+  return Match.aggregate([
+    {
+      $match: matchOption,
+    },
     {
       $project: projectOption,
     },
     {
       $lookup: {
         from: 'users',
-        localField: localField,
+        localField,
         foreignField: '_id',
         as: 'list',
       },
