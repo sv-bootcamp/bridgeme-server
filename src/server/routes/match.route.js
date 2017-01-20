@@ -14,25 +14,16 @@ const router = express.Router();
 /**
  * @api {post} /match/mentorList Request Mentor's list with career/expertise filter
  * @apiName getMentorList
- * @apiGroup User
+ * @apiGroup Match
  *
  * @apiParam {json} Parameter Sample when you request list with filters.
  *     {
- *       "expertise" : [
- *         {
- *           "select" : "Get a new job",
- *           "index" : 1
- *         },
- *         {
- *           "select": "Career change",
- *           "index": 4
- *         }
- *       ],
+ *       "expertise" : [ 1, 4 ],
  *       "career" : {
- *         "area" : "Design",
- *         "role" : "Visual/UI Designer",
- *         "years" : "All",
- *         "education_background" : "All"
+ *         "area" : 1,
+ *         "role" : 3,
+ *         "years" : 1,
+ *         "educational_background" : 4
  *       }
  *     }
  *
@@ -62,17 +53,17 @@ router.post('/mentorList', apiProtector, match.getMentorList);
 /**
  * @api {post} /match/mentorList/count Request expected user number per expertise with career filter
  * @apiName countExpectedExpertiseMatching
- * @apiGroup User
+ * @apiGroup Match
  *
  * @apiParam {json} career Career value that user set
  *
  * @apiParamExample {json} Parameter Sample
  *     {
  *       "career": {
- *         "area": "Design",
- *         "role": "Visual/UI Designer",
- *         "years": "All",
- *         "education_background": "All"
+ *         "area": 1,
+ *         "role": 2,
+ *         "years": 3,
+ *         "educational_background": 2
  *       }
  *     }
  *
@@ -85,12 +76,7 @@ router.post('/mentorList', apiProtector, match.getMentorList);
  * @apiErrorExample {json}
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "career": {
- *         "area": "Design",
- *         "role": "Visual/UI Designer",
- *         "years": "All",
- *         "education_background": "All"
- *       }
+ *       "err_point": "Authentication Fail"
  *     }
  *
  */
@@ -103,8 +89,8 @@ router.post('/mentorList/count', apiProtector, match.countExpectedExpertiseMatch
  * @apiGroup Match
  *
  * @apiParam {String} mentor_id ObjectId of mentor who want to get mentoring service.
- * @apiParam String subjects Request contains this subjects.
- * @apiParam String contents Request contains this contents.
+ * @apiParam {String} subjects Request contains this subjects.
+ * @apiParam {String} contents Request contains this contents.
  *
  * @apiParamExample {json} Parameter Sample
  *     {
@@ -211,5 +197,112 @@ router.post('/response', apiProtector, match.responseMentoring);
  *     }
  */
 router.get('/activity', apiProtector, match.getMyActivity);
+
+/**
+ * @api {get} /match/getCareerData Fetch the career data for filter
+ * @apiName getCareerData
+ * @apiDescription Fetch the whole career data for filter.
+ * @apiGroup Match
+ *
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       career: {
+ *         role: [
+ *           {
+ *             index: 1,
+ *             area: 'Software Engineering',
+ *             list: [
+ *               {
+ *                 index: 1,
+ *                 content: 'Backend Engineer',
+ *               },
+ *               {
+ *                 index: 2,
+ *                 content: 'Build / Release Engineer',
+ *               },
+ *             ],
+ *           },
+ *           {
+ *             index: 2,
+ *             area: 'Design',
+ *             list: [
+ *               {
+ *                 index: 1,
+ *                 content: 'Brand / Graphic Designer',
+ *               },
+ *             ],
+ *           },
+ *         years: [
+ *           {
+ *             index: 1,
+ *             content: '0-1 years',
+ *           },
+ *         ],
+ *         area: [
+ *           {
+ *             index: 1,
+ *             content: 'Software Engineering',
+ *           },
+ *         ],
+ *         educational_background: [
+ *           {
+ *             index: 1,
+ *             content: "Associate's",
+ *           },
+ *         ],
+ *       },
+ *       expertise: [
+ *         {
+ *           index: 1,
+ *           content: 'Study abroad',
+ *         },
+ *         {
+ *           index: 2,
+ *           content: 'Career advice',
+ *         },
+ *       ],
+ *     };
+ *
+ * @apiErrorExample {json} Fail
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ */
+router.get('/filterData', apiProtector, match.getfilterData);
+
+
+/**
+ * @api {get} /match/filter Request user's latest filter set
+ * @apiName getFilter
+ * @apiGroup Match
+ *
+ * @apiSuccessExample {json} Success
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "expertise" : [ 1, 4 ],
+ *       "career" : {
+ *         "area" : 1,
+ *         "role" : 3,
+ *         "years" : 1,
+ *         "educational_background" : 4
+ *       }
+ *     }
+ *
+ * @apiErrorExample {json}
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "err_point": {err_msg}
+ *     }
+ *
+ */
+router.get('/filter', apiProtector, match.getFilter);
 
 export default router;

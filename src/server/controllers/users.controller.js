@@ -14,7 +14,6 @@ import crypto from 'crypto';
  */
 
 const Match = mongoose.model('match');
-const ObjectId = mongoose.Types.ObjectId;
 const User = mongoose.model('user');
 const SecretCode = mongoose.model('secretCode');
 const platform = { local: '0', facebook: '1', linkedin: '2' };

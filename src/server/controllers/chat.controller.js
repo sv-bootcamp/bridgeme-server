@@ -26,3 +26,4 @@ export function getAppId(req, res, next) {
     res.status(400).json({ err_point: userCallback.ERR_UNDEFINED_KEY });
   }
 }
+

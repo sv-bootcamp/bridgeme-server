@@ -1,25 +1,21 @@
 import mongoose from 'mongoose';
 
 /*
- * Define the schema model for filter usage history
+ * Define the schema model for filter search history
  */
 
 const Schema = mongoose.Schema;
 
-const expertiseSchema = new Schema({
-  select: String,
-  index: Number,
-});
-
 let filterSchema = new Schema({
   user_id: Schema.Types.ObjectId,
-  expertise: [expertiseSchema],
+  expertise: Array,
   career: {
-    area: String,
-    role: String,
-    years: String,
-    education_background: String,
+    area: Number,
+    role: Number,
+    years: Number,
+    education_background: Number,
   },
+  isLatest: Boolean,
   date: {
     type: Date,
     default: Date.now,

@@ -9,24 +9,22 @@ export default {
   },
   career_data: {
     career: {
-        area: 'Design',
-        role: 'Visual / UI',
-        years: '0-2 years',
-        education_background: "Bachelor's",
+        area: 1,
+        role: 1,
+        years: 2,
+        educational_background: 2,
       },
   },
+  career_data_all: {
+    career: {
+      area: 0,
+      role: 0,
+      years: 0,
+      educational_background: 0,
+    },
+  },
   expertise_data: {
-    expertise: [
-      {
-        select: 'Requirement',
-      },
-      {
-        select: 'Resume',
-      },
-      {
-        select: 'Portfolio',
-      },
-    ],
+    expertise: [1, 2, 3, 4, 5, ],
   },
   personality_data: {
     personality: [
