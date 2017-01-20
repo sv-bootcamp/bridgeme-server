@@ -8,6 +8,7 @@ import match from './routes/match.route';
 import methodOverride from 'method-override';
 import morgan from 'morgan';
 import survey from './routes/survey.route';
+import tournament from './routes/tournament.route';
 import users from './routes/users.route';
 
 export default (cb) => {
@@ -33,6 +34,7 @@ export default (cb) => {
   app.use('/survey', survey);
   app.use('/match', match);
   app.use('/chat', chat);
+  app.use('/tournament', tournament);
 
   app.use(express.static(__dirname + '/apidoc'));
 
