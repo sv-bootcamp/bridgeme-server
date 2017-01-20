@@ -263,6 +263,7 @@ describe('Test User API', () => {
       })
         .then((result) => {
           userData.USER_E_DATA = result.body.user;
+          userData.USER_E_DATA.access_token = result.body.access_token;
           result.statusCode.should.equal(200);
           done();
         })
