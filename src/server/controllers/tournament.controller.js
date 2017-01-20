@@ -43,6 +43,9 @@ export function getTournamentList(req, res, next) {
         mentorMode: {
           $ne: false,
         },
+        career: {
+          $ne: undefined,
+        },
       };
 
       if (req.params.area === 'All') {
